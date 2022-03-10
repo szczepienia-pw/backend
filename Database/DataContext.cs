@@ -10,12 +10,12 @@ namespace backend.Database
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-        public DbSet<Address> Addresses { get; set; }
-        public DbSet<Admin> Admins { get; set; }
-        public DbSet<Doctor> Doctors { get; set; }
-        public DbSet<Patient> Patients { get; set; }
-        public DbSet<Vaccine> Vaccines { get; set; }
-        public DbSet<VaccinationSlot> VaccinationSlots { get; set; }
-        public DbSet<Vaccination> Vaccinations { get; set; }
+        public DbSet<AddressModel> Addresses { get; set; }
+        public DbSet<AdminModel> Admins { get; set; }
+        public DbSet<DoctorModel> Doctors { get; set; }
+        public DbSet<PatientModel> Patients { get; set; }
+        public DbSet<VaccineModel> Vaccines { get; set; }
+        public DbSet<VaccinationSlotModel> VaccinationSlots { get; set; }
+        public DbSet<VaccinationModel> Vaccinations { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace backend.Models.Vaccines
 {
-    public enum Disease
+    public enum DiseaseEnum
     {
         COVID19,
         COVID21,

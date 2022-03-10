@@ -1,6 +1,6 @@
 ﻿namespace backend.Models.Accounts
 {
-    public class Admin : Account
+    public class AdminModel : AccountModel
     {
 
     }
