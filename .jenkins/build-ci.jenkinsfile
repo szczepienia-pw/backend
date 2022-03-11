@@ -32,7 +32,7 @@ pipeline {
                         sh 'echo "stopping backend-develop docker"'
                         sh 'docker stop backend-develop'
                         sh 'rm -rf /home/flatly/apps/dotnet/develop/*'
-                        sh 'cp -r ./* /home/flatly/apps/dotnet/develop/'
+                        sh 'cp -r ./out/* /home/flatly/apps/dotnet/develop/'
                         sh 'echo "restarting backend-develop docker"'
                         sh 'docker restart backend-develop'
                         cleanWs()
@@ -50,7 +50,7 @@ pipeline {
                         sh 'echo "stopping backend docker"'
                         sh 'docker stop backend'
                         sh 'rm -rf /home/flatly/apps/dotnet/main/*'
-                        sh 'cp -r ./* /home/flatly/apps/dotnet/main/'
+                        sh 'cp -r ./out/* /home/flatly/apps/dotnet/main/'
                         sh 'echo "restarting backend docker"'
                         sh 'docker restart backend'
                         cleanWs()

@@ -4,6 +4,13 @@ pipeline {
     }
     stages {
         stage('test') {
+            when {
+                // execute only on PRs to develop and main
+                anyOf {
+                    changeRequest target: 'main'
+                    changeRequest target: 'develop'
+                }
+            }
             steps {
                 sh 'cd tests'
                 sh 'dotnet test'
