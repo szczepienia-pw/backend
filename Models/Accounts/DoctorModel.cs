@@ -1,7 +1,7 @@
 ﻿namespace backend.Models.Accounts
 {
-    public class Doctor : Account
+    public class DoctorModel : AccountModel
     {
-
+        
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace backend.Models.Visits
 {
-    public enum Status
+    public enum StatusEnum
     {
         Planned,
         Completed,

@@ -2,9 +2,9 @@
 
 namespace backend.Models.Accounts
 {
-    public class Patient : Account
+    public class PatientModel : AccountModel
     {
         public string Pesel { get; set; }
-        public Address Address { get; set; }
+        public AddressModel Address { get; set; }
     }
 }

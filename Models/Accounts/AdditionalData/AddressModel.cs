@@ -1,6 +1,6 @@
 ﻿namespace backend.Models.Accounts.AdditionalData
 {
-    public class Address
+    public class AddressModel
     {
         public int Id { get; set; }
         public string City { get; set; }
