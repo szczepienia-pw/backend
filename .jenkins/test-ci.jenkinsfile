@@ -1,0 +1,14 @@
+pipeline {
+    agent {
+        label 'dotnet'
+    }
+    stages {
+        stage('test') {
+            steps {
+                sh 'cd tests'
+                sh 'dotnet test'
+                cleanWs()
+            }
+        }
+    }
+}
