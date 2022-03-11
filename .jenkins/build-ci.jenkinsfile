@@ -29,11 +29,11 @@ pipeline {
                     }
                     steps {
                         unstash name: 'build'
-                        sh 'stopping backend-develop docker'
+                        sh 'echo "stopping backend-develop docker"'
                         sh 'docker stop backend-develop'
                         sh 'rm -rf /home/flatly/apps/dotnet/develop/*'
                         sh 'cp -r ./* /home/flatly/apps/dotnet/develop/'
-                        sh 'restarting backend-develop docker'
+                        sh 'echo "restarting backend-develop docker"'
                         sh 'docker restart backend-develop'
                         cleanWs()
                     }
@@ -47,11 +47,11 @@ pipeline {
                     }
                     steps {
                         unstash name: 'build'
-                        sh 'stopping backend docker'
+                        sh 'echo "stopping backend docker"'
                         sh 'docker stop backend'
                         sh 'rm -rf /home/flatly/apps/dotnet/main/*'
                         sh 'cp -r ./* /home/flatly/apps/dotnet/main/'
-                        sh 'restarting backend docker'
+                        sh 'echo "restarting backend docker"'
                         sh 'docker restart backend'
                         cleanWs()
                     }
