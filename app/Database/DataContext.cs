@@ -17,5 +17,10 @@ namespace backend.Database
         public DbSet<VaccineModel> Vaccines { get; set; }
         public DbSet<VaccinationSlotModel> VaccinationSlots { get; set; }
         public DbSet<VaccinationModel> Vaccinations { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            Seeder.Seed(modelBuilder);
+        }
     }
 }
