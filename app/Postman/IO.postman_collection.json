@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4691b681-29a1-4b6f-9222-f3ea61a12676",
+		"_postman_id": "96c78761-9c89-4dbc-a4a8-e62bb016ef99",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -33,7 +33,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"tymoteusz@bartnik.pl\",\r\n  \"password\": \"cebula\"\r\n}",
+							"raw": "{\r\n  \"email\": \"john@doctor.com\",\r\n  \"password\": \"password\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -57,7 +57,17 @@
 					"name": "Authentication test",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{IOHostURL}}/doctor/auth-test",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"doctor",
+								"auth-test"
+							]
+						}
 					},
 					"response": []
 				}
