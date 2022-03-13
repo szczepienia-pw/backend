@@ -6,5 +6,6 @@ namespace backend.Models.Accounts
     {
         public string Pesel { get; set; }
         public AddressModel Address { get; set; }
+        public int AddressId { get; set; }
     }
 }

@@ -46,9 +46,12 @@ namespace backend.Middlewares
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var accountType = Enum.Parse(typeof(AccountTypeEnum), 
+                    jwtToken.Claims.First(x => x.Type == "accountType").Value);
 
                 // Attach user to context on successful jwt validation
                 context.Items["User"] = dataContext.Doctors.First(doctor => doctor.Id == userId);
+                context.Items["AccountType"] = accountType;
             }
             catch
             {

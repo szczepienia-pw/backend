@@ -23,8 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Admin\" />
-    <Folder Include="Services\Patient\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>
