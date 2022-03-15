@@ -47,7 +47,7 @@ namespace backend.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()), 
-                                                     new Claim("accountType", AccountTypeFactory.CreateAccountTypeEnum(typeof(T)).ToString()) }),
+                                                     new Claim("accountType", user.GetEnum().ToString()) }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

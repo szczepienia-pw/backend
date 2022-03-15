@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using backend.Helpers;
 
 namespace backend.Models.Accounts
 {
@@ -10,5 +11,7 @@ namespace backend.Models.Accounts
         public string Password { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public abstract AccountTypeEnum GetEnum();
     }
 }
