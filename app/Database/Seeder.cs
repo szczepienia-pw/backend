@@ -7,6 +7,13 @@ namespace backend.Database
 {
     public class Seeder
     {
+        private readonly SecurePasswordHasher securePasswordHasher;
+
+        public Seeder(SecurePasswordHasher securePasswordHasher)
+        {
+            this.securePasswordHasher = securePasswordHasher;
+        }
+
         public void Seed(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AddressModel>().HasData(
@@ -27,7 +34,7 @@ namespace backend.Database
                     Email = "john@patient.com",
                     FirstName = "John",
                     LastName = "Patient",
-                    Password = SecurePasswordHasher.Hash("password"),
+                    Password = this.securePasswordHasher.Hash("password"),
                     Pesel = "22222222222",
                     AddressId = 1
                 }
@@ -39,7 +46,7 @@ namespace backend.Database
                     Email = "john@doctor.com",
                     FirstName = "John",
                     LastName = "Doctor",
-                    Password = SecurePasswordHasher.Hash("password"),
+                    Password = this.securePasswordHasher.Hash("password"),
                 }
             );
             modelBuilder.Entity<AdminModel>().HasData(
@@ -49,7 +56,7 @@ namespace backend.Database
                     Email = "john@admin.com",
                     FirstName = "John",
                     LastName = "Admin",
-                    Password = SecurePasswordHasher.Hash("password"),
+                    Password = this.securePasswordHasher.Hash("password"),
                 }
             );
         }

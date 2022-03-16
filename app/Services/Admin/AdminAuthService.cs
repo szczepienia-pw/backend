@@ -10,10 +10,8 @@ namespace backend.Services.Admin
 {
     public class AdminAuthService : AuthService<AdminModel>
     {
-        public AdminAuthService(JwtGenerator jwtGenerator, DataContext dataContext) : base(jwtGenerator, dataContext)
-        {
-
-        }
+        public AdminAuthService(JwtGenerator jwtGenerator, SecurePasswordHasher securePasswordHasher, DataContext dataContext) 
+            : base(jwtGenerator, securePasswordHasher, dataContext) { }
 
         protected override DbSet<AdminModel> GetDataContextDbSet()
         {

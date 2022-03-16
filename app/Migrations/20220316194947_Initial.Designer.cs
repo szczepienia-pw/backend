@@ -11,7 +11,7 @@ using backend.Database;
 namespace backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220313170810_Initial")]
+    [Migration("20220316194947_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,7 +96,7 @@ namespace backend.Migrations
                             Email = "john@admin.com",
                             FirstName = "John",
                             LastName = "Admin",
-                            Password = "$MYHASH$V1$10000$s81UWFb+BtkmfVnflPj7rBVS1sbBfXMuuFZSppwwn93jfvm3"
+                            Password = "$MYHASH$V1$10000$mqeo9mY32GPrrbVp6xp9TYQAu8eqJDYk5SUp2reRAyYZvpzq"
                         });
                 });
 
@@ -133,7 +133,7 @@ namespace backend.Migrations
                             Email = "john@doctor.com",
                             FirstName = "John",
                             LastName = "Doctor",
-                            Password = "$MYHASH$V1$10000$SX/9f3d4SVo0M3Bljm1Rds7A+lFyB03WUSciPSvT3gVa0bpy"
+                            Password = "$MYHASH$V1$10000$6EB6EjuT8drcPhVQg7AUyOoWjcjjtcJqIyFEAMPyvTVHNkR/"
                         });
                 });
 
@@ -180,7 +180,7 @@ namespace backend.Migrations
                             Email = "john@patient.com",
                             FirstName = "John",
                             LastName = "Patient",
-                            Password = "$MYHASH$V1$10000$fmYlvHNx8VLYOo2lhH3UvgO8jxJqKoL7V0l3apkdCEadIcGB",
+                            Password = "$MYHASH$V1$10000$/KNLglM2hKDJJORqyro48zoP+fZJ7WEqLU8asX8rkIJRwctd",
                             Pesel = "22222222222"
                         });
                 });

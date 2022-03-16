@@ -15,7 +15,8 @@ namespace backend.Database
             this.seeder = seeder;
         }
 
-        public DataContext() {}
+        // For mocking
+        protected DataContext() {}
 
         public virtual DbSet<AddressModel> Addresses { get; set; }
         public virtual DbSet<AdminModel> Admins { get; set; }

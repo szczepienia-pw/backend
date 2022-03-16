@@ -20,7 +20,7 @@ namespace backend_tests.Helpers
                     FirstName = Faker.Name.First(),
                     LastName = Faker.Name.Last(),
                     Email = "john@doctor.com",
-                    Password = SecurePasswordHasher.Hash("password")
+                    Password = SecurePasswordHasherHelper.Hasher.Hash("password")
                 }
             };
 
@@ -32,7 +32,7 @@ namespace backend_tests.Helpers
                     FirstName = Faker.Name.First(),
                     LastName = Faker.Name.Last(),
                     Email = "john@patient.com",
-                    Password = SecurePasswordHasher.Hash("password"),
+                    Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
                     Address = new AddressModel()
                     {
 
@@ -48,7 +48,7 @@ namespace backend_tests.Helpers
                     FirstName = Faker.Name.First(),
                     LastName = Faker.Name.Last(),
                     Email = "john@admin.com",
-                    Password = SecurePasswordHasher.Hash("password")
+                    Password = SecurePasswordHasherHelper.Hasher.Hash("password")
                 }
             };
 

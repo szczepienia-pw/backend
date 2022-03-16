@@ -22,9 +22,11 @@ builder.Services.AddScoped<AdminAuthService>();
 // Singletons
 builder.Services.AddSingleton<JwtGenerator>();
 builder.Services.AddSingleton<Seeder>();
+builder.Services.AddSingleton<HasherSettings>();
 
 // Connect Jwt settings to section in appsettings.json
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<HasherSettings>(builder.Configuration.GetSection("HasherSettings"));
 
 // Connect to MySQL database
 string connectionString = builder.Configuration.GetConnectionString("MySQLConnection").ToString();

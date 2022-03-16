@@ -190,17 +190,17 @@ namespace backend.Migrations
             migrationBuilder.InsertData(
                 table: "Admins",
                 columns: new[] { "Id", "Email", "FirstName", "LastName", "Password" },
-                values: new object[] { 1, "john@admin.com", "John", "Admin", "$MYHASH$V1$10000$s81UWFb+BtkmfVnflPj7rBVS1sbBfXMuuFZSppwwn93jfvm3" });
+                values: new object[] { 1, "john@admin.com", "John", "Admin", "$MYHASH$V1$10000$mqeo9mY32GPrrbVp6xp9TYQAu8eqJDYk5SUp2reRAyYZvpzq" });
 
             migrationBuilder.InsertData(
                 table: "Doctors",
                 columns: new[] { "Id", "Email", "FirstName", "LastName", "Password" },
-                values: new object[] { 1, "john@doctor.com", "John", "Doctor", "$MYHASH$V1$10000$SX/9f3d4SVo0M3Bljm1Rds7A+lFyB03WUSciPSvT3gVa0bpy" });
+                values: new object[] { 1, "john@doctor.com", "John", "Doctor", "$MYHASH$V1$10000$6EB6EjuT8drcPhVQg7AUyOoWjcjjtcJqIyFEAMPyvTVHNkR/" });
 
             migrationBuilder.InsertData(
                 table: "Patients",
                 columns: new[] { "Id", "AddressId", "Email", "FirstName", "LastName", "Password", "Pesel" },
-                values: new object[] { 1, 1, "john@patient.com", "John", "Patient", "$MYHASH$V1$10000$fmYlvHNx8VLYOo2lhH3UvgO8jxJqKoL7V0l3apkdCEadIcGB", "22222222222" });
+                values: new object[] { 1, 1, "john@patient.com", "John", "Patient", "$MYHASH$V1$10000$/KNLglM2hKDJJORqyro48zoP+fZJ7WEqLU8asX8rkIJRwctd", "22222222222" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Patients_AddressId",

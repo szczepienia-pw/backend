@@ -22,7 +22,8 @@ namespace backend_tests.Unit.Services.Doctor
         public async Task TestAuthenticationWithWrongCredentials(string email, string password)
         {
             var service = new DoctorAuthService(
-                new JwtGenerator(Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" })), 
+                new JwtGenerator(Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" })),
+                SecurePasswordHasherHelper.Hasher,
                 DbHelper.GetMockedDataContextWithAccounts().Object
             );
 
@@ -43,6 +44,7 @@ namespace backend_tests.Unit.Services.Doctor
 
             var service = new DoctorAuthService(
                 new JwtGenerator(Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" })),
+                SecurePasswordHasherHelper.Hasher,
                 dataContext
             );
 

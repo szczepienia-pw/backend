@@ -10,10 +10,8 @@ namespace backend.Services.Doctor
 {
     public class DoctorAuthService : AuthService<DoctorModel>
     {
-        public DoctorAuthService(JwtGenerator jwtGenerator, DataContext dataContext) : base(jwtGenerator, dataContext)
-        {
-
-        }
+        public DoctorAuthService(JwtGenerator jwtGenerator, SecurePasswordHasher securePasswordHasher, DataContext dataContext)
+            : base(jwtGenerator, securePasswordHasher, dataContext) { }
 
         protected override DbSet<DoctorModel> GetDataContextDbSet()
         {

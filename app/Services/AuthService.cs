@@ -11,11 +11,13 @@ namespace backend.Services
     public abstract class AuthService<T> where T : AccountModel
     {
         private readonly JwtGenerator jwtGenerator;
+        private readonly SecurePasswordHasher securePasswordHasher;
         protected readonly DataContext dataContext;
 
-        public AuthService(JwtGenerator jwtGenerator, DataContext dataContext)
+        public AuthService(JwtGenerator jwtGenerator, SecurePasswordHasher securePasswordHasher, DataContext dataContext)
         {
             this.jwtGenerator = jwtGenerator;
+            this.securePasswordHasher = securePasswordHasher;
             this.dataContext = dataContext;
         }
 
@@ -24,7 +26,7 @@ namespace backend.Services
             var user = this.GetDataContextDbSet().SingleOrDefault(user => user.Email == request.Email);
 
             // Return null if user not found or password is invalid
-            if (user == null || !SecurePasswordHasher.Verify(request.Password, user.Password))
+            if (user == null || !this.securePasswordHasher.Verify(request.Password, user.Password))
                 throw new UnauthorizedException();
 
             // Authentication successful so generate jwt token

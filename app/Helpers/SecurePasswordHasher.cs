@@ -1,27 +1,34 @@
 ﻿using System.Security.Cryptography;
+using Microsoft.Extensions.Options;
 
 namespace backend.Helpers
 {
     // Source: https://stackoverflow.com/questions/4181198/how-to-hash-a-password
-    public static class SecurePasswordHasher
+    public class SecurePasswordHasher
     {
-        private const int saltSize = 16;
-        private const int hashSize = 20;
+        private readonly int saltSize;
+        private readonly int hashSize;
 
-        public static string Hash(string password, int iterations)
+        public SecurePasswordHasher(IOptions<HasherSettings> hasherSettings)
+        {
+            this.saltSize = hasherSettings.Value.SaltSize;
+            this.hashSize = hasherSettings.Value.HashSize;
+        }
+
+        public string Hash(string password, int iterations)
         {
             // Create salt
             byte[] salt;
-            new RNGCryptoServiceProvider().GetBytes(salt = new byte[saltSize]);
+            new RNGCryptoServiceProvider().GetBytes(salt = new byte[this.saltSize]);
 
             // Create hash
             var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations);
-            var hash = pbkdf2.GetBytes(hashSize);
+            var hash = pbkdf2.GetBytes(this.hashSize);
 
             // Combine salt and hash
-            var hashBytes = new byte[saltSize + hashSize];
-            Array.Copy(salt, 0, hashBytes, 0, saltSize);
-            Array.Copy(hash, 0, hashBytes, saltSize, hashSize);
+            var hashBytes = new byte[this.saltSize + this.hashSize];
+            Array.Copy(salt, 0, hashBytes, 0, this.saltSize);
+            Array.Copy(hash, 0, hashBytes, this.saltSize, this.hashSize);
 
             // Convert to base64
             var base64Hash = Convert.ToBase64String(hashBytes);
@@ -30,17 +37,17 @@ namespace backend.Helpers
             return string.Format("$MYHASH$V1${0}${1}", iterations, base64Hash);
         }
 
-        public static string Hash(string password)
+        public string Hash(string password)
         {
             return Hash(password, 10000);
         }
 
-        public static bool IsHashSupported(string hashString)
+        public bool IsHashSupported(string hashString)
         {
             return hashString.Contains("$MYHASH$V1$");
         }
 
-        public static bool Verify(string password, string hashedPassword)
+        public bool Verify(string password, string hashedPassword)
         {
             // Check hash
             if (!IsHashSupported(hashedPassword))
@@ -57,17 +64,17 @@ namespace backend.Helpers
             var hashBytes = Convert.FromBase64String(base64Hash);
 
             // Get salt
-            var salt = new byte[saltSize];
-            Array.Copy(hashBytes, 0, salt, 0, saltSize);
+            var salt = new byte[this.saltSize];
+            Array.Copy(hashBytes, 0, salt, 0, this.saltSize);
 
             // Create hash with given salt
             var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations);
-            byte[] hash = pbkdf2.GetBytes(hashSize);
+            byte[] hash = pbkdf2.GetBytes(this.hashSize);
 
             // Get result
-            for (var i = 0; i < hashSize; i++)
+            for (var i = 0; i < this.hashSize; i++)
             {
-                if (hashBytes[i + saltSize] != hash[i])
+                if (hashBytes[i + this.saltSize] != hash[i])
                 {
                     return false;
                 }
