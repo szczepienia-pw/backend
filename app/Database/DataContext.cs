@@ -8,7 +8,12 @@ namespace backend.Database
 {
     public class DataContext : DbContext
     {
-        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+        private readonly Seeder seeder;
+
+        public DataContext(Seeder seeder, DbContextOptions<DataContext> options) : base(options)
+        {
+            this.seeder = seeder;
+        }
 
         public DataContext() {}
 
@@ -22,7 +27,7 @@ namespace backend.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            Seeder.Seed(modelBuilder);
+            this.seeder.Seed(modelBuilder);
         }
     }
 }

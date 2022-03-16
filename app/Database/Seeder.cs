@@ -7,7 +7,7 @@ namespace backend.Database
 {
     public class Seeder
     {
-        public static void Seed(ModelBuilder modelBuilder)
+        public void Seed(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AddressModel>().HasData(
                 new AddressModel()
