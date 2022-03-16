@@ -27,7 +27,7 @@ namespace backend.Services
 
         public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest request)
         {
-            var user = this.GetDataContextDbSet().Single(user => user.Email == request.Email);
+            var user = this.GetDataContextDbSet().SingleOrDefault(user => user.Email == request.Email);
 
             // Return null if user not found or password is invalid
             if (user == null || !SecurePasswordHasher.Verify(request.Password, user.Password))

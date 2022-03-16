@@ -22,7 +22,7 @@ namespace backend.Services.Patient
 
         protected override AuthenticateResponse GetResponse(string token, PatientModel model)
         {
-            this.dataContext.Entry(model).Reference("Address").Load();
+            this.dataContext.Entry(model)?.Reference("Address")?.Load();
             return new AuthenticateResponse(token, model);
         }
     }
