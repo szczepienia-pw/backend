@@ -10,7 +10,7 @@ namespace backend.Services.Admin
 {
     public class AdminAuthService : AuthService<AdminModel>
     {
-        public AdminAuthService(IOptions<JwtSettings> appSettings, DataContext dataContext) : base(appSettings, dataContext)
+        public AdminAuthService(JwtGenerator jwtGenerator, DataContext dataContext) : base(jwtGenerator, dataContext)
         {
 
         }

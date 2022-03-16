@@ -1,10 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
-using backend.Helpers;
+﻿using backend.Helpers;
 using backend.Database;
 using backend.Dto.Requests;
 using backend.Dto.Responses;
@@ -16,12 +10,12 @@ namespace backend.Services
 {
     public abstract class AuthService<T> where T : AccountModel
     {
-        protected readonly JwtSettings appSettings;
+        private readonly JwtGenerator jwtGenerator;
         protected readonly DataContext dataContext;
 
-        public AuthService(IOptions<JwtSettings> appSettings, DataContext dataContext)
+        public AuthService(JwtGenerator jwtGenerator, DataContext dataContext)
         {
-            this.appSettings = appSettings.Value;
+            this.jwtGenerator = jwtGenerator;
             this.dataContext = dataContext;
         }
 
@@ -34,25 +28,9 @@ namespace backend.Services
                 throw new UnauthorizedException();
 
             // Authentication successful so generate jwt token
-            var token = this.GenerateJwtToken(user);
+            var token = this.jwtGenerator.GenerateJwtToken(user.Id, user.GetEnum());
 
             return this.GetResponse(token, user);
-        }
-
-        private string GenerateJwtToken(T user)
-        {
-            // Generate token that is valid for 7 days
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(this.appSettings.SecretToken);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()), 
-                                                     new Claim("accountType", user.GetEnum().ToString()) }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
         }
 
         protected abstract DbSet<T> GetDataContextDbSet();

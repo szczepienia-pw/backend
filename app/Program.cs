@@ -19,6 +19,9 @@ builder.Services.AddScoped<PatientAuthService>();
 builder.Services.AddScoped<DoctorAuthService>();
 builder.Services.AddScoped<AdminAuthService>();
 
+// Singletons
+builder.Services.AddSingleton<JwtGenerator>();
+
 // Connect Jwt settings to section in appsettings.json
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 

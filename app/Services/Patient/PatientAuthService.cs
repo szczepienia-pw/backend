@@ -10,7 +10,7 @@ namespace backend.Services.Patient
 {
     public class PatientAuthService : AuthService<PatientModel>
     {
-        public PatientAuthService(IOptions<JwtSettings> appSettings, DataContext dataContext) : base(appSettings, dataContext)
+        public PatientAuthService(JwtGenerator jwtGenerator, DataContext dataContext) : base(jwtGenerator, dataContext)
         {
 
         }

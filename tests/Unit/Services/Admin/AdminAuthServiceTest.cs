@@ -22,7 +22,7 @@ namespace backend_tests.Unit.Services.Admin
         public async Task TestAuthenticationWithWrongCredentials(string email, string password)
         {
             var service = new AdminAuthService(
-                Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" }), 
+                new JwtGenerator(Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" })), 
                 DbHelper.GetMockedDataContextWithAccounts().Object
             );
 
@@ -42,7 +42,7 @@ namespace backend_tests.Unit.Services.Admin
             var dataContext = DbHelper.GetMockedDataContextWithAccounts().Object;
 
             var service = new AdminAuthService(
-                Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" }),
+                new JwtGenerator(Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" })),
                 dataContext
             );
 
