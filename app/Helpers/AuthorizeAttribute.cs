@@ -18,26 +18,13 @@ namespace backend.Helpers
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            bool authorized = true;
-
-            // Check if user exists in database
-            if (context.HttpContext.Items.ContainsKey("User"))
-            {
-                AccountModel? user = (AccountModel)context.HttpContext.Items["User"];
-                if (user == null) authorized = false;
-            }
-            else authorized = false;
-
-            // Check if requested access priviliges match account type
-            if (context.HttpContext.Items.ContainsKey("AccountType"))
-            {
-                AccountTypeEnum? accountType = (AccountTypeEnum)context.HttpContext.Items["AccountType"];
-                if (accountType == null || accountType != this.accountType) authorized = false;
-            }
-            else authorized = false;
-
-            // Authorization failed
-            if(!authorized)
+            if (
+                !context.HttpContext.Items.ContainsKey("User")
+                || context.HttpContext.Items["User"] == null
+                || !context.HttpContext.Items.ContainsKey("AccountType")
+                || context.HttpContext.Items["AccountType"] == null
+                || (AccountTypeEnum) context.HttpContext.Items["AccountType"] != this.accountType
+            )
             {
                 context.Result = new JsonResult(new ErrorResponse("Unauthorized")) { StatusCode = StatusCodes.Status401Unauthorized };
             }
