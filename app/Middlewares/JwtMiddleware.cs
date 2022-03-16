@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using backend.Helpers;
 using backend.Database;
+using backend.Models.Accounts;
 
 namespace backend.Middlewares
 {
@@ -46,9 +47,27 @@ namespace backend.Middlewares
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var accountType = Enum.Parse(typeof(AccountTypeEnum), 
+                    jwtToken.Claims.First(x => x.Type == "accountType").Value);
+
+                AccountModel user;
+
+                switch (accountType)
+                {
+                    case AccountTypeEnum.Admin:
+                        user = dataContext.Admins.First(admin => admin.Id == userId);
+                        break;
+                    case AccountTypeEnum.Doctor:
+                        user = dataContext.Doctors.First(doctor => doctor.Id == userId);
+                        break;
+                    default:
+                        user = dataContext.Patients.First(patient => patient.Id == userId);
+                        break;
+                }
 
                 // Attach user to context on successful jwt validation
-                context.Items["User"] = dataContext.Doctors.First(doctor => doctor.Id == userId);
+                context.Items["User"] = user;
+                context.Items["AccountType"] = accountType;
             }
             catch
             {

@@ -11,8 +11,8 @@ using backend.Database;
 namespace backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220308192249_v7")]
-    partial class v7
+    [Migration("20220316194947_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace backend.Migrations
                 .HasAnnotation("ProductVersion", "6.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("backend.Models.Accounts.AdditionalData.Address", b =>
+            modelBuilder.Entity("backend.Models.Accounts.AdditionalData.AddressModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,10 +49,21 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Address");
+                    b.ToTable("Addresses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            City = "Warsaw",
+                            HouseNumber = "64",
+                            LocalNumber = "32",
+                            Street = "Koszykowa",
+                            ZipCode = "01-123"
+                        });
                 });
 
-            modelBuilder.Entity("backend.Models.Accounts.Admin", b =>
+            modelBuilder.Entity("backend.Models.Accounts.AdminModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,15 +78,29 @@ namespace backend.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.ToTable("Admins");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "john@admin.com",
+                            FirstName = "John",
+                            LastName = "Admin",
+                            Password = "$MYHASH$V1$10000$mqeo9mY32GPrrbVp6xp9TYQAu8eqJDYk5SUp2reRAyYZvpzq"
+                        });
                 });
 
-            modelBuilder.Entity("backend.Models.Accounts.Doctor", b =>
+            modelBuilder.Entity("backend.Models.Accounts.DoctorModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,12 +118,26 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.ToTable("Doctors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "john@doctor.com",
+                            FirstName = "John",
+                            LastName = "Doctor",
+                            Password = "$MYHASH$V1$10000$6EB6EjuT8drcPhVQg7AUyOoWjcjjtcJqIyFEAMPyvTVHNkR/"
+                        });
                 });
 
-            modelBuilder.Entity("backend.Models.Accounts.Patient", b =>
+            modelBuilder.Entity("backend.Models.Accounts.PatientModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -119,6 +158,10 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Pesel")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -128,9 +171,42 @@ namespace backend.Migrations
                     b.HasIndex("AddressId");
 
                     b.ToTable("Patients");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AddressId = 1,
+                            Email = "john@patient.com",
+                            FirstName = "John",
+                            LastName = "Patient",
+                            Password = "$MYHASH$V1$10000$/KNLglM2hKDJJORqyro48zoP+fZJ7WEqLU8asX8rkIJRwctd",
+                            Pesel = "22222222222"
+                        });
                 });
 
-            modelBuilder.Entity("backend.Models.Visits.Vaccination", b =>
+            modelBuilder.Entity("backend.Models.Vaccines.VaccineModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("Disease")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("RequiredDoses")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vaccines");
+                });
+
+            modelBuilder.Entity("backend.Models.Visits.VaccinationModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -164,7 +240,7 @@ namespace backend.Migrations
                     b.ToTable("Vaccinations");
                 });
 
-            modelBuilder.Entity("backend.Models.Visits.VaccinationSlot", b =>
+            modelBuilder.Entity("backend.Models.Visits.VaccinationSlotModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -181,34 +257,9 @@ namespace backend.Migrations
                     b.ToTable("VaccinationSlots");
                 });
 
-            modelBuilder.Entity("backend.Models.Visits.Vaccine", b =>
+            modelBuilder.Entity("backend.Models.Accounts.PatientModel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("Disease")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("RequiredDoses")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SerialNumber")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Vaccine");
-                });
-
-            modelBuilder.Entity("backend.Models.Accounts.Patient", b =>
-                {
-                    b.HasOne("backend.Models.Accounts.AdditionalData.Address", "Address")
+                    b.HasOne("backend.Models.Accounts.AdditionalData.AddressModel", "Address")
                         .WithMany()
                         .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -217,27 +268,27 @@ namespace backend.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("backend.Models.Visits.Vaccination", b =>
+            modelBuilder.Entity("backend.Models.Visits.VaccinationModel", b =>
                 {
-                    b.HasOne("backend.Models.Accounts.Doctor", "Doctor")
+                    b.HasOne("backend.Models.Accounts.DoctorModel", "Doctor")
                         .WithMany()
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Models.Accounts.Patient", "Patient")
+                    b.HasOne("backend.Models.Accounts.PatientModel", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Models.Visits.VaccinationSlot", "VaccinationSlot")
+                    b.HasOne("backend.Models.Visits.VaccinationSlotModel", "VaccinationSlot")
                         .WithMany()
                         .HasForeignKey("VaccinationSlotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Models.Visits.Vaccine", "Vaccine")
+                    b.HasOne("backend.Models.Vaccines.VaccineModel", "Vaccine")
                         .WithMany()
                         .HasForeignKey("VaccineId")
                         .OnDelete(DeleteBehavior.Cascade)

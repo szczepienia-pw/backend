@@ -1,7 +1,10 @@
 using backend.Database;
 using backend.Helpers;
 using backend.Middlewares;
+using backend.Services.Patient;
 using backend.Services.Doctor;
+using backend.Services.Admin;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,10 +15,19 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Singletons
+builder.Services.AddSingleton<JwtGenerator>();
+builder.Services.AddSingleton<Seeder>();
+builder.Services.AddSingleton<SecurePasswordHasher>();
+
+builder.Services.AddScoped<PatientAuthService>();
 builder.Services.AddScoped<DoctorAuthService>();
+builder.Services.AddScoped<AdminAuthService>();
 
 // Connect Jwt settings to section in appsettings.json
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<HasherSettings>(builder.Configuration.GetSection("HasherSettings"));
 
 // Connect to MySQL database
 string connectionString = builder.Configuration.GetConnectionString("MySQLConnection").ToString();

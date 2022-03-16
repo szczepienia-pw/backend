@@ -9,12 +9,23 @@ namespace backend.Helpers
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     {
+        private AccountTypeEnum accountType;
+
+        public AuthorizeAttribute(AccountTypeEnum accountType)
+        {
+            this.accountType = accountType;
+        }
+
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var user = (DoctorModel)context.HttpContext.Items["User"];
-            if (user == null)
+            if (
+                !context.HttpContext.Items.ContainsKey("User")
+                || context.HttpContext.Items["User"] == null
+                || !context.HttpContext.Items.ContainsKey("AccountType")
+                || context.HttpContext.Items["AccountType"] == null
+                || (AccountTypeEnum) context.HttpContext.Items["AccountType"] != this.accountType
+            )
             {
-                // Not logged in
                 context.Result = new JsonResult(new ErrorResponse("Unauthorized")) { StatusCode = StatusCodes.Status401Unauthorized };
             }
         }

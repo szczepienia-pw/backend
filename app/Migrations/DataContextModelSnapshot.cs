@@ -48,6 +48,17 @@ namespace backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Addresses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            City = "Warsaw",
+                            HouseNumber = "64",
+                            LocalNumber = "32",
+                            Street = "Koszykowa",
+                            ZipCode = "01-123"
+                        });
                 });
 
             modelBuilder.Entity("backend.Models.Accounts.AdminModel", b =>
@@ -75,6 +86,16 @@ namespace backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Admins");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "john@admin.com",
+                            FirstName = "John",
+                            LastName = "Admin",
+                            Password = "$MYHASH$V1$10000$mqeo9mY32GPrrbVp6xp9TYQAu8eqJDYk5SUp2reRAyYZvpzq"
+                        });
                 });
 
             modelBuilder.Entity("backend.Models.Accounts.DoctorModel", b =>
@@ -102,6 +123,16 @@ namespace backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Doctors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "john@doctor.com",
+                            FirstName = "John",
+                            LastName = "Doctor",
+                            Password = "$MYHASH$V1$10000$6EB6EjuT8drcPhVQg7AUyOoWjcjjtcJqIyFEAMPyvTVHNkR/"
+                        });
                 });
 
             modelBuilder.Entity("backend.Models.Accounts.PatientModel", b =>
@@ -138,6 +169,18 @@ namespace backend.Migrations
                     b.HasIndex("AddressId");
 
                     b.ToTable("Patients");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AddressId = 1,
+                            Email = "john@patient.com",
+                            FirstName = "John",
+                            LastName = "Patient",
+                            Password = "$MYHASH$V1$10000$/KNLglM2hKDJJORqyro48zoP+fZJ7WEqLU8asX8rkIJRwctd",
+                            Pesel = "22222222222"
+                        });
                 });
 
             modelBuilder.Entity("backend.Models.Vaccines.VaccineModel", b =>
