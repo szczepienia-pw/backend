@@ -2,6 +2,9 @@
 using backend.Dto.Requests;
 using backend.Services.Doctor;
 using backend.Helpers;
+using backend.Dto.Requests.Doctor;
+using backend.Models.Visits;
+using backend.Models.Accounts;
 
 namespace backend.Controllers.Doctor
 {
@@ -10,10 +13,12 @@ namespace backend.Controllers.Doctor
     public class DoctorAuthController : ControllerBase
     {
         private readonly DoctorAuthService authService;
+        private readonly VaccinationSlotService vaccinationSlotService;
 
-        public DoctorAuthController(DoctorAuthService authService)
+        public DoctorAuthController(DoctorAuthService authService, VaccinationSlotService vaccinationSlotService)
         {
             this.authService = authService;
+            this.vaccinationSlotService = vaccinationSlotService;
         }
 
         // POST doctor/login

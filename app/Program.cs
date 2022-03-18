@@ -24,6 +24,7 @@ builder.Services.AddSingleton<SecurePasswordHasher>();
 builder.Services.AddScoped<PatientAuthService>();
 builder.Services.AddScoped<DoctorAuthService>();
 builder.Services.AddScoped<AdminAuthService>();
+builder.Services.AddScoped<VaccinationSlotService>();
 
 // Connect Jwt settings to section in appsettings.json
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
