@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ef706c7d-2d76-4ef9-a01f-9384e152fe94",
+		"_postman_id": "66fb426b-be9a-4180-bec0-5b2173cefe2c",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -169,6 +169,33 @@
 							"path": [
 								"doctor",
 								"auth-test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new vaccination slot",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"date\": \"2022-04-01T14:15:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{IOHostURL}}/doctor/vaccination-slots",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"doctor",
+								"vaccination-slots"
 							]
 						}
 					},

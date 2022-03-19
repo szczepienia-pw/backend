@@ -13,12 +13,10 @@ namespace backend.Controllers.Doctor
     public class DoctorAuthController : ControllerBase
     {
         private readonly DoctorAuthService authService;
-        private readonly VaccinationSlotService vaccinationSlotService;
 
-        public DoctorAuthController(DoctorAuthService authService, VaccinationSlotService vaccinationSlotService)
+        public DoctorAuthController(DoctorAuthService authService)
         {
             this.authService = authService;
-            this.vaccinationSlotService = vaccinationSlotService;
         }
 
         // POST doctor/login
