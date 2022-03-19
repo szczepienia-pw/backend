@@ -4,12 +4,15 @@ using backend.Dto.Responses.Doctor;
 using backend.Exceptions;
 using backend.Models.Accounts;
 using backend.Models.Visits;
+using System.Data.Entity;
 
 namespace backend.Services.Doctor
 {
     public class VaccinationSlotService
     {
+        private readonly int slotMarginMins = 15;
         private readonly DataContext dataContext;
+
         public VaccinationSlotService(DataContext dataContext)
         {
             this.dataContext = dataContext;
@@ -17,6 +20,7 @@ namespace backend.Services.Doctor
 
         public async Task<NewVaccinationSlotResponse> AddNewSlot(NewVaccinationSlotRequest request, DoctorModel doctor)
         {
+            // Validate date from request
             DateTime date;
 
             try
@@ -28,6 +32,14 @@ namespace backend.Services.Doctor
                 throw new ValidationException();
             }
 
+            // Check for overlapping slots
+            var doctorSlots = this.dataContext.VaccinationSlots.Where(slot => slot.Doctor.Id == doctor.Id &&
+                                                                      slot.Date > date.AddMinutes(-slotMarginMins) &&
+                                                                      slot.Date < date.AddMinutes(slotMarginMins));
+            if (doctorSlots.Count() > 0)
+                throw new ValidationException();
+
+            // Add new slot to database
             VaccinationSlotModel slot = new VaccinationSlotModel { Date = date, Doctor = doctor, Reserved = false };
             this.dataContext.Add(slot);
             this.dataContext.SaveChanges();
