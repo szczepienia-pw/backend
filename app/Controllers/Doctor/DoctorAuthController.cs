@@ -2,6 +2,9 @@
 using backend.Dto.Requests;
 using backend.Services.Doctor;
 using backend.Helpers;
+using backend.Dto.Requests.Doctor;
+using backend.Models.Visits;
+using backend.Models.Accounts;
 
 namespace backend.Controllers.Doctor
 {
