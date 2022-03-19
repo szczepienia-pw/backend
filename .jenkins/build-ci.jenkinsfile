@@ -9,14 +9,18 @@ pipeline {
                 }
             }
             stages {
-                stage('build') {
+                stage('build and update db') {
                     agent {
                         label 'dotnet'
                     }
                     steps {
-                        sh 'cd app'
-                        sh 'dotnet publish -o out'
-                        stash includes: 'out/**', name: 'build'
+                        dir('app') {
+                            sh 'sed -i "s/localhost/mariadb/g" appsettings.json'
+                            sh 'dotnet publish -o out'
+                            stash includes: 'out/**', name: 'build'
+                            sh '/root/.dotnet/tools/dotnet-ef database update'
+                        }
+
                         cleanWs()
                     }
                 }
