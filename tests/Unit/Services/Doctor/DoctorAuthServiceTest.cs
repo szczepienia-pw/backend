@@ -18,7 +18,7 @@ namespace backend_tests.Unit.Services.Doctor
         [InlineData("john@doctor.com", "password1")]
         [InlineData("john@doctor1.com", "password")]
         [InlineData("john@patient.com", "password")]
-        [InlineData("john@admin.com", "password")]
+        [InlineData("john@admin.com", "password")] 
         public async Task TestAuthenticationWithWrongCredentials(string email, string password)
         {
             var service = new DoctorAuthService(
