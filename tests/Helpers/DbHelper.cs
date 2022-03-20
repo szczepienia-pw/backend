@@ -4,6 +4,7 @@ using backend.Database;
 using backend.Helpers;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
+using backend.Models.Visits;
 using Moq;
 
 namespace backend_tests.Helpers
@@ -52,10 +53,13 @@ namespace backend_tests.Helpers
                 }
             };
 
+            var vaccinationSlots = new List<VaccinationSlotModel>() { };
+
             var contextMock = new Mock<DataContext>();
             contextMock.Setup(dbContext => dbContext.Doctors).Returns(doctors.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Patients).Returns(patients.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Admins).Returns(admins.AsQueryable().BuildMockDbSet().Object);
+            contextMock.Setup(dbContext => dbContext.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
             return contextMock;
         }
     }

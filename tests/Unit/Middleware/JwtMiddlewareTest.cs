@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using backend.Helpers;
 using backend.Middlewares;
@@ -12,10 +7,8 @@ using backend_tests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace backend_tests.Unit.Middleware
 {
@@ -38,7 +31,7 @@ namespace backend_tests.Unit.Middleware
             var contextItems = new Dictionary<object, object?>();
 
             httpContextMock.Setup(context => context.Request.Headers).Returns(new HeaderDictionary(headers));
-            httpContextMock.Setup(x => x.Items).Returns(contextItems);
+            httpContextMock.Setup(context => context.Items).Returns(contextItems);
 
             var requestDelegate = new RequestDelegate((innerContext) => Task.FromResult(0));
             var middleware = new JwtMiddleware(requestDelegate, Options.Create(new JwtSettings() { SecretToken = superSecret}));
