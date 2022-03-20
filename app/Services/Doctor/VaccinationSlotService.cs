@@ -4,7 +4,6 @@ using backend.Dto.Responses.Doctor;
 using backend.Exceptions;
 using backend.Models.Accounts;
 using backend.Models.Visits;
-using System.Data.Entity;
 
 namespace backend.Services.Doctor
 {
