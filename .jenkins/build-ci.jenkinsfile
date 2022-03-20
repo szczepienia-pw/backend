@@ -1,0 +1,66 @@
+pipeline {
+    agent none
+    stages {
+        stage('build and update') {
+            when {
+                anyOf {
+                    branch 'develop'
+                    branch 'main'
+                }
+            }
+            stages {
+                stage('build and update db') {
+                    agent {
+                        label 'dotnet'
+                    }
+                    steps {
+                        dir('app') {
+                            sh 'sed -i "s/localhost/mariadb/g" appsettings.json'
+                            sh 'dotnet publish -o out'
+                            stash includes: 'out/**', name: 'build'
+                            sh '/root/.dotnet/tools/dotnet-ef database update'
+                        }
+
+                        cleanWs()
+                    }
+                }
+                stage('update develop') {
+                    agent {
+                        label 'vps'
+                    }
+                    when {
+                        branch 'develop'
+                    }
+                    steps {
+                        unstash name: 'build'
+                        sh 'echo "stopping backend-develop docker"'
+                        sh 'docker stop backend-develop'
+                        sh 'rm -rf /home/flatly/apps/dotnet/develop/*'
+                        sh 'cp -r ./out/* /home/flatly/apps/dotnet/develop/'
+                        sh 'echo "restarting backend-develop docker"'
+                        sh 'docker restart backend-develop'
+                        cleanWs()
+                    }
+                }
+                stage('update main') {
+                    agent {
+                        label 'vps'
+                    }
+                    when {
+                        branch 'main'
+                    }
+                    steps {
+                        unstash name: 'build'
+                        sh 'echo "stopping backend docker"'
+                        sh 'docker stop backend'
+                        sh 'rm -rf /home/flatly/apps/dotnet/main/*'
+                        sh 'cp -r ./out/* /home/flatly/apps/dotnet/main/'
+                        sh 'echo "restarting backend docker"'
+                        sh 'docker restart backend'
+                        cleanWs()
+                    }
+                }
+            }
+        }
+    }
+}
