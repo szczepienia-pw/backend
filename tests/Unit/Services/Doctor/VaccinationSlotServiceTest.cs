@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using backend.Dto.Requests.Doctor;
-using backend.Dto.Responses.Doctor;
+using backend.Dto.Requests.Doctor.VaccinationSlot;
+using backend.Dto.Responses;
 using backend.Exceptions;
 using backend.Models.Visits;
 using backend.Services.Doctor;
@@ -28,7 +28,7 @@ namespace backend_tests.Unit.Services.Doctor
                 doctorModel
             );
 
-            Assert.IsType<NewVaccinationSlotResponse>(response);
+            Assert.IsType<SuccessResponse>(response);
             Assert.True(response.Success);
         }
 
@@ -71,7 +71,61 @@ namespace backend_tests.Unit.Services.Doctor
                 await vaccinationSlotService.AddNewSlot(request, doctorModel);
                 Assert.True(true);
             }
-            
+        }
+
+        [Fact]
+        public async Task TestShouldDeleteOnlyDoctorNotReservedSlots()
+        {
+            var dataContext = DbHelper.GetMockedDataContextWithAccounts();
+            var firstDoctor = dataContext.Object.Doctors.First(doctor => doctor.Id == 1);
+            var secondDoctor = dataContext.Object.Doctors.First(doctor => doctor.Id == 2);
+
+            var vaccinationSlots = new List<VaccinationSlotModel>()
+            {
+                new()
+                {
+                    Id = 1,
+                    Date = DateTime.Now,
+                    Reserved = false,
+                    Doctor = firstDoctor
+                },
+                new()
+                {
+                    Id = 2,
+                    Date = DateTime.Now,
+                    Reserved = true,
+                    Doctor = firstDoctor
+                },
+                new()
+                {
+                    Id = 3,
+                    Date = DateTime.Now,
+                    Reserved = false,
+                    Doctor = secondDoctor
+                }
+            };
+
+            dataContext.Setup(context => context.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
+            var vaccinationService = new VaccinationSlotService(dataContext.Object);
+
+            // Test correct deletion
+            var response = await vaccinationService.DeleteSlot(1, firstDoctor);
+            Assert.IsType<SuccessResponse>(response);
+
+            // Test reserved
+            await Assert.ThrowsAsync<ConflictException>(
+                () => vaccinationService.DeleteSlot(2, firstDoctor)
+            );
+
+            // Test another doctor
+            await Assert.ThrowsAsync<NotFoundException>(
+                () => vaccinationService.DeleteSlot(3, firstDoctor)
+            );
+
+            // Test not existing vaccination slot
+            await Assert.ThrowsAsync<NotFoundException>(
+                () => vaccinationService.DeleteSlot(4, firstDoctor)
+            );
         }
     }
 }
