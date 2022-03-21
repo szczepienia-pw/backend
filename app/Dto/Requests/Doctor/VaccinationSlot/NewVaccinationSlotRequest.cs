@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace backend.Dto.Requests.Doctor
+namespace backend.Dto.Requests.Doctor.VaccinationSlot
 {
     public class NewVaccinationSlotRequest
     {

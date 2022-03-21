@@ -1,4 +1,4 @@
-﻿namespace backend.Dto.Responses.Doctor
+﻿namespace backend.Dto.Responses.Doctor.VaccinationSlot
 {
     public class NewVaccinationSlotResponse
     {

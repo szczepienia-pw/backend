@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "66fb426b-be9a-4180-bec0-5b2173cefe2c",
+		"_postman_id": "ecfc6c6f-4573-46eb-8b34-1915a32047d0",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -112,6 +112,80 @@
 			"name": "Doctor",
 			"item": [
 				{
+					"name": "Vaccination slots",
+					"item": [
+						{
+							"name": "Create new vaccination slot",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"date\": \"2022-04-01T14:15:00Z\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/doctor/vaccination-slots",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"doctor",
+										"vaccination-slots"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Show vaccination slots",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/doctor/vaccination-slots?page=1",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"doctor",
+										"vaccination-slots"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "OPTIONAL | default 1"
+										},
+										{
+											"key": "onlyReserved",
+											"value": "1",
+											"description": "OPTIONAL | 1 - only reserved | 0 - only not reserved",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2022-03-18T14:15:00Z",
+											"description": "OPTIONAL",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2022-03-20T14:15:00Z",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Login as a doctor",
 					"event": [
 						{
@@ -169,33 +243,6 @@
 							"path": [
 								"doctor",
 								"auth-test"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create new vaccination slot",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"date\": \"2022-04-01T14:15:00Z\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{IOHostURL}}/doctor/vaccination-slots",
-							"host": [
-								"{{IOHostURL}}"
-							],
-							"path": [
-								"doctor",
-								"vaccination-slots"
 							]
 						}
 					},
