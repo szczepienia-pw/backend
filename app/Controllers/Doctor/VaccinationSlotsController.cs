@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using backend.Services.Doctor;
 using backend.Helpers;
 using backend.Dto.Requests.Doctor.VaccinationSlot;
@@ -31,6 +32,14 @@ namespace backend.Controllers.Doctor
         public async Task<IActionResult> GetVaccinationSlots([FromQuery] FilterVaccinationSlotsRequest request)
         {
             return Ok(await this.vaccinationSlotService.GetSlots(request, (DoctorModel)this.HttpContext.Items["User"]));
+        }
+
+        // DELETE doctor/vaccination-slots/:vaccination-slot
+        [HttpDelete("{vaccinationSlotId:int}")]
+        [Authorize(AccountTypeEnum.Doctor)]
+        public async Task<IActionResult> DeleteVaccinationSlot(int vaccinationSlotId)
+        {
+            return Ok(await this.vaccinationSlotService.DeleteSlot(vaccinationSlotId, (DoctorModel)this.HttpContext.Items["User"]));
         }
     }
 }

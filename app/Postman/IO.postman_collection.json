@@ -182,6 +182,25 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Delete vaccination slot",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/doctor/vaccination-slots/1",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"doctor",
+										"vaccination-slots",
+										"1"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},

@@ -19,7 +19,7 @@ namespace backend.Services.Doctor
             this.dataContext = dataContext;
         }
 
-        public async Task<NewVaccinationSlotResponse> AddNewSlot(NewVaccinationSlotRequest request, DoctorModel doctor)
+        public async Task<SuccessResponse> AddNewSlot(NewVaccinationSlotRequest request, DoctorModel doctor)
         {
             // Validate date from request
             DateTime date;
@@ -34,17 +34,21 @@ namespace backend.Services.Doctor
             }
 
             // Check for overlapping slots
-            var doctorSlots = this.dataContext.VaccinationSlots.Where(slot => slot.Doctor.Id == doctor.Id &&
-                                                                      slot.Date > date.AddMinutes(-slotMarginMins) &&
-                                                                      slot.Date < date.AddMinutes(slotMarginMins));
-            if (doctorSlots.Count() > 0)
+            var doctorSlots = this.dataContext.VaccinationSlots
+                .Where(slot => 
+                    slot.Doctor.Id == doctor.Id 
+                    && slot.Date > date.AddMinutes(-slotMarginMins) 
+                    && slot.Date < date.AddMinutes(slotMarginMins)
+                );
+
+            if (doctorSlots.Any())
                 throw new ValidationException();
 
             // Add new slot to database
             VaccinationSlotModel slot = new VaccinationSlotModel { Date = date, Doctor = doctor, Reserved = false };
             this.dataContext.Add(slot);
             this.dataContext.SaveChanges();
-            return new NewVaccinationSlotResponse();
+            return new SuccessResponse();
         }
 
         public async Task<PaginatedResponse<VaccinationSlotModel, List<VaccinationSlotResponse>>> GetSlots(FilterVaccinationSlotsRequest request, DoctorModel doctor)
@@ -64,6 +68,22 @@ namespace backend.Services.Doctor
                 paginatedSlots, 
                 paginatedSlots.Select(slot => new VaccinationSlotResponse(slot)).ToList()
             );
+        }
+
+        public async Task<SuccessResponse> DeleteSlot(int vaccinationSlotId, DoctorModel doctor)
+        {
+            var slot = this.dataContext.VaccinationSlots
+                .FirstOrDefault(slot => slot.Id == vaccinationSlotId && slot.Doctor.Id == doctor.Id);
+
+            if (slot == null)
+                throw new NotFoundException();
+            if (slot.Reserved)
+                throw new ConflictException("Provided vaccination slot is already reserved and cannot be deleted");
+
+            this.dataContext.VaccinationSlots.Remove(slot);
+            this.dataContext.SaveChanges();
+
+            return new SuccessResponse();
         }
     }
 }
