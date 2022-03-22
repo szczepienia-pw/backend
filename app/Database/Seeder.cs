@@ -1,4 +1,5 @@
 ﻿using backend.Helpers;
+using backend.Models;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
 using Microsoft.EntityFrameworkCore;
@@ -57,6 +58,14 @@ namespace backend.Database
                     FirstName = "John",
                     LastName = "Admin",
                     Password = this.securePasswordHasher.Hash("password"),
+                }
+            );
+            modelBuilder.Entity<SettingModel>().HasData(
+                new SettingModel()
+                {
+                    Id = 1,
+                    Type = SettingType.BugEmail,
+                    Value = "bugmail@szczepienia.pw"
                 }
             );
         }
