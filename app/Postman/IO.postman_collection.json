@@ -456,6 +456,77 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Common",
+			"item": [
+				{
+					"name": "Bugs",
+					"item": [
+						{
+							"name": "Send bug",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Some bug\",\r\n    \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam erat orci, viverra vitae ex ac, fringilla scelerisque tellus. Maecenas rutrum posuere eros, non ultrices turpis. Praesent rutrum faucibus orci sit amet blandit. Vestibulum id congue magna, ut bibendum nulla. Vivamus in lectus laoreet, imperdiet sem at, placerat erat. Morbi ut enim vel erat pulvinar dapibus a quis ex. In id libero urna. Nullam nec auctor lectus.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/bugs",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"bugs"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "apikey",
+				"apikey": [
+					{
+						"key": "value",
+						"value": "{{IO_ADMIN_TOKEN}}",
+						"type": "string"
+					},
+					{
+						"key": "key",
+						"value": "Authorization",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
 		}
 	]
 }
