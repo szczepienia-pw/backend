@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using backend.Services.Admin;
 using backend.Helpers;
+using backend.Services.Admin;
+using backend.Dto.Requests.Admin;
 
 namespace backend.Controllers.Admin
 {
@@ -13,6 +14,14 @@ namespace backend.Controllers.Admin
         public AdminDoctorsController(AdminDoctorsService doctorsService)
         {
             this.doctorsService = doctorsService;
+        }
+
+        // POST admin/doctors
+        [HttpPost]
+        [Authorize(AccountTypeEnum.Admin)]
+        public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorRequest request)
+        {
+            return Ok(await this.doctorsService.CreateDoctor(request));
         }
 
         // DELETE admin/doctors/:doctor-id
