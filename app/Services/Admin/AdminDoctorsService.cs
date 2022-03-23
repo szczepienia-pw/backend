@@ -20,12 +20,23 @@ namespace backend.Services.Admin
 
         public async Task<SuccessResponse> DeleteDoctor(int doctorId)
         {
+            // Validate provided doctorId
             var doctor = this.dataContext.Doctors.FirstOrDefault(doctor => doctor.Id == doctorId);
 
             if (doctor == null)
                 throw new NotFoundException();
 
-            this.dataContext.Doctors.Remove(doctor);
+            // Remove connections to vaccination slots
+            var freeSlots = this.dataContext.VaccinationSlots.Where(slot => slot.Doctor.Id == doctorId && slot.Reserved == false);
+            this.dataContext.RemoveRange(freeSlots);
+
+            var reservedSlots = this.dataContext.VaccinationSlots.Where(slot => slot.Doctor.Id == doctorId &&
+                                                                        slot.Reserved == true &&
+                                                                        slot.Date > DateTime.Now);
+            this.dataContext.RemoveRange(reservedSlots); // Add patient notification, when visit cancellation logic is implemented.
+
+            // Remove doctor
+            (doctor as ISoftDelete).SoftDelete();
             this.dataContext.SaveChanges();
 
             return new SuccessResponse();
