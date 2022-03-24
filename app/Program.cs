@@ -26,6 +26,7 @@ builder.Services.AddScoped<DoctorAuthService>();
 builder.Services.AddScoped<AdminAuthService>();
 builder.Services.AddScoped<VaccinationSlotService>();
 builder.Services.AddScoped<AdminDoctorsService>();
+builder.Services.AddScoped<PatientRegistrationService>();
 
 // Connect Jwt settings to section in appsettings.json
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));

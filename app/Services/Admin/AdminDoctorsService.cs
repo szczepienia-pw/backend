@@ -27,12 +27,13 @@ namespace backend.Services.Admin
                 throw new NotFoundException();
 
             // Remove connections to vaccination slots
-            var freeSlots = this.dataContext.VaccinationSlots.Where(slot => slot.Doctor.Id == doctorId && slot.Reserved == false);
+            var freeSlots = this.dataContext.VaccinationSlots.Where(slot => slot.Doctor.Id == doctorId &&
+                                                                            slot.Reserved == false);
             this.dataContext.RemoveRange(freeSlots);
 
             var reservedSlots = this.dataContext.VaccinationSlots.Where(slot => slot.Doctor.Id == doctorId &&
-                                                                        slot.Reserved == true &&
-                                                                        slot.Date > DateTime.Now);
+                                                                                slot.Reserved == true &&
+                                                                                slot.Date > DateTime.Now);
             this.dataContext.RemoveRange(reservedSlots); // Add patient notification, when visit cancellation logic is implemented.
 
             // Remove doctor
