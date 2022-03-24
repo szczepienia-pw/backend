@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Database;
 
@@ -10,9 +11,10 @@ using backend.Database;
 namespace backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220322203343_v3")]
+    partial class v3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,7 +96,7 @@ namespace backend.Migrations
                             Email = "john@admin.com",
                             FirstName = "John",
                             LastName = "Admin",
-                            Password = "$MYHASH$V1$10000$eADhyFswnID7A2eLofKm7vzkCx7wysB23lrJOIWyL8o868kt"
+                            Password = "$MYHASH$V1$10000$menoKjiBr3ewxMKOXJhwrPUE8avlPjpYcicxuITMxvW29ez5"
                         });
                 });
 
@@ -111,9 +113,6 @@ namespace backend.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -133,9 +132,8 @@ namespace backend.Migrations
                             Id = 1,
                             Email = "john@doctor.com",
                             FirstName = "John",
-                            IsDeleted = false,
                             LastName = "Doctor",
-                            Password = "$MYHASH$V1$10000$wsEcsdNf6hvp1wu72fIsv/ySElRfkfHFx5NeFlUGHROiQOp9"
+                            Password = "$MYHASH$V1$10000$APn07rPFB0UlELBndUYQV9efJG2cMlAxFzWzPNvQq6vmTcSn"
                         });
                 });
 
@@ -182,7 +180,7 @@ namespace backend.Migrations
                             Email = "john@patient.com",
                             FirstName = "John",
                             LastName = "Patient",
-                            Password = "$MYHASH$V1$10000$ZhbqRfltk33d0T4u6+JhV0h2HGzK3pSY+M5F6G8fS6LAnHlH",
+                            Password = "$MYHASH$V1$10000$C4t/Mm46towqEtwlGnmuaounq2HFCFVAR0eETYBh7I0q3SUW",
                             Pesel = "22222222222"
                         });
                 });
@@ -251,7 +249,7 @@ namespace backend.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("DoctorId")
+                    b.Property<int?>("DoctorId")
                         .HasColumnType("int");
 
                     b.Property<bool>("Reserved")
@@ -314,9 +312,7 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.Accounts.DoctorModel", "Doctor")
                         .WithMany()
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DoctorId");
 
                     b.Navigation("Doctor");
                 });
