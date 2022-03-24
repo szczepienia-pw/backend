@@ -24,11 +24,9 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="Dto\Requests\Admin\" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="EntityFramework" />
-    <None Remove="Dto\Requests\Admin\" />
   </ItemGroup>
 </Project>
