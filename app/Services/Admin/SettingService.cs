@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using backend.Database;
+using backend.Dto.Responses;
 using backend.Exceptions;
 
 namespace backend.Services.Admin
@@ -32,7 +33,7 @@ namespace backend.Services.Admin
             return responseDictionary;
         }
 
-        public async Task<int> Set(Dictionary<String, String> request)
+        public async Task<SuccessResponse> Set(Dictionary<String, String> request)
         {
             var settings = this.dataContext.Settings;
 
@@ -55,7 +56,7 @@ namespace backend.Services.Admin
 
             this.dataContext.SaveChanges();
 
-            return 1;
+            return new SuccessResponse();
         }
     }
 }

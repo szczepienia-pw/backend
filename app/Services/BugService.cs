@@ -1,6 +1,7 @@
 ﻿using backend.Helpers;
 using backend.Database;
 using backend.Dto.Requests;
+using backend.Dto.Responses;
 using backend.Models;
 using backend.Models.Accounts;
 
@@ -17,13 +18,17 @@ namespace backend.Services
             this.dataContext = dataContext;
         }
 
-        public async Task<int> SendBug(SendBugRequest request, AccountModel account)
+        public async Task<SuccessResponse> SendBug(SendBugRequest request, AccountModel account)
         {
             var bugEmail = this.dataContext.Settings.Where(setting => setting.Type == SettingType.BugEmail).First().Value;
 
-            await this.mailer.SendEmailAsync(bugEmail, "Bug report",
-                $"Titile: {request.Name}<br>Description: {request.Description}");
-            return 1;
+            await this.mailer.SendEmailAsync(
+                bugEmail, 
+                "Bug report",
+                $"Titile: {request.Name}<br>Description: {request.Description}<br>Sent by: {account.FirstName} {account.LastName} - {account.Email} ({account.GetEnum().ToString()})"
+            );
+
+            return new SuccessResponse();
         }
     }
 }

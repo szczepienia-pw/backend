@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using backend.Dto.Requests;
+using backend.Dto.Responses;
 using backend.Helpers;
 using backend.Models;
 using backend.Services;
@@ -39,13 +40,20 @@ namespace backend_tests.Unit.Services
 
             var response = await service.SendBug(request, senderAccount);
 
-            Assert.Equal(1, response);
+            Assert.IsType<SuccessResponse>(response);
 
             // Verify if mailer has been called with correct params
             mailerMock.Verify(mailer => mailer.SendEmailAsync(
                 bugMailSetting.Value,
                 "Bug report",
-                It.Is<string>(body => body.Contains(request.Name) && body.Contains(request.Description)),
+                It.Is<string>(
+                    body => body.Contains(request.Name) 
+                            && body.Contains(request.Description)
+                            && body.Contains(senderAccount.FirstName)
+                            && body.Contains(senderAccount.LastName)
+                            && body.Contains(senderAccount.Email)
+                            && body.Contains(senderAccount.GetEnum().ToString())
+                    ),
                 null
             ), Times.Once);
         }
