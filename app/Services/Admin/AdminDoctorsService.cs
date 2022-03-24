@@ -63,7 +63,7 @@ namespace backend.Services.Admin
 
             DoctorModel doctor = new DoctorModel() {
                 FirstName = request.FirstName,
-                LastName = request.SecondName,
+                LastName = request.LastName,
                 Email = request.Email,
                 Password = securePasswordHasher.Hash(request.Password)
             };
@@ -94,6 +94,7 @@ namespace backend.Services.Admin
             }
 
             this.dataContext.Doctors.Update(doctor);
+            this.dataContext.SaveChanges();
 
             return doctor;
         }
