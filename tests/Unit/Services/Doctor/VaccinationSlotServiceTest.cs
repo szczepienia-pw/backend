@@ -16,8 +16,8 @@ namespace backend_tests.Unit.Services.Doctor
     public class VaccinationSlotServiceTest
     {
         [Theory]
-        [InlineData("2022-04-01T14:15:00Z")]
-        [InlineData("2022-04-15T14:15:00Z")]
+        [InlineData("2023-04-01T14:15:00Z")]
+        [InlineData("2023-04-15T14:15:00Z")]
         public async Task TestShouldAddNewDateSlot(string date)
         {
             var dataContext = DbHelper.GetMockedDataContextWithAccounts().Object;
@@ -34,13 +34,13 @@ namespace backend_tests.Unit.Services.Doctor
         }
 
         [Theory]
-        [InlineData("2022-04-01T14:00:00Z", "2022-04-01T14:00:00Z", true)]
-        [InlineData("2022-04-01T14:00:00Z", "2022-04-01T14:14:00Z", true)]
-        [InlineData("2022-04-01T14:00:00Z", "2022-04-01T14:14:59Z", true)]
-        [InlineData("2022-04-01T14:00:00Z", "2022-04-01T14:15:00Z", false)]
-        [InlineData("2022-04-01T14:00:00Z", "2022-04-01T13:46:00Z", true)]
-        [InlineData("2022-04-01T14:00:00Z", "2022-04-01T13:45:01Z", true)]
-        [InlineData("2022-04-01T14:00:00Z", "2022-04-01T13:45:00Z", false)]
+        [InlineData("2023-04-01T14:00:00Z", "2023-04-01T14:00:00Z", true)]
+        [InlineData("2023-04-01T14:00:00Z", "2023-04-01T14:14:00Z", true)]
+        [InlineData("2023-04-01T14:00:00Z", "2023-04-01T14:14:59Z", true)]
+        [InlineData("2023-04-01T14:00:00Z", "2023-04-01T14:15:00Z", false)]
+        [InlineData("2023-04-01T14:00:00Z", "2023-04-01T13:46:00Z", true)]
+        [InlineData("2023-04-01T14:00:00Z", "2023-04-01T13:45:01Z", true)]
+        [InlineData("2023-04-01T14:00:00Z", "2023-04-01T13:45:00Z", false)]
         public async Task TestShouldThrowAnExceptionWhenAddingNewDateSlotWithin15Minutes(string firstDate, string secondDate, bool shouldThrow)
         {
             var dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
@@ -63,6 +63,31 @@ namespace backend_tests.Unit.Services.Doctor
 
             // Add second date
             var request = new NewVaccinationSlotRequest() {Date = secondDate};
+            if (shouldThrow)
+            {
+                await Assert.ThrowsAsync<ValidationException>(() => vaccinationSlotService.AddNewSlot(request, doctorModel));
+            }
+            else
+            {
+                await vaccinationSlotService.AddNewSlot(request, doctorModel);
+                Assert.True(true);
+            }
+        }
+
+        [Theory]
+        [InlineData("2021-04-01T14:00:00Z", true)]
+        [InlineData("2022-01-01T14:15:00Z", true)]
+        [InlineData("2022-03-01T07:00:00Z", true)]
+        [InlineData("2022-09-01T08:00:00Z", false)]
+        [InlineData("2032-04-01T20:00:00Z", false)]
+        public async Task TestShouldThrowAnExceptionWhenAddingNewDateSlotInPast(string date, bool shouldThrow)
+        {
+            var dataContext = DbHelper.GetMockedDataContextWithAccounts().Object;
+            var vaccinationSlotService = new VaccinationSlotService(dataContext);
+            var doctorModel = dataContext.Doctors.First();
+
+            // Add second date
+            var request = new NewVaccinationSlotRequest() { Date = date };
             if (shouldThrow)
             {
                 await Assert.ThrowsAsync<ValidationException>(() => vaccinationSlotService.AddNewSlot(request, doctorModel));

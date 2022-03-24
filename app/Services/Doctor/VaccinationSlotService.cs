@@ -33,6 +33,10 @@ namespace backend.Services.Doctor
                 throw new ValidationException();
             }
 
+            // Check for date in the past
+            if(date < DateTime.Now)
+                throw new ValidationException("Date is in the past.");
+
             // Check for overlapping slots
             var doctorSlots = this.dataContext.VaccinationSlots
                 .Where(slot => 
@@ -42,7 +46,7 @@ namespace backend.Services.Doctor
                 );
 
             if (doctorSlots.Any())
-                throw new ValidationException();
+                throw new ValidationException("Slots overlaps the existing slots.");
 
             // Add new slot to database
             VaccinationSlotModel slot = new VaccinationSlotModel { Date = date, Doctor = doctor, Reserved = false };
