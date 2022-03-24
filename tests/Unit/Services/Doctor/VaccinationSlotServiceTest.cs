@@ -97,6 +97,7 @@ namespace backend_tests.Unit.Services.Doctor
                 await vaccinationSlotService.AddNewSlot(request, doctorModel);
                 Assert.True(true);
             }
+        }
 
         [Fact]
         public async Task TestShouldDeleteOnlyDoctorNotReservedSlots()
