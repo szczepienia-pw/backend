@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using backend.Services.Doctor;
 using backend.Helpers;
-using backend.Dto.Requests.Doctor;
+using backend.Dto.Requests.Doctor.VaccinationSlot;
 using backend.Models.Accounts;
 
 namespace backend.Controllers.Doctor
 {
-    [Route("doctor/")]
+    [Route("doctor/vaccination-slots")]
     [ApiController]
     public class VaccinationSlotsController : ControllerBase
     {
@@ -18,11 +19,27 @@ namespace backend.Controllers.Doctor
         }
 
         // POST doctor/vaccination-slots
-        [HttpPost("vaccination-slots")]
+        [HttpPost]
         [Authorize(AccountTypeEnum.Doctor)]
-        public async Task<IActionResult> AddVaccinationSlots([FromBody] NewVaccinationSlotRequest request)
+        public async Task<IActionResult> AddVaccinationSlot([FromBody] NewVaccinationSlotRequest request)
         {
             return Ok(await this.vaccinationSlotService.AddNewSlot(request, (DoctorModel)this.HttpContext.Items["User"]));
+        }
+
+        // GET doctor/vaccination-slots
+        [HttpGet]
+        [Authorize(AccountTypeEnum.Doctor)]
+        public async Task<IActionResult> GetVaccinationSlots([FromQuery] FilterVaccinationSlotsRequest request)
+        {
+            return Ok(await this.vaccinationSlotService.GetSlots(request, (DoctorModel)this.HttpContext.Items["User"]));
+        }
+
+        // DELETE doctor/vaccination-slots/:vaccination-slot
+        [HttpDelete("{vaccinationSlotId:int}")]
+        [Authorize(AccountTypeEnum.Doctor)]
+        public async Task<IActionResult> DeleteVaccinationSlot(int vaccinationSlotId)
+        {
+            return Ok(await this.vaccinationSlotService.DeleteSlot(vaccinationSlotId, (DoctorModel)this.HttpContext.Items["User"]));
         }
     }
 }

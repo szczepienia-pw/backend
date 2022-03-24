@@ -23,6 +23,14 @@ namespace backend_tests.Helpers
                     LastName = Faker.Name.Last(),
                     Email = "john@doctor.com",
                     Password = SecurePasswordHasherHelper.Hasher.Hash("password")
+                },
+                new()
+                {
+                    Id = 2,
+                    FirstName = Faker.Name.First(),
+                    LastName = Faker.Name.Last(),
+                    Email = "john@doctor2.com",
+                    Password = SecurePasswordHasherHelper.Hasher.Hash("password")
                 }
             };
 
