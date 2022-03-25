@@ -7,7 +7,7 @@ namespace backend.Helpers
 	{
 		public static void CheckDuplicate<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, BasicException exception)
         {
-            if(source != null)
+            if (source != null)
             {
                 var elements = source.Where(predicate);
 

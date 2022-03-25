@@ -16,7 +16,7 @@ namespace backend.Helpers
 
 			// Check sum validation
 			int sum = 0;
-			for(int i = 0; i < PeselValidator.length - 1; i++)
+			for (int i = 0; i < PeselValidator.length - 1; i++)
             {
 				sum += PeselValidator.coeff[i] * int.Parse(pesel[i].ToString());
             }
