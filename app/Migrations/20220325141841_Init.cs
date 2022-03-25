@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace backend.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -63,6 +63,7 @@ namespace backend.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     Email = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Password = table.Column<string>(type: "longtext", nullable: false)
@@ -79,17 +80,18 @@ namespace backend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "VaccinationSlots",
+                name: "Settings",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Reserved = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VaccinationSlots", x => x.Id);
+                    table.PrimaryKey("PK_Settings", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -135,6 +137,28 @@ namespace backend.Migrations
                         name: "FK_Patients_Addresses_AddressId",
                         column: x => x.AddressId,
                         principalTable: "Addresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "VaccinationSlots",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Reserved = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VaccinationSlots", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VaccinationSlots_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -190,17 +214,22 @@ namespace backend.Migrations
             migrationBuilder.InsertData(
                 table: "Admins",
                 columns: new[] { "Id", "Email", "FirstName", "LastName", "Password" },
-                values: new object[] { 1, "john@admin.com", "John", "Admin", "$MYHASH$V1$10000$mqeo9mY32GPrrbVp6xp9TYQAu8eqJDYk5SUp2reRAyYZvpzq" });
+                values: new object[] { 1, "john@admin.com", "John", "Admin", "$MYHASH$V1$10000$PoCOCkh+aTC0VguxgWdwKLxqWK19PSIAhKLJnYiowotTOuDR" });
 
             migrationBuilder.InsertData(
                 table: "Doctors",
-                columns: new[] { "Id", "Email", "FirstName", "LastName", "Password" },
-                values: new object[] { 1, "john@doctor.com", "John", "Doctor", "$MYHASH$V1$10000$6EB6EjuT8drcPhVQg7AUyOoWjcjjtcJqIyFEAMPyvTVHNkR/" });
+                columns: new[] { "Id", "Email", "FirstName", "IsDeleted", "LastName", "Password" },
+                values: new object[] { 1, "john@doctor.com", "John", false, "Doctor", "$MYHASH$V1$10000$7ts/3CyVzO90mqJcGEy39IswbmV4GWveM5C6H+xUp7r+YmkC" });
+
+            migrationBuilder.InsertData(
+                table: "Settings",
+                columns: new[] { "Id", "Type", "Value" },
+                values: new object[] { 1, 0, "bugmail@szczepienia.pw" });
 
             migrationBuilder.InsertData(
                 table: "Patients",
                 columns: new[] { "Id", "AddressId", "Email", "FirstName", "LastName", "Password", "Pesel" },
-                values: new object[] { 1, 1, "john@patient.com", "John", "Patient", "$MYHASH$V1$10000$/KNLglM2hKDJJORqyro48zoP+fZJ7WEqLU8asX8rkIJRwctd", "22222222222" });
+                values: new object[] { 1, 1, "john@patient.com", "John", "Patient", "$MYHASH$V1$10000$vLceq59ebyRfZ2TtmkTFrXEygb62n6UZ4ZimrwXWgjnLJluq", "22222222222" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Patients_AddressId",
@@ -226,6 +255,11 @@ namespace backend.Migrations
                 name: "IX_Vaccinations_VaccineId",
                 table: "Vaccinations",
                 column: "VaccineId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VaccinationSlots_DoctorId",
+                table: "VaccinationSlots",
+                column: "DoctorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -234,10 +268,10 @@ namespace backend.Migrations
                 name: "Admins");
 
             migrationBuilder.DropTable(
-                name: "Vaccinations");
+                name: "Settings");
 
             migrationBuilder.DropTable(
-                name: "Doctors");
+                name: "Vaccinations");
 
             migrationBuilder.DropTable(
                 name: "Patients");
@@ -250,6 +284,9 @@ namespace backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Addresses");
+
+            migrationBuilder.DropTable(
+                name: "Doctors");
         }
     }
 }

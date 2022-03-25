@@ -11,8 +11,8 @@ using backend.Database;
 namespace backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220323155557_v4")]
-    partial class v4
+    [Migration("20220325141841_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -96,7 +96,7 @@ namespace backend.Migrations
                             Email = "john@admin.com",
                             FirstName = "John",
                             LastName = "Admin",
-                            Password = "$MYHASH$V1$10000$eADhyFswnID7A2eLofKm7vzkCx7wysB23lrJOIWyL8o868kt"
+                            Password = "$MYHASH$V1$10000$PoCOCkh+aTC0VguxgWdwKLxqWK19PSIAhKLJnYiowotTOuDR"
                         });
                 });
 
@@ -137,7 +137,7 @@ namespace backend.Migrations
                             FirstName = "John",
                             IsDeleted = false,
                             LastName = "Doctor",
-                            Password = "$MYHASH$V1$10000$wsEcsdNf6hvp1wu72fIsv/ySElRfkfHFx5NeFlUGHROiQOp9"
+                            Password = "$MYHASH$V1$10000$7ts/3CyVzO90mqJcGEy39IswbmV4GWveM5C6H+xUp7r+YmkC"
                         });
                 });
 
@@ -184,8 +184,34 @@ namespace backend.Migrations
                             Email = "john@patient.com",
                             FirstName = "John",
                             LastName = "Patient",
-                            Password = "$MYHASH$V1$10000$ZhbqRfltk33d0T4u6+JhV0h2HGzK3pSY+M5F6G8fS6LAnHlH",
+                            Password = "$MYHASH$V1$10000$vLceq59ebyRfZ2TtmkTFrXEygb62n6UZ4ZimrwXWgjnLJluq",
                             Pesel = "22222222222"
+                        });
+                });
+
+            modelBuilder.Entity("backend.Models.SettingModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Type = 0,
+                            Value = "bugmail@szczepienia.pw"
                         });
                 });
 

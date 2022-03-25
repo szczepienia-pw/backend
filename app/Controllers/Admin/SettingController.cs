@@ -18,7 +18,7 @@ namespace backend.Controllers.Admin
 
 
         // GET admin/settings
-        [HttpGet()]
+        [HttpGet]
         [Authorize(AccountTypeEnum.Admin)]
         public async Task<IActionResult> GetSettings()
         {
@@ -26,7 +26,7 @@ namespace backend.Controllers.Admin
         }
 
         // PUT admin/settings
-        [HttpPut()]
+        [HttpPut]
         [Authorize(AccountTypeEnum.Admin)]
         public async Task<IActionResult> SetSettings([FromBody] Dictionary<String, String> request)
         {
