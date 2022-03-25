@@ -38,15 +38,13 @@ namespace backend.Services.Doctor
                 throw new ValidationException("Date is in the past.");
 
             // Check for overlapping slots
-            var doctorSlots = this.dataContext.VaccinationSlots
-                .Where(slot => 
+            this.dataContext.VaccinationSlots
+                .CheckDuplicate(slot => 
                     slot.Doctor.Id == doctor.Id 
                     && slot.Date > date.AddMinutes(-slotMarginMins) 
-                    && slot.Date < date.AddMinutes(slotMarginMins)
+                    && slot.Date < date.AddMinutes(slotMarginMins),
+                    new ValidationException("Slots overlaps the existing slots.") 
                 );
-
-            if (doctorSlots.Any())
-                throw new ValidationException("Slots overlaps the existing slots.");
 
             // Add new slot to database
             VaccinationSlotModel slot = new VaccinationSlotModel { Date = date, Doctor = doctor, Reserved = false };
@@ -77,10 +75,9 @@ namespace backend.Services.Doctor
         public async Task<SuccessResponse> DeleteSlot(int vaccinationSlotId, DoctorModel doctor)
         {
             var slot = this.dataContext.VaccinationSlots
-                .FirstOrDefault(slot => slot.Id == vaccinationSlotId && slot.Doctor.Id == doctor.Id);
+                .FirstOrThrow(slot => slot.Id == vaccinationSlotId && slot.Doctor.Id == doctor.Id,
+                              new NotFoundException());
 
-            if (slot == null)
-                throw new NotFoundException();
             if (slot.Reserved)
                 throw new ConflictException("Provided vaccination slot is already reserved and cannot be deleted");
 

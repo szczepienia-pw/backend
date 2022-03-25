@@ -22,18 +22,12 @@ namespace backend.Services.Patient
         public async Task<PatientModel> Register(PatientRegistrationRequest request)
         {
             // Check for duplicated e-mail
-            var existingEmail = this.dataContext.Patients
-                .FirstOrDefault(patient => patient.Email == request.Email);
-
-            if (existingEmail != null)
-                throw new ConflictException("Specified e-mail already exists.");
+            this.dataContext.Patients.CheckDuplicate(patient => patient.Email == request.Email,
+                                                     new ConflictException("Specified e-mail already exists."));
 
             // Check for duplicated PESEL
-            var existingPesel = this.dataContext.Patients
-                .FirstOrDefault(patient => patient.Pesel == request.Pesel);
-
-            if (existingPesel != null)
-                throw new ConflictException("Specified PESEL already exists.");
+            this.dataContext.Patients.CheckDuplicate(patient => patient.Pesel == request.Pesel,
+                                                     new ConflictException("Specified PESEL already exists."));                
 
             // Validate PESEL
             if (!PeselValidator.Validate(request.Pesel))
