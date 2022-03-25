@@ -30,7 +30,11 @@ namespace backend.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Run seeder
             this.seeder.Seed(modelBuilder);
+
+            // Filter soft deleted entities
+            modelBuilder.Entity<DoctorModel>().HasQueryFilter(model => !model.IsDeleted);
         }
     }
 }

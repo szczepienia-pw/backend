@@ -10,6 +10,8 @@ namespace backend.Services.Doctor
 {
     public class DoctorAuthService : AuthService<DoctorModel>
     {
+
+
         public DoctorAuthService(JwtGenerator jwtGenerator, SecurePasswordHasher securePasswordHasher, DataContext dataContext)
             : base(jwtGenerator, securePasswordHasher, dataContext) { }
 

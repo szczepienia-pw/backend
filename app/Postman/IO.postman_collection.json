@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ecfc6c6f-4573-46eb-8b34-1915a32047d0",
+		"_postman_id": "67e1a291-5027-4260-97c3-5142b9c77ec2",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -397,6 +397,52 @@
 							"path": [
 								"admin",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete doctor",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{IOHostURL}}/admin/doctors/2",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"admin",
+								"doctors",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create doctor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Dr John\",\n  \"secondName\": \"Doe\",\n  \"email\": \"john.doe@doctor.com\",\n  \"password\": \"!Password#123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{IOHostURL}}/admin/doctors",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"admin",
+								"doctors"
 							]
 						}
 					},
