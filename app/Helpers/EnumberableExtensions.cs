@@ -21,7 +21,7 @@ namespace backend.Helpers
             if (source == null)
                 throw exception;
 
-            var element = source.First(predicate);
+            var element = source.FirstOrDefault(predicate);
 
             if (element == null)
                 throw exception;
