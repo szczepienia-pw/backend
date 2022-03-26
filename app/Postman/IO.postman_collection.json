@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "67e1a291-5027-4260-97c3-5142b9c77ec2",
+		"_postman_id": "a357a631-1b22-47ae-b657-c909579efea1",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -66,6 +66,33 @@
 							"path": [
 								"patient",
 								"auth-test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register patient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"pesel\": \"94100613369\",\n  \"email\": \"john.doe@patient.com\",\n  \"password\": \"!Password#123\",\n  \"address\": {\n    \"city\": \"Warszawa\",\n    \"zipCode\": \"01-202\",\n    \"street\": \"Jaktorowska\",\n    \"houseNumber\": \"14\",\n    \"localNumber\": \"5a\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{IOHostURL}}/patient/registration",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"patient",
+								"registration"
 							]
 						}
 					},
