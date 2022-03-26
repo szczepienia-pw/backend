@@ -385,6 +385,65 @@
 					]
 				},
 				{
+					"name": "Doctor",
+					"event": [
+						{
+							"name": "Delete doctor",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/doctors/2",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"doctors",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create doctor",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Dr John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@doctor.com\",\n  \"password\": \"!Password#123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/admin/doctors",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"doctors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Doctor",
+							"request": {
+								"method": "PUT",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Login as an admin",
 					"event": [
 						{
@@ -424,52 +483,6 @@
 							"path": [
 								"admin",
 								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete doctor",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{IOHostURL}}/admin/doctors/2",
-							"host": [
-								"{{IOHostURL}}"
-							],
-							"path": [
-								"admin",
-								"doctors",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create doctor",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"firstName\": \"Dr John\",\n  \"secondName\": \"Doe\",\n  \"email\": \"john.doe@doctor.com\",\n  \"password\": \"!Password#123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{IOHostURL}}/admin/doctors",
-							"host": [
-								"{{IOHostURL}}"
-							],
-							"path": [
-								"admin",
-								"doctors"
 							]
 						}
 					},

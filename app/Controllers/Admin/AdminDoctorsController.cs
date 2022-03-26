@@ -2,6 +2,7 @@
 using backend.Helpers;
 using backend.Services.Admin;
 using backend.Dto.Requests.Admin;
+using backend.Dto.Requests.Admin.Doctor;
 
 namespace backend.Controllers.Admin
 {
@@ -30,6 +31,14 @@ namespace backend.Controllers.Admin
         public async Task<IActionResult> DeleteDoctor(int doctorId)
         {
             return Ok(await this.doctorsService.DeleteDoctor(doctorId));
+        }
+
+        //PUT admin/doctors/:doctor-id
+        [HttpPut("{doctorId:int}")]
+        [Authorize(AccountTypeEnum.Admin)]
+        public async Task<IActionResult> UpdateDoctor(int doctorId, [FromBody] EditDoctorRequest request)
+        {
+            return Ok(await this.doctorsService.EditDoctor(doctorId, request));
         }
     }
 }
