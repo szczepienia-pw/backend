@@ -2,6 +2,7 @@
 using System.Linq;
 using backend.Database;
 using backend.Helpers;
+using backend.Models;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
 using backend.Models.Visits;
@@ -61,6 +62,15 @@ namespace backend_tests.Helpers
                 }
             };
 
+            var settings = new List<SettingModel>()
+            {
+                new()
+                {
+                    Id = 1,
+                    Type = SettingType.BugEmail,
+                    Value = "bugmail@szczepiania.pw"
+                }
+            };
             var vaccinationSlots = new List<VaccinationSlotModel>() { };
 
             var contextMock = new Mock<DataContext>();
@@ -68,6 +78,7 @@ namespace backend_tests.Helpers
             contextMock.Setup(dbContext => dbContext.Patients).Returns(patients.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Admins).Returns(admins.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
+            contextMock.Setup(dbContext => dbContext.Settings).Returns(settings.AsQueryable().BuildMockDbSet().Object);
             return contextMock;
         }
     }

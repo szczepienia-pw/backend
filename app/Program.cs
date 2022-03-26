@@ -1,6 +1,7 @@
 using backend.Database;
 using backend.Helpers;
 using backend.Middlewares;
+using backend.Services;
 using backend.Services.Patient;
 using backend.Services.Doctor;
 using backend.Services.Admin;
@@ -20,17 +21,21 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<JwtGenerator>();
 builder.Services.AddSingleton<Seeder>();
 builder.Services.AddSingleton<SecurePasswordHasher>();
+builder.Services.AddSingleton<Mailer>();
 
 builder.Services.AddScoped<PatientAuthService>();
 builder.Services.AddScoped<DoctorAuthService>();
 builder.Services.AddScoped<AdminAuthService>();
 builder.Services.AddScoped<VaccinationSlotService>();
+builder.Services.AddScoped<SettingService>();
+builder.Services.AddScoped<BugService>();
 builder.Services.AddScoped<AdminDoctorsService>();
 builder.Services.AddScoped<PatientRegistrationService>();
 
-// Connect Jwt settings to section in appsettings.json
+// Connect settings to sections in appsettings.json
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.Configure<HasherSettings>(builder.Configuration.GetSection("HasherSettings"));
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
 // Connect to MySQL database
 string connectionString = builder.Configuration.GetConnectionString("MySQLConnection").ToString();

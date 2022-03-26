@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a357a631-1b22-47ae-b657-c909579efea1",
+		"_postman_id": "432654ac-061a-468a-adc8-4d737e54dffd",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -335,6 +335,56 @@
 			"name": "Admin",
 			"item": [
 				{
+					"name": "Settings",
+					"item": [
+						{
+							"name": "Get settings",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/settings",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"settings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set settings",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"bugEmail\": \"bugEmail@szczepiania.pw\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/admin/settings",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"settings"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Doctor",
 					"item": [
 						{
@@ -387,7 +437,18 @@
 							"name": "Edit Doctor",
 							"request": {
 								"method": "PUT",
-								"header": []
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/doctors/1",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"doctors",
+										"1"
+									]
+								}
 							},
 							"response": []
 						}
@@ -455,6 +516,77 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"auth": {
+				"type": "apikey",
+				"apikey": [
+					{
+						"key": "value",
+						"value": "{{IO_ADMIN_TOKEN}}",
+						"type": "string"
+					},
+					{
+						"key": "key",
+						"value": "Authorization",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Common",
+			"item": [
+				{
+					"name": "Bugs",
+					"item": [
+						{
+							"name": "Send bug",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Some bug\",\r\n    \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam erat orci, viverra vitae ex ac, fringilla scelerisque tellus. Maecenas rutrum posuere eros, non ultrices turpis. Praesent rutrum faucibus orci sit amet blandit. Vestibulum id congue magna, ut bibendum nulla. Vivamus in lectus laoreet, imperdiet sem at, placerat erat. Morbi ut enim vel erat pulvinar dapibus a quis ex. In id libero urna. Nullam nec auctor lectus.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/bugs",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"bugs"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			],
 			"auth": {
