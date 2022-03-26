@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a357a631-1b22-47ae-b657-c909579efea1",
+		"_postman_id": "432654ac-061a-468a-adc8-4d737e54dffd",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -386,7 +386,7 @@
 				},
 				{
 					"name": "Doctor",
-					"event": [
+					"item": [
 						{
 							"name": "Delete doctor",
 							"request": {
@@ -437,7 +437,18 @@
 							"name": "Edit Doctor",
 							"request": {
 								"method": "PUT",
-								"header": []
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/doctors/1",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"doctors",
+										"1"
+									]
+								}
 							},
 							"response": []
 						}
