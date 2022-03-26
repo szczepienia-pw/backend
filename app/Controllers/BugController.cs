@@ -19,7 +19,7 @@ namespace backend.Controllers
         // POST bugs
         [HttpPost("bugs")]
         [Authorize]
-        public async Task<IActionResult> Login([FromBody] SendBugRequest request)
+        public async Task<IActionResult> SendBug([FromBody] SendBugRequest request)
         {
             return Ok(await this.bugService.SendBug(request, (AccountModel)this.HttpContext.Items["User"]));
         }

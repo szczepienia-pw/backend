@@ -26,7 +26,7 @@ namespace backend.Services.Admin
             
             foreach (var setting in settings)
                 responseDictionary.Add(
-                    this.ToCamelCase(setting.Type.ToString()), 
+                    this.ToCamelCase(setting.Type.ToString()), // Dictionary keys are unique across all settings
                     setting.Value
                 );
 
