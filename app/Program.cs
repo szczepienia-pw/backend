@@ -1,3 +1,4 @@
+using System.Reflection;
 using backend.Database;
 using backend.Helpers;
 using backend.Middlewares;
@@ -5,14 +6,17 @@ using backend.Services;
 using backend.Services.Patient;
 using backend.Services.Doctor;
 using backend.Services.Admin;
-
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddFluentValidation(options =>
+{
+    options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
