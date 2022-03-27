@@ -9,5 +9,7 @@ namespace backend.Models.Visits
         public DateTime Date { get; set; }
         public bool Reserved { get; set; }
         public DoctorModel Doctor { get; set; }
+        [JsonIgnore]
+        public int DoctorId { get; set; }
     }
 }
