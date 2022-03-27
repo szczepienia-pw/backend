@@ -171,5 +171,21 @@ namespace backend_tests.Unit.Services.Admin
         {
             Assert.ThrowsAsync<ValidationException>(() => this.adminDoctorsServiceMock.EditDoctor(doctorId, new EditDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email }));
         }
+
+        [Theory]
+        [InlineData(1)]
+        public void TestShowDoctorWorks(int doctorId)
+        {
+            var doctor = this.adminDoctorsServiceMock.ShowDoctor(doctorId).Result;
+
+            Assert.Equal(doctorId, doctor.Id);
+        }
+
+        [Theory]
+        [InlineData(10)]
+        public void TestShowDoctorThrowsNotFoundException(int doctorId)
+        {
+            Assert.ThrowsAsync<NotFoundException>(() => this.adminDoctorsServiceMock.ShowDoctor(doctorId));
+        }
     }
 }
