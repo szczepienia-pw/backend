@@ -43,6 +43,7 @@ namespace backend_tests.Helpers
                     LastName = Faker.Name.Last(),
                     Email = "john@patient.com",
                     Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
+                    Pesel = "22222222222",
                     Address = new AddressModel()
                     {
 

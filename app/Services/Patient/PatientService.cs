@@ -14,7 +14,8 @@ namespace backend.Services.Patient
         private readonly DataContext dataContext;
         private readonly SecurePasswordHasher securePasswordHasher;
 
-        private void ValidatePatient(string? email = null, string? pesel = null)
+        // exposed for UTs
+        public void ValidatePatient(string? email = null, string? pesel = null)
         {
             if (email != null)
                 this.dataContext.Patients.CheckDuplicate(patient => patient.Email == email,
@@ -66,7 +67,7 @@ namespace backend.Services.Patient
             return new PatientResponse(patient);
         }
 
-        public async Task<PatientResponse> EditPatient(PatientModel patient, EditPatientRequest request)
+        public async Task<PatientResponse> EditPatient(PatientModel patient, PatientRequest request)
         {
             this.ValidatePatient(request.Email, request.Pesel);
 
@@ -110,7 +111,7 @@ namespace backend.Services.Patient
             return new PatientResponse(patient);
         }
 
-        public Task<PatientResponse> EditPatient(int patientId, EditPatientRequest request)
+        public Task<PatientResponse> EditPatient(int patientId, PatientRequest request)
         {
             var patient = this.dataContext.Patients.FirstOrThrow((patient) => patient.Id == patientId, new NotFoundException());
             return this.EditPatient(patient, request);

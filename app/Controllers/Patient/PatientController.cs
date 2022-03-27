@@ -28,7 +28,7 @@ namespace backend.Controllers.Patient
 
         // PUT patient/account
         [HttpPut("account")]
-        public async Task<IActionResult> EditPatient([FromBody] EditPatientRequest request)
+        public async Task<IActionResult> EditPatient([FromBody] PatientRequest request)
         {
             return Ok(await this.patientService.EditPatient((PatientModel)this.HttpContext.Items["User"], request));
         }

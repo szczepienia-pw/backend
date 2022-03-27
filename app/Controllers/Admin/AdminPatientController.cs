@@ -20,7 +20,7 @@ namespace backend.Controllers.Admin
         // PUT admin/patients/:patient-id
         [HttpPut("{patientId:int}")]
         [Authorize(AccountTypeEnum.Admin)]
-        public async Task<IActionResult> EditPatient(int patientId, [FromBody] EditPatientRequest request)
+        public async Task<IActionResult> EditPatient(int patientId, [FromBody] PatientRequest request)
         {
             return Ok(await this.patientService.EditPatient(patientId, request));
         }
