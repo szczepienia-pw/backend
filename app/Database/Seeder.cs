@@ -2,6 +2,7 @@
 using backend.Models;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
+using backend.Models.Visits;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Database
@@ -28,6 +29,7 @@ namespace backend.Database
                     ZipCode = "01-123"
                 }
             );
+
             modelBuilder.Entity<PatientModel>().HasData(
                 new PatientModel()
                 {
@@ -40,16 +42,17 @@ namespace backend.Database
                     AddressId = 1
                 }
             );
-            modelBuilder.Entity<DoctorModel>().HasData(
-                new DoctorModel()
-                {
-                    Id = 1,
-                    Email = "john@doctor.com",
-                    FirstName = "John",
-                    LastName = "Doctor",
-                    Password = this.securePasswordHasher.Hash("password"),
-                }
-            );
+
+            DoctorModel doctor = new DoctorModel()
+            {
+                Id = 1,
+                Email = "john@doctor.com",
+                FirstName = "John",
+                LastName = "Doctor",
+                Password = this.securePasswordHasher.Hash("password"),
+            };
+            modelBuilder.Entity<DoctorModel>().HasData(doctor);
+
             modelBuilder.Entity<AdminModel>().HasData(
                 new AdminModel()
                 {
@@ -60,6 +63,7 @@ namespace backend.Database
                     Password = this.securePasswordHasher.Hash("password"),
                 }
             );
+
             modelBuilder.Entity<SettingModel>().HasData(
                 new SettingModel()
                 {
@@ -68,6 +72,19 @@ namespace backend.Database
                     Value = "bugmail@szczepienia.pw"
                 }
             );
+
+            for (int i = 1; i <= 20; i++)
+            {
+                modelBuilder.Entity<VaccinationSlotModel>().HasData(
+                    new VaccinationSlotModel
+                    {
+                        Id = i,
+                        DoctorId = doctor.Id,
+                        Date = DateTime.Now.AddDays(i - 1),
+                        Reserved = i % 2 == 0
+                    }
+                );
+            }
         }
     }
 }
