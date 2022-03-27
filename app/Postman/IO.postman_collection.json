@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "a9b8d5a4-a6d7-417a-a21d-39e34007bb18",
-		"name": "IO",
+		"_postman_id": "b1bb5d11-9630-4e99-a6e3-cce93371421c",
+		"name": "IO Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -455,6 +455,44 @@
 										"admin",
 										"doctors",
 										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Show Doctor",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Show Doctors",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/admin/doctors",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"doctors"
 									]
 								}
 							},
