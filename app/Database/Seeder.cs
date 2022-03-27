@@ -11,6 +11,8 @@ namespace backend.Database
     {
         private readonly SecurePasswordHasher securePasswordHasher;
 
+        
+
         public Seeder(SecurePasswordHasher securePasswordHasher)
         {
             this.securePasswordHasher = securePasswordHasher;
@@ -18,6 +20,9 @@ namespace backend.Database
 
         public void Seed(ModelBuilder modelBuilder)
         {
+            #region Addresses
+
+            modelBuilder.Entity<AddressModel>().HasKey(address => address.Id);
             modelBuilder.Entity<AddressModel>().HasData(
                 new AddressModel()
                 {
@@ -28,6 +33,15 @@ namespace backend.Database
                     LocalNumber = "32",
                     ZipCode = "01-123"
                 }
+            );
+
+            #endregion
+
+            #region Patients
+
+            modelBuilder.Entity<PatientModel>().HasKey(patient => patient.Id);
+            modelBuilder.Entity<PatientModel>(
+                entity => entity.HasOne(patient => patient.Address).WithOne().HasForeignKey<PatientModel>(patient => patient.AddressId)
             );
 
             modelBuilder.Entity<PatientModel>().HasData(
@@ -43,6 +57,10 @@ namespace backend.Database
                 }
             );
 
+            #endregion
+
+            #region Doctors
+
             DoctorModel doctor = new DoctorModel()
             {
                 Id = 1,
@@ -52,7 +70,13 @@ namespace backend.Database
                 Password = this.securePasswordHasher.Hash("password"),
             };
             modelBuilder.Entity<DoctorModel>().HasData(doctor);
+            modelBuilder.Entity<DoctorModel>().HasKey(doctor => doctor.Id);
 
+            #endregion
+
+            #region Admins
+
+            modelBuilder.Entity<AdminModel>().HasKey(admin => admin.Id);
             modelBuilder.Entity<AdminModel>().HasData(
                 new AdminModel()
                 {
@@ -64,6 +88,11 @@ namespace backend.Database
                 }
             );
 
+            #endregion
+
+            #region Settings
+
+            modelBuilder.Entity<SettingModel>().HasKey(setting => setting.Id);
             modelBuilder.Entity<SettingModel>().HasData(
                 new SettingModel()
                 {
@@ -72,6 +101,10 @@ namespace backend.Database
                     Value = "bugmail@szczepienia.pw"
                 }
             );
+
+            #endregion
+
+            #region VaccinationSlots
 
             for (int i = 1; i <= 20; i++)
             {
@@ -85,6 +118,8 @@ namespace backend.Database
                     }
                 );
             }
+
+            #endregion
         }
     }
 }
