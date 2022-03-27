@@ -3,6 +3,7 @@ using backend.Helpers;
 using backend.Services.Admin;
 using backend.Dto.Requests.Admin;
 using backend.Dto.Requests.Admin.Doctor;
+using backend.Dto.Requests;
 
 namespace backend.Controllers.Admin
 {
@@ -39,6 +40,22 @@ namespace backend.Controllers.Admin
         public async Task<IActionResult> UpdateDoctor(int doctorId, [FromBody] EditDoctorRequest request)
         {
             return Ok(await this.doctorsService.EditDoctor(doctorId, request));
+        }
+
+        // GET admin/doctors/:doctor-id
+        [HttpGet("{doctorId:int}")]
+        [Authorize(AccountTypeEnum.Admin)]
+        public async Task<IActionResult> ShowDoctor(int doctorId)
+        {
+            return Ok(await this.doctorsService.ShowDoctor(doctorId));
+        }
+
+        // GET admin/doctors
+        [HttpGet()]
+        [Authorize(AccountTypeEnum.Admin)]
+        public async Task<IActionResult> ShowDoctors([FromBody] PaginationRequest request)
+        {
+            return Ok(await this.doctorsService.ShowDoctors(request.Page));
         }
     }
 }
