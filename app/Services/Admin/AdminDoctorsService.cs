@@ -2,6 +2,7 @@
 using backend.Dto.Requests.Admin;
 using backend.Dto.Requests.Admin.Doctor;
 using backend.Dto.Responses;
+using backend.Dto.Responses.Doctor;
 using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
@@ -97,6 +98,23 @@ namespace backend.Services.Admin
             this.dataContext.SaveChanges();
 
             return doctor;
+        }
+
+        public async Task<DoctorResponse> ShowDoctor(int doctorId)
+        {
+            var doctor = this.dataContext.Doctors.FirstOrThrow((doctor) => doctor.Id == doctorId, new NotFoundException());
+            return new DoctorResponse(doctor);
+        }
+
+        public async Task<PaginatedResponse<DoctorModel, List<DoctorResponse>>> ShowDoctors(int page)
+        {
+            var doctors = this.dataContext.Doctors;
+            var doctorList = PaginatedList<DoctorModel>.Paginate(doctors, page);
+
+            return new PaginatedResponse<DoctorModel, List<DoctorResponse>>(
+                doctorList,
+                doctorList.Select(doctor => new DoctorResponse(doctor)).ToList()
+            );
         }
     }
 }
