@@ -7,7 +7,9 @@ namespace backend.Models.Accounts
     public class PatientModel : AccountModel
     {
         public string Pesel { get; set; }
-        public AddressModel Address { get; set; }
+        public virtual AddressModel Address { get; set; }
+
+        // for the purposes of seeding
         [JsonIgnore]
         public int AddressId { get; set; }
 

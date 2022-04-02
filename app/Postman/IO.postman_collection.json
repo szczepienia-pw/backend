@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "432654ac-061a-468a-adc8-4d737e54dffd",
+		"_postman_id": "a9b8d5a4-a6d7-417a-a21d-39e34007bb18",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -95,6 +95,14 @@
 								"registration"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Patient",
+					"request": {
+						"method": "PUT",
+						"header": []
 					},
 					"response": []
 				}

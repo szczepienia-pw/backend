@@ -3,20 +3,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace backend.Dto.Requests.Patient
 {
-	public class PatientRegistrationRequest
+	public class PatientRegistrationRequest : PatientRequest
 	{
 		[Required]
-		public string FirstName { get; set; }
+		public override string? FirstName { get; set; }
 		[Required]
-		public string LastName { get; set; }
+		public override string? LastName { get; set; }
 		[Required]
-		public string Pesel { get; set; }
+		public override string? Pesel { get; set; }
 		[Required]
-		public string Email { get; set; }
+		public override string? Email { get; set; }
 		[Required]
-		public string Password { get; set; }
+		public override string? Password { get; set; }
 		[Required]
-		public PatientRegistrationAddressRequest Address { get; set; }
+		public override PatientAddressRequest? Address { get; set; }
 	}
 }
 

@@ -34,7 +34,7 @@ builder.Services.AddScoped<VaccinationSlotService>();
 builder.Services.AddScoped<SettingService>();
 builder.Services.AddScoped<BugService>();
 builder.Services.AddScoped<AdminDoctorsService>();
-builder.Services.AddScoped<PatientRegistrationService>();
+builder.Services.AddScoped<PatientService>();
 
 // Connect settings to sections in appsettings.json
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
@@ -44,7 +44,7 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 // Connect to MySQL database
 string connectionString = builder.Configuration.GetConnectionString("MySQLConnection").ToString();
 ServerVersion sv = MariaDbServerVersion.AutoDetect(connectionString);
-builder.Services.AddDbContext<DataContext>(options => options.UseMySql(connectionString, sv));
+builder.Services.AddDbContext<DataContext>(options => { options.UseMySql(connectionString, sv); options.UseLazyLoadingProxies(); });
 
 var app = builder.Build();
 
