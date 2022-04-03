@@ -6,6 +6,7 @@ using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
 using backend.Models.Visits;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Doctor
 {
@@ -39,11 +40,11 @@ namespace backend.Services.Doctor
 
             // Check for overlapping slots
             this.dataContext.VaccinationSlots
-                .CheckDuplicate(slot => 
-                    slot.Doctor.Id == doctor.Id 
-                    && slot.Date > date.AddMinutes(-slotMarginMins) 
+                .CheckDuplicate(slot =>
+                    slot.Doctor.Id == doctor.Id
+                    && slot.Date > date.AddMinutes(-slotMarginMins)
                     && slot.Date < date.AddMinutes(slotMarginMins),
-                    new ValidationException("Slots overlaps the existing slots.") 
+                    new ValidationException("Slots overlaps the existing slots.")
                 );
 
             // Add new slot to database

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace backend.Models.Visits
 {
-    public class VaccinationSlotModel
+    public class VaccinationSlotModel : BaseModel
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
