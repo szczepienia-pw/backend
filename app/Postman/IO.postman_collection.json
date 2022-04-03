@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "b1bb5d11-9630-4e99-a6e3-cce93371421c",
-		"name": "IO Copy",
+		"_postman_id": "c6d32453-4b0a-48bd-8ed5-8cb95b09fc25",
+		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -102,7 +102,10 @@
 					"name": "Edit Patient",
 					"request": {
 						"method": "PUT",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				}
@@ -464,35 +467,40 @@
 							"name": "Show Doctor",
 							"request": {
 								"method": "GET",
-								"header": []
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/doctors/1",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"doctors",
+										"1"
+									]
+								}
 							},
 							"response": []
 						},
 						{
 							"name": "Show Doctors",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"page\": 1\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
-									"raw": "{{IOHostURL}}/admin/doctors",
+									"raw": "{{IOHostURL}}/admin/doctors?page=1",
 									"host": [
 										"{{IOHostURL}}"
 									],
 									"path": [
 										"admin",
 										"doctors"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										}
 									]
 								}
 							},
