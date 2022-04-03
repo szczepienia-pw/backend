@@ -2,6 +2,7 @@
 using System.Linq;
 using backend.Database;
 using backend.Helpers;
+using backend.Models;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
 using backend.Models.Visits;
@@ -22,6 +23,14 @@ namespace backend_tests.Helpers
                     LastName = Faker.Name.Last(),
                     Email = "john@doctor.com",
                     Password = SecurePasswordHasherHelper.Hasher.Hash("password")
+                },
+                new()
+                {
+                    Id = 2,
+                    FirstName = Faker.Name.First(),
+                    LastName = Faker.Name.Last(),
+                    Email = "john@doctor2.com",
+                    Password = SecurePasswordHasherHelper.Hasher.Hash("password")
                 }
             };
 
@@ -34,6 +43,7 @@ namespace backend_tests.Helpers
                     LastName = Faker.Name.Last(),
                     Email = "john@patient.com",
                     Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
+                    Pesel = "22222222222",
                     Address = new AddressModel()
                     {
 
@@ -53,6 +63,15 @@ namespace backend_tests.Helpers
                 }
             };
 
+            var settings = new List<SettingModel>()
+            {
+                new()
+                {
+                    Id = 1,
+                    Type = SettingType.BugEmail,
+                    Value = "bugmail@szczepiania.pw"
+                }
+            };
             var vaccinationSlots = new List<VaccinationSlotModel>() { };
 
             var contextMock = new Mock<DataContext>();
@@ -60,6 +79,7 @@ namespace backend_tests.Helpers
             contextMock.Setup(dbContext => dbContext.Patients).Returns(patients.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Admins).Returns(admins.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
+            contextMock.Setup(dbContext => dbContext.Settings).Returns(settings.AsQueryable().BuildMockDbSet().Object);
             return contextMock;
         }
     }

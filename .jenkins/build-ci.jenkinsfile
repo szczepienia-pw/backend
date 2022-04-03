@@ -9,6 +9,24 @@ pipeline {
                 }
             }
             stages {
+                stage('create databases') {
+                    agent {
+                        label 'vps'
+                    }
+                    steps {
+                        script {
+                            if (env.BRANCH_NAME == 'develop') {
+                                sh 'docker exec mariadb /bin/bash -c \"mysql -u root --execute=\\"DROP DATABASE IF EXISTS io_develop\\"\"'
+                                sh 'docker exec mariadb /bin/bash -c \"mysql -u root --execute=\\"CREATE DATABASE io_develop\\"\"'
+                            } else {
+                                sh 'docker exec mariadb /bin/bash -c \"mysql -u root --execute=\\"DROP DATABASE IF EXISTS io\\"\"'
+                                sh 'docker exec mariadb /bin/bash -c \"mysql -u root --execute=\\"CREATE DATABASE io\\"\"'
+                            }
+                        }
+                        
+                        cleanWs()
+                    }
+                }
                 stage('build and update db') {
                     agent {
                         label 'dotnet'
@@ -16,8 +34,15 @@ pipeline {
                     steps {
                         dir('app') {
                             sh 'sed -i "s/localhost/mariadb/g" appsettings.json'
+                            script {
+                                if (env.BRANCH_NAME == 'develop') {
+                                    sh 'sed -i "s/database=io/database=io_develop/g" appsettings.json'
+                                }
+                            }
                             sh 'dotnet publish -o out'
                             stash includes: 'out/**', name: 'build'
+                            sh 'rm -rf Migrations'
+                            sh '/root/.dotnet/tools/dotnet-ef migrations add migration'
                             sh '/root/.dotnet/tools/dotnet-ef database update'
                         }
 
