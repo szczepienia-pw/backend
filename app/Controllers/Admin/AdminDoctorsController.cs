@@ -53,7 +53,7 @@ namespace backend.Controllers.Admin
         // GET admin/doctors
         [HttpGet()]
         [Authorize(AccountTypeEnum.Admin)]
-        public async Task<IActionResult> ShowDoctors([FromBody] PaginationRequest request)
+        public async Task<IActionResult> ShowDoctors([FromQuery] PaginationRequest request)
         {
             return Ok(await this.doctorsService.ShowDoctors(request.Page));
         }
