@@ -14,6 +14,7 @@ namespace backend.Database
                 var reflectedFields = typeof(T).GetProperties().ToList();
 
                 reflectedFields.RemoveAll(field => !field.GetAccessors().Any(accessor => accessor.IsVirtual));
+                reflectedFields.RemoveAll(field => field.Name == "IsDeleted");
                 fields = reflectedFields.ConvertAll(tf => tf.Name).ToArray();
             }
 
