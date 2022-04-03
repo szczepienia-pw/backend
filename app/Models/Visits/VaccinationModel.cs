@@ -3,7 +3,7 @@ using backend.Models.Vaccines;
 
 namespace backend.Models.Visits
 {
-    public class VaccinationModel
+    public class VaccinationModel : BaseModel
     {
         public int Id { get; set; }
         public virtual VaccineModel Vaccine { get; set; }

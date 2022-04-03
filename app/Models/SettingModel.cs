@@ -1,6 +1,6 @@
 ﻿namespace backend.Models
 {
-    public class SettingModel
+    public class SettingModel : BaseModel
     {
         public int Id { get; set; }
         public SettingType Type { get; set; }

@@ -3,7 +3,7 @@ using backend.Helpers;
 
 namespace backend.Models.Accounts
 {
-    public abstract class AccountModel
+    public abstract class AccountModel : BaseModel
     {
         public int Id { get; set; }
         public string Email { get; set; }
