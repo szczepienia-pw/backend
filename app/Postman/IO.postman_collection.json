@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c6d32453-4b0a-48bd-8ed5-8cb95b09fc25",
+		"_postman_id": "903e4aed-af26-4e30-8dcc-e598419d7339",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -22,7 +22,83 @@
 									"}\r",
 									"else {\r",
 									"    pm.globals.set(\"IO_PATIENT_TOKEN\", \"\");    \r",
-									"}"
+									"}\r",
+									"\r",
+									"const schema = {\r",
+									"  \"type\": \"object\",\r",
+									"  \"properties\": {\r",
+									"    \"token\": {\r",
+									"      \"type\": \"string\"\r",
+									"    },\r",
+									"    \"patient\": {\r",
+									"      \"type\": \"object\",\r",
+									"      \"properties\": {\r",
+									"        \"id\": {\r",
+									"          \"type\": \"integer\"\r",
+									"        },\r",
+									"        \"firstName\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"lastName\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"pesel\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"email\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"address\": {\r",
+									"          \"type\": \"object\",\r",
+									"          \"properties\": {\r",
+									"            \"id\": {\r",
+									"              \"type\": \"integer\"\r",
+									"            },\r",
+									"            \"city\": {\r",
+									"              \"type\": \"string\"\r",
+									"            },\r",
+									"            \"zipCode\": {\r",
+									"              \"type\": \"string\"\r",
+									"            },\r",
+									"            \"street\": {\r",
+									"              \"type\": \"string\"\r",
+									"            },\r",
+									"            \"houseNumber\": {\r",
+									"              \"type\": \"string\"\r",
+									"            },\r",
+									"            \"localNumber\": {\r",
+									"              \"type\": \"string\"\r",
+									"            }\r",
+									"          },\r",
+									"          \"required\": [\r",
+									"            \"id\",\r",
+									"            \"city\",\r",
+									"            \"zipCode\",\r",
+									"            \"street\",\r",
+									"            \"houseNumber\",\r",
+									"            \"localNumber\"\r",
+									"          ]\r",
+									"        }\r",
+									"      },\r",
+									"      \"required\": [\r",
+									"        \"id\",\r",
+									"        \"firstName\",\r",
+									"        \"lastName\",\r",
+									"        \"pesel\",\r",
+									"        \"email\",\r",
+									"        \"address\"\r",
+									"      ]\r",
+									"    }\r",
+									"  },\r",
+									"  \"required\": [\r",
+									"    \"token\",\r",
+									"    \"patient\"\r",
+									"  ]\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Response structure is valid\", () => {\r",
+									"    pm.response.to.have.jsonSchema(schema);\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -73,12 +149,84 @@
 				},
 				{
 					"name": "Register patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"    \"id\": {",
+									"      \"type\": \"integer\"",
+									"    },",
+									"    \"firstName\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"lastName\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"pesel\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"email\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"address\": {",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"id\": {",
+									"          \"type\": \"integer\"",
+									"        },",
+									"        \"city\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"zipCode\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"street\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"houseNumber\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"localNumber\": {",
+									"          \"type\": \"string\"",
+									"        }",
+									"      },",
+									"      \"required\": [",
+									"        \"id\",",
+									"        \"city\",",
+									"        \"zipCode\",",
+									"        \"street\",",
+									"        \"houseNumber\"",
+									"      ]",
+									"    }",
+									"  },",
+									"  \"required\": [",
+									"    \"id\",",
+									"    \"firstName\",",
+									"    \"lastName\",",
+									"    \"pesel\",",
+									"    \"email\",",
+									"    \"address\"",
+									"  ]",
+									"}",
+									"",
+									"pm.test(\"Response structure is valid\", () => {",
+									"    pm.response.to.have.jsonSchema(schema);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"pesel\": \"94100613369\",\n  \"email\": \"john.doe@patient.com\",\n  \"password\": \"!Password#123\",\n  \"address\": {\n    \"city\": \"Warszawa\",\n    \"zipCode\": \"01-202\",\n    \"street\": \"Jaktorowska\",\n    \"houseNumber\": \"14\",\n    \"localNumber\": \"5a\"\n  }\n}",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"pesel\": \"59021324123\",\n  \"email\": \"john.doe2@patient.com\",\n  \"password\": \"!Password#123\",\n  \"address\": {\n    \"city\": \"Warszawa\",\n    \"zipCode\": \"01-202\",\n    \"street\": \"Jaktorowska\",\n    \"houseNumber\": \"14\",\n    \"localNumber\": \"5a\"\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -100,11 +248,99 @@
 				},
 				{
 					"name": "Edit Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"    \"id\": {",
+									"      \"type\": \"integer\"",
+									"    },",
+									"    \"firstName\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"lastName\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"pesel\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"email\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"address\": {",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"id\": {",
+									"          \"type\": \"integer\"",
+									"        },",
+									"        \"city\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"zipCode\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"street\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"houseNumber\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"localNumber\": {",
+									"          \"type\": \"string\"",
+									"        }",
+									"      },",
+									"      \"required\": [",
+									"        \"id\",",
+									"        \"city\",",
+									"        \"zipCode\",",
+									"        \"street\",",
+									"        \"houseNumber\",",
+									"      ]",
+									"    }",
+									"  },",
+									"  \"required\": [",
+									"    \"id\",",
+									"    \"firstName\",",
+									"    \"lastName\",",
+									"    \"pesel\",",
+									"    \"email\",",
+									"    \"address\"",
+									"  ]",
+									"}",
+									"",
+									"pm.test(\"Response structure is valid\", () => {",
+									"    pm.response.to.have.jsonSchema(schema);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John 2\",\n  \"lastName\": \"Doe 2\",\n  \"password\": \"Super-Strong-Password#123\",\n  \"address\": {\n    \"city\": \"Warszawa\",\n    \"zipCode\": \"01-202\",\n    \"street\": \"Jaktorowska\",\n    \"houseNumber\": \"14\",\n    \"localNumber\": \"5a\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": ""
+							"raw": "{{IOHostURL}}/patient/account",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"patient",
+								"account"
+							]
 						}
 					},
 					"response": []
@@ -446,9 +682,29 @@
 						},
 						{
 							"name": "Edit Doctor",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "PUT",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Dr John 2\",\n  \"lastName\": \"Doe 2\",\n  \"email\": \"john.doe2@doctor.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
 									"raw": "{{IOHostURL}}/admin/doctors/1",
 									"host": [
@@ -678,6 +934,30 @@
 					}
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Response must be valid and have a body\", function () {",
+					"     pm.response.to.be.ok;",
+					"     pm.response.to.be.withBody;",
+					"     pm.response.to.be.json;",
+					"});"
+				]
+			}
 		}
 	]
 }
