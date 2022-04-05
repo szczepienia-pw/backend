@@ -5,7 +5,7 @@ using backend.Helpers;
 
 namespace backend.Controllers.Patient
 {
-    [Route("patient/")]
+    [Route("patient")]
     [ApiController]
     public class PatientAuthController : ControllerBase
     {

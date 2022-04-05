@@ -14,7 +14,7 @@ namespace backend.Services.Patient
         private readonly DataContext dataContext;
         private readonly SecurePasswordHasher securePasswordHasher;
 
-        // exposed for UTs
+        // Exposed for UTs
         public void ValidatePatient(string? email = null, string? pesel = null)
         {
             if (email != null)
