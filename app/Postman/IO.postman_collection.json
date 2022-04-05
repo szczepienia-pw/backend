@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c6d32453-4b0a-48bd-8ed5-8cb95b09fc25",
+		"_postman_id": "6ad04109-b28d-46bd-abb3-d5d97bc05fe2",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -449,6 +449,15 @@
 							"request": {
 								"method": "PUT",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Dr John 2\",\n  \"lastName\": \"Doe 2\",\n  \"email\": \"john.doe2@doctor.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
 									"raw": "{{IOHostURL}}/admin/doctors/1",
 									"host": [
