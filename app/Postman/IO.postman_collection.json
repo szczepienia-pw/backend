@@ -314,6 +314,30 @@
 									"",
 									"pm.test(\"Response structure is valid\", () => {",
 									"    pm.response.to.have.jsonSchema(schema);",
+									"});",
+									"",
+									"pm.test(\"Response data is valid\", () => {",
+									"    const requestData = JSON.parse(request.data);",
+									"    const responeData = pm.response.json();",
+									"    if(requestData.hasOwnProperty(\"firstName\"))",
+									"        pm.expect(responeData.firstName).equal(requestData.firstName);",
+									"    if(requestData.hasOwnProperty(\"lastName\"))",
+									"        pm.expect(responeData.lastName).equal(requestData.lastName);",
+									"    if(requestData.hasOwnProperty(\"email\"))",
+									"        pm.expect(responeData.email).equal(requestData.email);   ",
+									"    if(requestData.hasOwnProperty(\"address\"))",
+									"    {",
+									"        if(requestData.address.hasOwnProperty(\"city\"))",
+									"            pm.expect(responeData.address.city).equal(requestData.address.city);        ",
+									"        if(requestData.address.hasOwnProperty(\"zipCode\"))",
+									"            pm.expect(responeData.address.zipCode).equal(requestData.address.zipCode); ",
+									"        if(requestData.address.hasOwnProperty(\"street\"))",
+									"            pm.expect(responeData.address.street).equal(requestData.address.street); ",
+									"        if(requestData.address.hasOwnProperty(\"houseNumber\"))",
+									"            pm.expect(responeData.address.houseNumber).equal(requestData.address.houseNumber); ",
+									"        if(requestData.address.hasOwnProperty(\"localNumber\"))",
+									"            pm.expect(responeData.address.localNumber).equal(requestData.address.localNumber); ",
+									"    }",
 									"});"
 								],
 								"type": "text/javascript"
@@ -652,7 +676,7 @@
 											"    pm.response.to.have.jsonSchema(schema);",
 											"});",
 											"",
-											"pm.test(\"Response structure is valid\", () => {",
+											"pm.test(\"Response returned success\", () => {",
 											"    const responseJson = pm.response.json();",
 											"    pm.expect(responseJson.success).to.be.equal(true);",
 											"});"
@@ -828,6 +852,40 @@
 					"item": [
 						{
 							"name": "Get settings",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"bugEmail\": {",
+											"      \"type\": \"string\"",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"bugEmail\"",
+											"  ]",
+											"};",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -846,6 +904,33 @@
 						},
 						{
 							"name": "Set settings",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"success\": {",
+											"      \"type\": \"boolean\"",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"pm.test(\"Response returned success\", () => {",
+											"    const responseJson = pm.response.json();",
+											"    pm.expect(responseJson.success).to.be.equal(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "PUT",
 								"header": [],
@@ -878,6 +963,33 @@
 					"item": [
 						{
 							"name": "Delete doctor",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"success\": {",
+											"      \"type\": \"boolean\"",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"pm.test(\"Response returned success\", () => {",
+											"    const responseJson = pm.response.json();",
+											"    pm.expect(responseJson.success).to.be.equal(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "DELETE",
 								"header": [],
@@ -897,6 +1009,43 @@
 						},
 						{
 							"name": "Create doctor",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"id\": {",
+											"      \"type\": \"integer\"",
+											"    },",
+											"    \"firstName\": {",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"lastName\": {",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"email\": {",
+											"      \"type\": \"string\"",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"id\",",
+											"    \"firstName\",",
+											"    \"lastName\",",
+											"    \"email\"",
+											"  ]",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "POST",
 								"header": [],
@@ -929,7 +1078,44 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											""
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"id\": {",
+											"      \"type\": \"integer\"",
+											"    },",
+											"    \"firstName\": {",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"lastName\": {",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"email\": {",
+											"      \"type\": \"string\"",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"id\",",
+											"    \"firstName\",",
+											"    \"lastName\",",
+											"    \"email\"",
+											"  ]",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"pm.test(\"Response data is valid\", () => {",
+											"    const requestData = JSON.parse(request.data);",
+											"    const responeData = pm.response.json();",
+											"    if(requestData.hasOwnProperty(\"firstName\"))",
+											"        pm.expect(responeData.firstName).equal(requestData.firstName);",
+											"    if(requestData.hasOwnProperty(\"lastName\"))",
+											"        pm.expect(responeData.lastName).equal(requestData.lastName);",
+											"    if(requestData.hasOwnProperty(\"email\"))",
+											"        pm.expect(responeData.email).equal(requestData.email);   ",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -963,6 +1149,43 @@
 						},
 						{
 							"name": "Show Doctor",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"id\": {",
+											"      \"type\": \"integer\"",
+											"    },",
+											"    \"firstName\": {",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"lastName\": {",
+											"      \"type\": \"string\"",
+											"    },",
+											"    \"email\": {",
+											"      \"type\": \"string\"",
+											"    }",
+											"  },",
+											"  \"required\": [",
+											"    \"id\",",
+											"    \"firstName\",",
+											"    \"lastName\",",
+											"    \"email\"",
+											"  ]",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -982,6 +1205,76 @@
 						},
 						{
 							"name": "Show Doctors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"pagination\": {",
+											"      \"type\": \"object\",",
+											"      \"properties\": {",
+											"        \"currentPage\": {",
+											"          \"type\": \"integer\"",
+											"        },",
+											"        \"totalPages\": {",
+											"          \"type\": \"integer\"",
+											"        },",
+											"        \"currentRecords\": {",
+											"          \"type\": \"integer\"",
+											"        },",
+											"        \"totalRecords\": {",
+											"          \"type\": \"integer\"",
+											"        }",
+											"      },",
+											"      \"required\": [",
+											"        \"currentPage\",",
+											"        \"totalPages\",",
+											"        \"currentRecords\",",
+											"        \"totalRecords\"",
+											"      ]",
+											"    },",
+											"    \"data\": {",
+											"      \"type\": \"array\",",
+											"      \"items\": [",
+											"        {",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"id\": {",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"firstName\": {",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"lastName\": {",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"email\": {",
+											"              \"type\": \"string\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"id\",",
+											"            \"firstName\",",
+											"            \"lastName\",",
+											"            \"email\"",
+											"          ]",
+											"        }",
+											"      ]",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -1020,7 +1313,45 @@
 									"}\r",
 									"else {\r",
 									"    pm.globals.set(\"IO_ADMIN_TOKEN\", \"\");    \r",
-									"}"
+									"}\r",
+									"\r",
+									"const schema = {\r",
+									"  \"type\": \"object\",\r",
+									"  \"properties\": {\r",
+									"    \"token\": {\r",
+									"      \"type\": \"string\"\r",
+									"    },\r",
+									"    \"admin\": {\r",
+									"      \"type\": \"object\",\r",
+									"      \"properties\": {\r",
+									"        \"id\": {\r",
+									"          \"type\": \"integer\"\r",
+									"        },\r",
+									"        \"email\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"firstName\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"lastName\": {\r",
+									"          \"type\": \"string\"\r",
+									"        }\r",
+									"      },\r",
+									"      \"required\": [\r",
+									"        \"id\",\r",
+									"        \"email\"\r",
+									"      ]\r",
+									"    }\r",
+									"  },\r",
+									"  \"required\": [\r",
+									"    \"token\",\r",
+									"    \"admin\"\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response structure is valid\", () => {\r",
+									"    pm.response.to.have.jsonSchema(schema);\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -1114,6 +1445,33 @@
 					"item": [
 						{
 							"name": "Send bug",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"success\": {",
+											"      \"type\": \"boolean\"",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"pm.test(\"Response returned success\", () => {",
+											"    const responseJson = pm.response.json();",
+											"    pm.expect(responseJson.success).to.be.equal(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "POST",
 								"header": [],
