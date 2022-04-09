@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "903e4aed-af26-4e30-8dcc-e598419d7339",
+		"_postman_id": "79f3f4a1-42b3-4be2-9fa4-4b2463d2f5e0",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -8,6 +8,66 @@
 		{
 			"name": "Patient",
 			"item": [
+				{
+					"name": "Vaccination",
+					"item": [
+						{
+							"name": "Reserve vaccination slot",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"success\": {",
+											"      \"type\": \"boolean\"",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"pm.test(\"Response returned success\", () => {",
+											"    const responseJson = pm.response.json();",
+											"    pm.expect(responseJson.success).to.be.equal(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"vaccineId\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/patient/vaccination-slots/3",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"patient",
+										"vaccination-slots",
+										"3"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
 				{
 					"name": "Login as a patient",
 					"event": [
