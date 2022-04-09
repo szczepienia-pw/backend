@@ -3,6 +3,7 @@ using backend.Helpers;
 using backend.Services.Patient;
 using backend.Models.Accounts;
 using backend.Dto.Requests.Patient;
+using backend.Models.Vaccines;
 
 namespace backend.Controllers.Patient
 {
@@ -15,6 +16,14 @@ namespace backend.Controllers.Patient
         public VaccinationController(VaccinationService vaccinationService)
         {
             this.vaccinationService = vaccinationService;
+        }
+
+        // GET patient/vaccines
+        [HttpGet("vaccines")]
+        [Authorize(AccountTypeEnum.Patient)]
+        public async Task<IActionResult> ShowAvailableVaccines([FromQuery] ShowVaccinesRequest request)
+        {
+            return Ok(await this.vaccinationService.ShowAvailableVaccines(DiseaseEnumAdapter.ToEnum(request.Disease)));
         }
 
         //PUT patient/vaccination-slots/:{vaccinationSlotId}

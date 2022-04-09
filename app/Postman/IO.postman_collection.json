@@ -65,6 +65,30 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Show list of available vaccines",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/patient/vaccines?disease=COVID-21",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"patient",
+										"vaccines"
+									],
+									"query": [
+										{
+											"key": "disease",
+											"value": "COVID-21"
+										}
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},

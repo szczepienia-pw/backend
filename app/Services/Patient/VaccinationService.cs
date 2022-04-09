@@ -5,6 +5,7 @@ using backend.Models.Visits;
 using backend.Exceptions;
 using backend.Models.Accounts;
 using backend.Models.Vaccines;
+using backend.Dto.Responses.Patient;
 
 namespace backend.Services.Patient
 {
@@ -17,6 +18,18 @@ namespace backend.Services.Patient
         {
             this.dataContext = dataContext;
             this.mailer = mailer;
+        }
+
+
+        public async Task<ShowVaccinesResponse> ShowAvailableVaccines(DiseaseEnum disease)
+        {
+            // Find vaccines for given disese
+            List<VaccineModel> vaccines = this.dataContext.Vaccines
+                                              .Where(vaccine => vaccine.Disease == disease)
+                                              .ToList();
+
+            // Return list of vaccines
+            return new ShowVaccinesResponse(vaccines);
         }
 
         public async Task<SuccessResponse> ReserveVaccinationSlot(PatientModel patient, int vaccinationSlotId, int vaccineId)
