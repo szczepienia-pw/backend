@@ -89,6 +89,24 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Get available vaccination slots",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/patient/vaccination-slots",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"patient",
+										"vaccination-slots"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},

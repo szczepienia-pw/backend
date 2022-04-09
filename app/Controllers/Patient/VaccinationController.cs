@@ -26,6 +26,14 @@ namespace backend.Controllers.Patient
             return Ok(await this.vaccinationService.ShowAvailableVaccines(DiseaseEnumAdapter.ToEnum(request.Disease)));
         }
 
+        // GET patient/vaccination-slots
+        [HttpGet("vaccination-slots")]
+        [Authorize(AccountTypeEnum.Patient)]
+        public async Task<IActionResult> GetAvailableVaccinationSlots()
+        {
+            return Ok(await this.vaccinationService.GetAvailableVaccinationSlots());
+        }
+
         //PUT patient/vaccination-slots/:{vaccinationSlotId}
         [HttpPut("vaccination-slots/{vaccinationSlotId:int}")]
         [Authorize(AccountTypeEnum.Patient)]

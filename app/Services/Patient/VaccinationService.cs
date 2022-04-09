@@ -6,6 +6,7 @@ using backend.Exceptions;
 using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient;
+using backend.Dto.Responses.Patient.VaccinationSlot;
 
 namespace backend.Services.Patient
 {
@@ -30,6 +31,18 @@ namespace backend.Services.Patient
 
             // Return list of vaccines
             return new ShowVaccinesResponse(vaccines);
+        }
+
+        public async Task<List<AvailableSlotResponse>> GetAvailableVaccinationSlots()
+        {
+            // Find available vaccination slots
+            List<VaccinationSlotModel> slots = this.dataContext.VaccinationSlots
+                                              .Where(slot => slot.Reserved == false &&
+                                                             slot.Date >= DateTime.Now)
+                                              .ToList();
+
+            // Return list of slots
+            return slots.Select(slot => new AvailableSlotResponse(slot)).ToList();
         }
 
         public async Task<SuccessResponse> ReserveVaccinationSlot(PatientModel patient, int vaccinationSlotId, int vaccineId)
