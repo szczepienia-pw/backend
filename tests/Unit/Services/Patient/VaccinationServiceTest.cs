@@ -2,6 +2,7 @@
 using System.Linq;
 using backend.Database;
 using backend.Dto.Responses.Common.Vaccination;
+using backend.Dto.Responses.Patient.Vaccination;
 using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
@@ -28,24 +29,6 @@ namespace backend_tests.Unit.Services.Patient
             this.mailerMock = new Mock<Mailer>();
             this.vaccinationServiceMock = new VaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
             this.patientMock = this.dataContextMock.Object.Patients.First();
-
-            // Create fake slots
-            this.dataContextMock.Object.VaccinationSlots.Add(new() {
-                    Id = 1,
-                    Date = System.DateTime.Now.AddDays(1),
-                    Doctor = this.dataContextMock.Object.Doctors.First(),
-                    DoctorId = this.dataContextMock.Object.Doctors.First().Id,
-                Reserved = false,
-            });
-
-            this.dataContextMock.Object.VaccinationSlots.Add(new()
-            {
-                Id = 2,
-                Date = System.DateTime.Now.AddDays(2),
-                Doctor = this.dataContextMock.Object.Doctors.First(),
-                DoctorId = this.dataContextMock.Object.Doctors.First().Id,
-                Reserved = true,
-            });
         }
 
         // Show available vaccination slots
@@ -171,6 +154,18 @@ namespace backend_tests.Unit.Services.Patient
         public void TestReserveVaccinationSlotThrowExceptionForReservedSlot(int slotId, int vaccineId)
         {
             Assert.ThrowsAsync<ConflictException>(() => this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId));
+        }
+
+        // Get available vaccination slot
+        [Fact]
+        public void TestGetAvailableVaccinationSlots()
+        {
+            var response = this.vaccinationServiceMock.GetAvailableVaccinationSlots();
+            Assert.NotNull(response);
+            
+            List<AvailableSlotResponse> slots = new List<AvailableSlotResponse>(response.Result);
+            Assert.Equal(slots.Select(slot => slot.Id).ToArray(), this.dataContextMock.Object.VaccinationSlots.Where(slot => !slot.Reserved).Select(slot => slot.Id).ToArray());
+            Assert.Equal(slots.Select(slot => slot.Date).ToArray(), this.dataContextMock.Object.VaccinationSlots.Where(slot => !slot.Reserved).Select(slot => slot.Date).ToArray());
         }
     }
 }
