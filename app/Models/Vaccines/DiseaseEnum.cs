@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 using backend.Exceptions;
 
 namespace backend.Models.Vaccines
@@ -17,6 +18,20 @@ namespace backend.Models.Vaccines
 
     public static class DiseaseEnumAdapter
     {
+        public static string GetDescription(this DiseaseEnum e)
+        {
+            var attribute =
+                e.GetType()
+                    .GetTypeInfo()
+                    .GetMember(e.ToString())
+                    .FirstOrDefault(member => member.MemberType == MemberTypes.Field)
+                    .GetCustomAttributes(typeof(DescriptionAttribute), false)
+                    .SingleOrDefault()
+                    as DescriptionAttribute;
+
+            return attribute?.Description ?? e.ToString();
+        }
+
         public static DiseaseEnum ToEnum(this string text)
         {
             switch (text)

@@ -1,6 +1,6 @@
 ﻿using backend.Models.Visits;
 
-namespace backend.Dto.Responses.Patient.VaccinationSlot
+namespace backend.Dto.Responses.Patient.Vaccination
 {
     public class AvailableSlotResponse
     {

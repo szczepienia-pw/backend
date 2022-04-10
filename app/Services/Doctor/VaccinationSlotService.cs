@@ -6,7 +6,6 @@ using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
 using backend.Models.Visits;
-using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Doctor
 {
