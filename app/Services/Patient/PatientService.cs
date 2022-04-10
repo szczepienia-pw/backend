@@ -1,5 +1,4 @@
-﻿using System;
-using backend.Database;
+﻿using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses.Patient;
 using backend.Exceptions;
