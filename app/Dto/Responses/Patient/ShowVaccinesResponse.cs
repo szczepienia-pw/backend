@@ -5,11 +5,11 @@ namespace backend.Dto.Responses.Patient
 {
 	public class ShowVaccinesResponse
 	{
-		public List<VaccineModel> Vaccines;
+		public string[] Vaccines;
 
 		public ShowVaccinesResponse(List<VaccineModel> availableVaccines)
 		{
-			this.Vaccines = new List<VaccineModel>(availableVaccines);
+			this.Vaccines = availableVaccines.Select(x => x.Name).ToArray();
 		}
 	}
 }

@@ -1,7 +1,7 @@
 ﻿using backend.Database;
 using backend.Dto.Requests.Doctor.VaccinationSlot;
 using backend.Dto.Responses;
-using backend.Dto.Responses.Doctor.VaccinationSlot;
+using backend.Dto.Responses.Doctor.Vaccination;
 using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
@@ -69,7 +69,7 @@ namespace backend.Services.Doctor
 
             return new PaginatedResponse<VaccinationSlotModel, List<VaccinationSlotResponse>>(
                 paginatedSlots, 
-                paginatedSlots.Select(slot => new VaccinationSlotResponse(slot)).ToList()
+                paginatedSlots.Select(slot => new VaccinationSlotResponse(slot, this.dataContext.Vaccinations.FirstOrDefault(vaccination => vaccination.VaccinationSlot == slot))).ToList()
             );
         }
 

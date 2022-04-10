@@ -1,6 +1,6 @@
 ﻿using backend.Models.Visits;
 
-namespace backend.Dto.Responses.Doctor.VaccinationSlot
+namespace backend.Dto.Responses.Doctor.Vaccination
 {
     public class VaccinationSlotResponse
     {
@@ -8,11 +8,12 @@ namespace backend.Dto.Responses.Doctor.VaccinationSlot
         public DateTime Date { get; set; }
         public object Vaccination { get; set; }
 
-        public VaccinationSlotResponse(VaccinationSlotModel vaccinationSlotModel)
+        public VaccinationSlotResponse(VaccinationSlotModel vaccinationSlotModel, VaccinationModel? vaccination)
         {
             this.Id = vaccinationSlotModel.Id;
             this.Date = vaccinationSlotModel.Date;
-            this.Vaccination = new { };
+            if (vaccination == null) this.Vaccination = new { };
+            else this.Vaccination = new VaccinationResponse(vaccination);
         }
     }
 }

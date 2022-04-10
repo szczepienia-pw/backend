@@ -21,7 +21,6 @@ namespace backend.Services.Patient
             this.mailer = mailer;
         }
 
-
         public async Task<ShowVaccinesResponse> ShowAvailableVaccines(DiseaseEnum disease)
         {
             // Find vaccines for given disese
