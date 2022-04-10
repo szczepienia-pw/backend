@@ -95,7 +95,7 @@ namespace backend.Services.Admin
             this.dataContext.Doctors.Update(doctor);
             this.dataContext.SaveChanges();
 
-            return doctor;
+            return doctor.BaseObject<DoctorModel>();
         }
 
         public async Task<DoctorResponse> ShowDoctor(int doctorId)
