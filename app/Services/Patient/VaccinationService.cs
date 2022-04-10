@@ -6,6 +6,7 @@ using backend.Exceptions;
 using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
+using backend.Dto.Responses.Common.Vaccination;
 
 namespace backend.Services.Patient
 {

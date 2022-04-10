@@ -1,4 +1,5 @@
-﻿using backend.Models.Vaccines;
+﻿using backend.Dto.Responses.Common.Vaccination;
+using backend.Models.Vaccines;
 
 namespace backend.Dto.Responses.Patient.Vaccination
 {

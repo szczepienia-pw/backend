@@ -1,6 +1,6 @@
 ﻿using backend.Models.Vaccines;
 
-namespace backend.Dto.Responses.Patient.Vaccination
+namespace backend.Dto.Responses.Common.Vaccination
 {
 	public class VaccineResponse
 	{
