@@ -20,7 +20,7 @@ namespace backend_tests.Unit.Services.Admin
     public class AdminDoctorsServiceTest
     {
         private Mock<DataContext> dataContextMock { get; set; }
-        private  AdminDoctorsService adminDoctorsServiceMock { get; set; }
+        private AdminDoctorsService adminDoctorsServiceMock { get; set; }
         private SecurePasswordHasher securePasswordHasherMock { get; set; }
 
         private DoctorModel? FindDoctor(int doctorId)
