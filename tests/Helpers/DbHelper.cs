@@ -73,7 +73,26 @@ namespace backend_tests.Helpers
                     Value = "bugmail@szczepiania.pw"
                 }
             };
-            var vaccinationSlots = new List<VaccinationSlotModel>() { };
+
+            var vaccinationSlots = new List<VaccinationSlotModel>()
+            {
+                new()
+                {
+                    Id = 1,
+                    Date = System.DateTime.Now.AddDays(1),
+                    Doctor = doctors.First(),
+                    DoctorId = doctors.First().Id,
+                    Reserved = false,
+                },
+                new()
+                {
+                    Id = 2,
+                    Date = System.DateTime.Now.AddDays(1),
+                    Doctor = doctors.First(),
+                    DoctorId = doctors.First().Id,
+                    Reserved = true,
+                }
+            };
 
             var vaccines = new List<VaccineModel>()
             {
@@ -149,6 +168,20 @@ namespace backend_tests.Helpers
                 }
             };
 
+            var tmpSlot = vaccinationSlots.First(slot => slot.Reserved == true);
+            var vaccinations = new List<VaccinationModel>()
+            {
+                new()
+                {
+                    Id = 1,
+                    VaccinationSlot = tmpSlot,
+                    Doctor = tmpSlot.Doctor,
+                    Patient = patients.First(),
+                    Vaccine = vaccines.First(),
+                    Status = StatusEnum.Planned
+                }
+            };
+
             var contextMock = new Mock<DataContext>();
             contextMock.Setup(dbContext => dbContext.Doctors).Returns(doctors.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Patients).Returns(patients.AsQueryable().BuildMockDbSet().Object);
@@ -156,6 +189,7 @@ namespace backend_tests.Helpers
             contextMock.Setup(dbContext => dbContext.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Settings).Returns(settings.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Vaccines).Returns(vaccines.AsQueryable().BuildMockDbSet().Object);
+            contextMock.Setup(dbContext => dbContext.Vaccinations).Returns(vaccinations.AsQueryable().BuildMockDbSet().Object);
             return contextMock;
         }
     }
