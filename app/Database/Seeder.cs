@@ -2,6 +2,7 @@
 using backend.Models;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
+using backend.Models.Vaccines;
 using backend.Models.Visits;
 using Microsoft.EntityFrameworkCore;
 
@@ -104,6 +105,83 @@ namespace backend.Database
 
             #endregion
 
+            #region Vaccines
+
+            modelBuilder.Entity<VaccineModel>().HasData(
+                new VaccineModel()
+                {
+                    Id = 1,
+                    Disease = DiseaseEnum.COVID19,
+                    Name = "Pfizer",
+                    RequiredDoses = 3
+                },
+                new VaccineModel()
+                {
+                    Id = 2,
+                    Disease = DiseaseEnum.COVID19,
+                    Name = "Moderna",
+                    RequiredDoses = 3
+                },
+                new VaccineModel()
+                {
+                    Id = 3,
+                    Disease = DiseaseEnum.COVID19,
+                    Name = "Johnson&Johnson",
+                    RequiredDoses = 2
+                },
+                new VaccineModel()
+                {
+                    Id = 4,
+                    Disease = DiseaseEnum.COVID21,
+                    Name = "Razor",
+                    RequiredDoses = 4
+                },
+                new VaccineModel()
+                {
+                    Id = 5,
+                    Disease = DiseaseEnum.COVID21,
+                    Name = "Razor light",
+                    RequiredDoses = 1
+                },
+                new VaccineModel()
+                {
+                    Id = 6,
+                    Disease = DiseaseEnum.Flu,
+                    Name = "FluMax",
+                    RequiredDoses = 2
+                },
+                new VaccineModel()
+                {
+                    Id = 7,
+                    Disease = DiseaseEnum.Flu,
+                    Name = "FluMini",
+                    RequiredDoses = 1
+                },
+                new VaccineModel()
+                {
+                    Id = 8,
+                    Disease = DiseaseEnum.Other,
+                    Name = "Vaccinator1000",
+                    RequiredDoses = 1
+                },
+                new VaccineModel()
+                {
+                    Id = 9,
+                    Disease = DiseaseEnum.Other,
+                    Name = "Vaccinator2000",
+                    RequiredDoses = 2
+                },
+                new VaccineModel()
+                {
+                    Id = 10,
+                    Disease = DiseaseEnum.Other,
+                    Name = "Vaccinator3000",
+                    RequiredDoses = 3
+                }
+            );
+
+            #endregion
+
             #region VaccinationSlots
 
             for (int i = 1; i <= 20; i++)
@@ -120,6 +198,7 @@ namespace backend.Database
             }
 
             #endregion
+
         }
     }
 }

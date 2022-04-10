@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using backend.Dto.Requests.Doctor.VaccinationSlot;
 using backend.Dto.Responses;
-using backend.Dto.Responses.Doctor.VaccinationSlot;
+using backend.Dto.Responses.Doctor.Vaccination;
 using backend.Exceptions;
 using backend.Models.Visits;
 using backend.Services.Doctor;

@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-
-using backend.Helpers;
+﻿using backend.Helpers;
 using backend.Database;
 using backend.Dto.Responses.Patient;
 using backend.Models.Accounts;
