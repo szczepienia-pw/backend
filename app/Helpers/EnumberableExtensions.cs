@@ -33,6 +33,24 @@ namespace backend.Helpers
 
             return element;
         }
+
+        public static TSource? FirstOrNull<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
+        {
+            if (source == null)
+                return default(TSource);
+
+            TSource? element;
+            try
+            {
+               element = source.First(predicate);
+            }
+            catch
+            {
+                return default(TSource);
+            }
+            
+            return element;
+        }
     }
 }
 

@@ -68,7 +68,7 @@ namespace backend.Services.Doctor
 
             return new PaginatedResponse<VaccinationSlotModel, List<VaccinationSlotResponse>>(
                 paginatedSlots, 
-                paginatedSlots.Select(slot => new VaccinationSlotResponse(slot, this.dataContext.Vaccinations.FirstOrDefault(vaccination => vaccination.VaccinationSlot == slot))).ToList()
+                paginatedSlots.Select(slot => new VaccinationSlotResponse(slot, this.dataContext.Vaccinations.FirstOrNull(vaccination => vaccination.VaccinationSlot == slot))).ToList()
             );
         }
 
