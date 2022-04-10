@@ -77,10 +77,8 @@ namespace backend.Services.Admin
 
         public async Task<DoctorModel> EditDoctor(int doctorId, EditDoctorRequest request)
         {
-            var doctor = this.dataContext.Doctors.FirstOrDefault(doctor => doctor.Id == doctorId);
-            
-            if (doctor == null)
-                throw new NotFoundException();
+            var doctor = this.dataContext.Doctors.FirstOrThrow(doctor => doctor.Id == doctorId,
+                                                               new NotFoundException());
 
             if (request.FirstName != null)
                 doctor.FirstName = request.FirstName;
@@ -102,7 +100,8 @@ namespace backend.Services.Admin
 
         public async Task<DoctorResponse> ShowDoctor(int doctorId)
         {
-            var doctor = this.dataContext.Doctors.FirstOrThrow((doctor) => doctor.Id == doctorId, new NotFoundException());
+            var doctor = this.dataContext.Doctors.FirstOrThrow(doctor => doctor.Id == doctorId,
+                                                               new NotFoundException());
             return new DoctorResponse(doctor);
         }
 
