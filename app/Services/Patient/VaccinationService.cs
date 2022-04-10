@@ -12,8 +12,11 @@ namespace backend.Services.Patient
 {
 	public class VaccinationService
 	{
-		private readonly DataContext dataContext;
+        private static Semaphore semaphore = new Semaphore(1, 1);
+
+        private readonly DataContext dataContext;
         private readonly Mailer mailer;
+
 
         public VaccinationService(DataContext dataContext, Mailer mailer)
         {
@@ -56,9 +59,13 @@ namespace backend.Services.Patient
                                             .FirstOrThrow(slot => slot.Id == vaccinationSlotId,
                                             new NotFoundException("Slot not found"));
 
+            // Block concurrent access
+            VaccinationService.semaphore.WaitOne();
+
             // Check if slot is still available
-            if(slot.Reserved)
+            if (slot.Reserved)
             {
+                VaccinationService.semaphore.Release();
                 throw new ConflictException("Slot is already taken.");
             }
 
@@ -76,6 +83,9 @@ namespace backend.Services.Patient
             };
             this.dataContext.Vaccinations.Add(vaccination);
             this.dataContext.SaveChanges();
+
+            // Release semaphore
+            VaccinationService.semaphore.Release();
 
             // Send email with confirmation
             await this.mailer.SendEmailAsync(
