@@ -72,7 +72,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{IOHostURL}}/patient/vaccines?disease=COVID-21",
+									"raw": "{{IOHostURL}}/patient/vaccines?disease=COVID-19",
 									"host": [
 										"{{IOHostURL}}"
 									],
@@ -83,7 +83,7 @@
 									"query": [
 										{
 											"key": "disease",
-											"value": "COVID-21"
+											"value": "COVID-19"
 										}
 									]
 								}
