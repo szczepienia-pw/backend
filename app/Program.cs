@@ -27,9 +27,15 @@ builder.Services.AddSingleton<Seeder>();
 builder.Services.AddSingleton<SecurePasswordHasher>();
 builder.Services.AddSingleton<Mailer>();
 
-builder.Services.AddScoped<PatientAuthService>();
-builder.Services.AddScoped<DoctorAuthService>();
 builder.Services.AddScoped<AdminAuthService>();
+builder.Services.AddScoped<AdminDoctorsService>();
+builder.Services.AddScoped<AdminPatientsService>();
+
+builder.Services.AddScoped<PatientAuthService>();
+builder.Services.AddScoped<PatientService>();
+
+builder.Services.AddScoped<DoctorAuthService>();
+
 builder.Services.AddScoped<VaccinationSlotService>();
 builder.Services.AddScoped<SettingService>();
 builder.Services.AddScoped<BugService>();

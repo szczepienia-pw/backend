@@ -11,5 +11,11 @@ namespace backend.Models.Visits
         public StatusEnum Status { get; set; }
         public virtual PatientModel Patient { get; set; }
         public virtual DoctorModel Doctor { get; set; }
+
+        // seeder purposes
+        public int VaccineId { get; set; }
+        public int VaccinationSlotId { get; set; }
+        public int PatientId { get; set; }
+        public int DoctorId { get; set; }
     }
 }

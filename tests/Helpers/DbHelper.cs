@@ -8,6 +8,7 @@ using backend.Models.Accounts.AdditionalData;
 using backend.Models.Vaccines;
 using backend.Models.Visits;
 using Moq;
+using System;
 
 namespace backend_tests.Helpers
 {
@@ -15,42 +16,58 @@ namespace backend_tests.Helpers
     {
         public static Mock<DataContext> GetMockedDataContextWithAccounts()
         {
+            #region Doctors
+
+            var d1 = new DoctorModel()
+            {
+                Id = 1,
+                FirstName = Faker.Name.First(),
+                LastName = Faker.Name.Last(),
+                Email = "john@doctor.com",
+                Password = SecurePasswordHasherHelper.Hasher.Hash("password")
+            };
+
+            var d2 = new DoctorModel()
+            {
+                Id = 2,
+                FirstName = Faker.Name.First(),
+                LastName = Faker.Name.Last(),
+                Email = "john@doctor2.com",
+                Password = SecurePasswordHasherHelper.Hasher.Hash("password")
+            };
+
             var doctors = new List<DoctorModel>()
             {
-                new()
+                d1,
+                d2
+            };
+
+            #endregion
+
+            #region Patients
+
+            var p1 = new PatientModel()
+            {
+                Id = 1,
+                FirstName = Faker.Name.First(),
+                LastName = Faker.Name.Last(),
+                Email = "john@patient.com",
+                Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
+                Pesel = "22222222222",
+                Address = new AddressModel()
                 {
-                    Id = 1,
-                    FirstName = Faker.Name.First(),
-                    LastName = Faker.Name.Last(),
-                    Email = "john@doctor.com",
-                    Password = SecurePasswordHasherHelper.Hasher.Hash("password")
-                },
-                new()
-                {
-                    Id = 2,
-                    FirstName = Faker.Name.First(),
-                    LastName = Faker.Name.Last(),
-                    Email = "john@doctor2.com",
-                    Password = SecurePasswordHasherHelper.Hasher.Hash("password")
+
                 }
             };
 
             var patients = new List<PatientModel>()
             {
-                new()
-                {
-                    Id = 1,
-                    FirstName = Faker.Name.First(),
-                    LastName = Faker.Name.Last(),
-                    Email = "john@patient.com",
-                    Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
-                    Pesel = "22222222222",
-                    Address = new AddressModel()
-                    {
-
-                    }
-                }
+                p1
             };
+
+            #endregion
+
+            #region Admins
 
             var admins = new List<AdminModel>()
             {
@@ -64,6 +81,10 @@ namespace backend_tests.Helpers
                 }
             };
 
+            #endregion
+
+            #region Settings
+
             var settings = new List<SettingModel>()
             {
                 new()
@@ -73,6 +94,10 @@ namespace backend_tests.Helpers
                     Value = "bugmail@szczepiania.pw"
                 }
             };
+
+            #endregion
+
+            #region Vaccination Slots
 
             var vaccinationSlots = new List<VaccinationSlotModel>()
             {
@@ -93,6 +118,10 @@ namespace backend_tests.Helpers
                     Reserved = true,
                 }
             };
+
+            #endregion
+
+            #region Vaccines
 
             var vaccines = new List<VaccineModel>()
             {
@@ -168,6 +197,10 @@ namespace backend_tests.Helpers
                 }
             };
 
+            #endregion
+
+            #region Vaccinations
+
             var tmpSlot = vaccinationSlots.First(slot => slot.Reserved == true);
             var vaccinations = new List<VaccinationModel>()
             {
@@ -182,11 +215,14 @@ namespace backend_tests.Helpers
                 }
             };
 
+            #endregion
+
             var contextMock = new Mock<DataContext>();
             contextMock.Setup(dbContext => dbContext.Doctors).Returns(doctors.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Patients).Returns(patients.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Admins).Returns(admins.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
+            contextMock.Setup(dbContext => dbContext.Vaccinations).Returns(vaccinations.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Settings).Returns(settings.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Vaccines).Returns(vaccines.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Vaccinations).Returns(vaccinations.AsQueryable().BuildMockDbSet().Object);
