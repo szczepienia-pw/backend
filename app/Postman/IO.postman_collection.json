@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "af32573b-7e73-4383-a21f-60782ae7be97",
+		"_postman_id": "e692f27e-a3aa-45f0-b575-2d2510a1e886",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -68,6 +68,55 @@
 						},
 						{
 							"name": "Show list of available vaccines",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"vaccines\": {",
+											"      \"type\": \"array\",",
+											"      \"items\":",
+											"        {",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"id\": {",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"disease\": {",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"requiredDoses\": {",
+											"              \"type\": \"integer\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"id\",",
+											"            \"name\",",
+											"            \"disease\",",
+											"            \"requiredDoses\"",
+											"          ]",
+											"        },",
+											"    },",
+											"  },",
+											"  \"required\": [",
+											"    \"vaccines\"",
+											"  ]",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
