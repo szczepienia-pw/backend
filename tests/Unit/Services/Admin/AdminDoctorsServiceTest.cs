@@ -150,7 +150,7 @@ namespace backend_tests.Unit.Services.Admin
             this.dataContextMock.Verify(dataContext => dataContext.SaveChanges(), Times.Once());
 
             Assert.Single(verifyList);
-            Assert.Contains(verifyList, (obj) => obj == rsp);
+            Assert.Contains(verifyList, (obj) => obj.Id == rsp.Id);
 
             Assert.Equal(firstName == null ? doctorOld?.FirstName : firstName, rsp.FirstName);
             Assert.Equal(lastName == null ? doctorOld?.LastName : lastName, rsp.LastName);
