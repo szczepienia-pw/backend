@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "af32573b-7e73-4383-a21f-60782ae7be97",
+		"_postman_id": "1c11cfcd-3c02-4fc4-80da-354ad1491bbe",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -103,6 +103,25 @@
 									"path": [
 										"patient",
 										"vaccination-slots"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cancel vaccination slot",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/patient/vaccination-slots/3",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"patient",
+										"vaccination-slots",
+										"3"
 									]
 								}
 							},
