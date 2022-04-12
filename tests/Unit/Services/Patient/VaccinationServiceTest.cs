@@ -42,7 +42,7 @@ namespace backend_tests.Unit.Services.Patient
             var response = this.vaccinationServiceMock.ShowAvailableVaccines(DiseaseEnumAdapter.ToEnum(diseaseName));
             Assert.NotNull(response);
 
-            List<VaccineResponse> vaccines = new List<VaccineResponse>(response.Result);
+            List<VaccineResponse> vaccines = new List<VaccineResponse>(response.Result.Vaccines);
             Assert.Equal(vaccines.Select(vaccine => vaccine.Id).ToArray(), expectedIds);
         }
 
