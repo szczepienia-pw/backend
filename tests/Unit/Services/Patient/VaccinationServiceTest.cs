@@ -140,7 +140,7 @@ namespace backend_tests.Unit.Services.Patient
 
             this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
                 this.patientMock.Email,
-                "Vaccination visit confirmed",
+                "Vaccination visit confirmation",
                 It.Is<string>(body => body.Contains(slot.Date.ToString())),
                 null
             ), Times.Once);
