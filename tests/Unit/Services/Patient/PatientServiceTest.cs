@@ -141,6 +141,10 @@ namespace backend_tests.Unit.Services.Admin
 
         [Theory]
         [InlineData(null, "67090884236")]
+        [InlineData("john@patientcom", null)]
+        [InlineData("john@", null)]
+        [InlineData("@patient.com", null)]
+        [InlineData("johnpatientcom", null)]
         public void ValidationShouldThrowValidationException(string? email, string? pesel)
         {
             Assert.Throws<ValidationException>(() => this.patientServiceMock.ValidatePatient(email, pesel));

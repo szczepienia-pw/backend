@@ -127,6 +127,16 @@ namespace backend_tests.Unit.Services.Admin
             Assert.ThrowsAsync<ValidationException>(() => this.adminDoctorsServiceMock.CreateDoctor(new CreateDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email, Password = password }));
         }
 
+        [Theory]
+        [InlineData("foo", "bar", "john@doctorcom", "asdf")]
+        [InlineData("foo", "bar", "@doctor.com", "asdf")]
+        [InlineData("foo", "bar", "john@", "asdf")]
+        [InlineData("foo", "bar", "johndoctorcom", "asdf")]
+        public void TestCreatingDoctorWithInvalidEmailShouldCauseValidationException(string firstName, string lastName, string email, string password)
+        {
+            Assert.ThrowsAsync<ValidationException>(() => this.adminDoctorsServiceMock.CreateDoctor(new CreateDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email, Password = password }));
+        }
+
         // Edit Doctor
         [Theory]
         [InlineData(1, "foo", "bar", "john_new@doctor.com")]
@@ -168,6 +178,16 @@ namespace backend_tests.Unit.Services.Admin
         [Theory]
         [InlineData(2, null, null, "john@doctor.com")]
         public void TestEditingDoctorWithOccupiedEmailShouldCauseValidationException(int doctorId, string firstName, string lastName, string email)
+        {
+            Assert.ThrowsAsync<ValidationException>(() => this.adminDoctorsServiceMock.EditDoctor(doctorId, new EditDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email }));
+        }
+
+        [Theory]
+        [InlineData(2, null, null, "john@doctorcom")]
+        [InlineData(2, null, null, "@doctor.com")]
+        [InlineData(2, null, null, "john@")]
+        [InlineData(2, null, null, "johndoctorcom")]
+        public void TestEditingDoctorWithInvalidEmailShouldCauseValidationException(int doctorId, string firstName, string lastName, string email)
         {
             Assert.ThrowsAsync<ValidationException>(() => this.adminDoctorsServiceMock.EditDoctor(doctorId, new EditDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email }));
         }
