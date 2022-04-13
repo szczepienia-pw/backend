@@ -17,15 +17,20 @@ namespace backend.Services.Patient
         public void ValidatePatient(string? email = null, string? pesel = null)
         {
             if (email != null)
+            {
                 this.dataContext.Patients.CheckDuplicate(patient => patient.Email == email,
-                                                     new ConflictException("Specified e-mail already exists."));
+                                     new ConflictException("Specified e-mail already exists."));
+
+                if (!Validator.ValidateEmail(email))
+                    throw new ValidationException("Invalid e-mail.");
+            }
 
             if (pesel != null)
             {
                 this.dataContext.Patients.CheckDuplicate(patient => patient.Pesel == pesel,
                                                      new ConflictException("Specified PESEL already exists."));
 
-                if (!PeselValidator.Validate(pesel))
+                if (!Validator.ValidatePesel(pesel))
                     throw new ValidationException("Invalid PESEL.");
             }
         }
