@@ -122,7 +122,7 @@ namespace backend.Services.Patient
                 throw new ConflictException("You cannot cancel not reserved vaccination slot");
 
             slot.Reserved = false;
-            this.dataContext.Vaccinations.Remove(vaccinationForSlot);
+            vaccinationForSlot.Status = StatusEnum.Canceled;
             this.dataContext.SaveChanges();
 
             // Send email with confirmation

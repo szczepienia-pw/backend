@@ -200,15 +200,10 @@ namespace backend_tests.Unit.Services.Patient
         {
             var vaccination = this.dataContextMock.Object.Vaccinations.First();
 
-            List<VaccinationModel> verifyList = new List<VaccinationModel>();
-            this.dataContextMock
-                .Setup(dataContext => dataContext.Vaccinations.Remove(It.IsAny<VaccinationModel>()))
-                .Callback<VaccinationModel>((v) => verifyList.Add(v));
-
             await this.vaccinationServiceMock.CancelVaccinationSlot(this.patientMock, vaccination.VaccinationSlotId);
 
             Assert.Equal(false, vaccination.VaccinationSlot?.Reserved);
-            Assert.Equal(vaccination, verifyList[0]);
+            Assert.Equal(StatusEnum.Canceled, vaccination.Status);
 
             this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
                 this.patientMock.Email,
