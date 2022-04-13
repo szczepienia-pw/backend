@@ -41,5 +41,16 @@ namespace backend.Controllers.Patient
         {
             return Ok(await this.vaccinationService.ReserveVaccinationSlot((PatientModel)this.HttpContext.Items["User"], vaccinationSlotId, request.VaccineId));
         }
+
+        // GET patient/vaccinations
+        [HttpGet("vaccinations")]
+        [Authorize(AccountTypeEnum.Patient)]
+        public async Task<IActionResult> GetVaccinationsHistory([FromQuery] FilterVaccinationsRequest request)
+        {
+            return Ok(await this.vaccinationService.GetVaccinationsHistory(
+                (PatientModel)this.HttpContext.Items["User"], 
+                request
+            ));
+        }
     }
 }
