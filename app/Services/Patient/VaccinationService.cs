@@ -114,7 +114,7 @@ namespace backend.Services.Patient
                     .Vaccinations
                     .Include(vaccination => vaccination.Vaccine)
                     .FirstOrThrow(
-                        vaccination => vaccination.VaccinationSlotId == slot.Id,
+                        vaccination => vaccination.VaccinationSlotId == slot.Id && vaccination.PatientId == patient.Id && vaccination.Status == StatusEnum.Planned,
                         new ConflictException("Specified vaccination slot does not belong to you")
                     );
 
