@@ -214,4 +214,3 @@ namespace backend_tests.Unit.Services.Patient
         }
     }
 }
-
