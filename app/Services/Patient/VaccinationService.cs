@@ -24,7 +24,7 @@ namespace backend.Services.Patient
             this.mailer = mailer;
         }
 
-        public async Task<List<VaccineResponse>> ShowAvailableVaccines(DiseaseEnum disease)
+        public async Task<ShowAvailableVaccinesResponse> ShowAvailableVaccines(DiseaseEnum disease)
         {
             // Find vaccines for given disese
             List<VaccineModel> vaccines = this.dataContext.Vaccines
@@ -32,7 +32,7 @@ namespace backend.Services.Patient
                                               .ToList();
 
             // Return list of vaccines
-            return vaccines.Select(vaccine => new VaccineResponse(vaccine)).ToList();
+            return new ShowAvailableVaccinesResponse(vaccines);
         }
 
         public async Task<List<AvailableSlotResponse>> GetAvailableVaccinationSlots()
