@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using backend.Database;
+using backend.Dto.Requests.Patient;
 using backend.Dto.Responses.Common.Vaccination;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Exceptions;
@@ -47,7 +48,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData("OTHER", new int[] { 8, 9, 10 })]
         public void TestShowVaccinesForValidDiseases(string diseaseName, int[] expectedIds)
         {
-            var response = this.vaccinationServiceMock.ShowAvailableVaccines(DiseaseEnumAdapter.ToEnum(diseaseName));
+            var response = this.vaccinationServiceMock.ShowAvailableVaccines(new ShowVaccinesRequest() { Disease = diseaseName });
             Assert.NotNull(response);
 
             List<VaccineResponse> vaccines = new List<VaccineResponse>(response.Result.Vaccines);
@@ -63,7 +64,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData("")]
         public void TestShowVaccinesThrowExceptionForInvalidDiseases(string diseaseName)
         {
-            Assert.ThrowsAsync<ValidationException>(() => this.vaccinationServiceMock.ShowAvailableVaccines(DiseaseEnumAdapter.ToEnum(diseaseName)));
+            Assert.ThrowsAsync<ValidationException>(() => this.vaccinationServiceMock.ShowAvailableVaccines(new ShowVaccinesRequest() { Disease = diseaseName }));
         }
 
         // Reserve vaccination slot
