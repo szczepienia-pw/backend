@@ -6,6 +6,7 @@ using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
 using backend.Models.Visits;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Doctor
 {
@@ -74,7 +75,7 @@ namespace backend.Services.Doctor
 
         public async Task<SuccessResponse> DeleteSlot(int vaccinationSlotId, DoctorModel doctor)
         {
-            var slot = this.dataContext.VaccinationSlots
+            var slot = this.dataContext.VaccinationSlots.Include("Doctor")
                 .FirstOrThrow(slot => slot.Id == vaccinationSlotId && slot.Doctor.Id == doctor.Id,
                               new NotFoundException());
 
