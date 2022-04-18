@@ -156,6 +156,25 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Cancel vaccination slot",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/patient/vaccination-slots/3",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"patient",
+										"vaccination-slots",
+										"3"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},

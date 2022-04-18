@@ -22,11 +22,14 @@ namespace backend.Services
         {
             var bugEmail = this.dataContext.Settings.Where(setting => setting.Type == SettingType.BugEmail).First().Value;
 
-            await this.mailer.SendEmailAsync(
-                bugEmail, 
-                "Bug report",
-                $"Titile: {request.Name}<br>Description: {request.Description}<br>Sent by: {account.FirstName} {account.LastName} - {account.Email} ({account.GetEnum().ToString()})"
-            );
+            _ = Task.Factory.StartNew(async () =>
+            {
+                await this.mailer.SendEmailAsync(
+                    bugEmail,
+                    "Bug report",
+                    $"Titile: {request.Name}<br>Description: {request.Description}<br>Sent by: {account.FirstName} {account.LastName} - {account.Email} ({account.GetEnum().ToString()})"
+                );
+            });
 
             return new SuccessResponse();
         }

@@ -10,6 +10,7 @@ using backend.Models.Vaccines;
 using backend.Models.Visits;
 using backend.Services.Patient;
 using backend_tests.Helpers;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Xunit;
 
@@ -27,6 +28,13 @@ namespace backend_tests.Unit.Services.Patient
             // Constructor is being executed before each test
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.mailerMock = new Mock<Mailer>();
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                null
+            ));
+
             this.vaccinationServiceMock = new VaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
             this.patientMock = this.dataContextMock.Object.Patients.First();
         }
@@ -129,6 +137,13 @@ namespace backend_tests.Unit.Services.Patient
 
             var slot = this.dataContextMock.Object.VaccinationSlots.FirstOrDefault(slot => slot.Id == slotId);
             Assert.Equal(record.Doctor.Id, slot.Doctor.Id);
+
+            this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
+                this.patientMock.Email,
+                "Vaccination visit confirmation",
+                It.Is<string>(body => body.Contains(slot.Date.ToString())),
+                null
+            ), Times.Once);
         }
 
         [Theory]
@@ -167,6 +182,35 @@ namespace backend_tests.Unit.Services.Patient
             Assert.Equal(slots.Select(slot => slot.Id).ToArray(), this.dataContextMock.Object.VaccinationSlots.Where(slot => !slot.Reserved).Select(slot => slot.Id).ToArray());
             Assert.Equal(slots.Select(slot => slot.Date).ToArray(), this.dataContextMock.Object.VaccinationSlots.Where(slot => !slot.Reserved).Select(slot => slot.Date).ToArray());
         }
+
+        // Cancel reservation
+
+        [Fact]
+        public void TestShouldThrowAnExceptionWhenCancelingNotHisVaccination()
+        {
+            var vaccinationSlot = this.dataContextMock.Object.VaccinationSlots.First();
+
+            Assert.ThrowsAsync<ConflictException>(
+                () => this.vaccinationServiceMock.CancelVaccinationSlot(this.patientMock, vaccinationSlot.Id)
+            );
+        }
+
+        [Fact]
+        public async void TestShouldCorrectlyCancelVaccination()
+        {
+            var vaccination = this.dataContextMock.Object.Vaccinations.First();
+
+            await this.vaccinationServiceMock.CancelVaccinationSlot(this.patientMock, vaccination.VaccinationSlotId);
+
+            Assert.Equal(false, vaccination.VaccinationSlot?.Reserved);
+            Assert.Equal(StatusEnum.Canceled, vaccination.Status);
+
+            this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
+                this.patientMock.Email,
+                "Vaccination visit canceled",
+                It.Is<string>(body => body.Contains(vaccination.VaccinationSlot.Date.ToString())),
+                null
+            ), Times.Once);
+        }
     }
 }
-

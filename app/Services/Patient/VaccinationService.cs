@@ -7,6 +7,7 @@ using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Dto.Responses.Common.Vaccination;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Patient
 {
@@ -88,11 +89,51 @@ namespace backend.Services.Patient
             VaccinationService.semaphore.Release();
 
             // Send email with confirmation
-            await this.mailer.SendEmailAsync(
-                patient.Email,
-                "Vaccination visit confirmation",
-                $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date} is confirmed."
-            );
+            _ = Task.Factory.StartNew(async () =>
+            {
+                await this.mailer.SendEmailAsync(
+                    patient.Email,
+                    "Vaccination visit confirmation",
+                    $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date} is confirmed."
+                );
+            });
+
+            return new SuccessResponse();
+        }
+
+        public async Task<SuccessResponse> CancelVaccinationSlot(PatientModel patient, int vaccinationSlotId)
+        {
+            // Find slot with matching id
+            VaccinationSlotModel slot = this.dataContext
+                .VaccinationSlots
+                .FirstOrThrow(slot => slot.Id == vaccinationSlotId, new NotFoundException("Slot not found"));
+
+            // Get vaccination connected to found vaccination slot
+            VaccinationModel? vaccinationForSlot =
+                this.dataContext
+                    .Vaccinations
+                    .Include(vaccination => vaccination.Vaccine)
+                    .FirstOrThrow(
+                        vaccination => vaccination.VaccinationSlotId == slot.Id && vaccination.PatientId == patient.Id && vaccination.Status == StatusEnum.Planned,
+                        new ConflictException("Specified vaccination slot does not belong to you")
+                    );
+
+            if (!slot.Reserved)
+                throw new ConflictException("You cannot cancel not reserved vaccination slot");
+
+            slot.Reserved = false;
+            vaccinationForSlot.Status = StatusEnum.Canceled;
+            this.dataContext.SaveChanges();
+
+            // Send email with confirmation
+            _ = Task.Factory.StartNew(async () =>
+              {
+                  await this.mailer.SendEmailAsync(
+                      patient.Email,
+                      "Vaccination visit canceled",
+                      $"Your {vaccinationForSlot.Vaccine.Disease.ToString()} vaccination visit on {slot.Date} has been canceled."
+                  );
+              });
 
             return new SuccessResponse();
         }
