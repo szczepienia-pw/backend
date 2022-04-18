@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses.Common.Vaccination;
@@ -124,6 +125,7 @@ namespace backend_tests.Unit.Services.Patient
         {
             List<VaccinationModel> verifyList = new List<VaccinationModel>();
             this.dataContextMock.Setup(dataContext => dataContext.Vaccinations.Add(It.IsAny<VaccinationModel>())).Callback<VaccinationModel>((v) => verifyList.Add(v));
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns(Task.FromResult(Task.CompletedTask));
 
             var response = this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId).Result;
 
@@ -200,6 +202,7 @@ namespace backend_tests.Unit.Services.Patient
         public async void TestShouldCorrectlyCancelVaccination()
         {
             var vaccination = this.dataContextMock.Object.Vaccinations.First();
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns(Task.FromResult(Task.CompletedTask));
 
             await this.vaccinationServiceMock.CancelVaccinationSlot(this.patientMock, vaccination.VaccinationSlotId);
 

@@ -94,14 +94,11 @@ namespace backend.Services.Patient
             VaccinationService.semaphore.Release();
 
             // Send email with confirmation
-            _ = Task.Factory.StartNew(async () =>
-            {
-                await this.mailer.SendEmailAsync(
+            _ = this.mailer.SendEmailAsync(
                     patient.Email,
                     "Vaccination visit confirmation",
                     $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date} is confirmed."
-                );
-            });
+            );
 
             return new SuccessResponse();
         }
@@ -131,14 +128,11 @@ namespace backend.Services.Patient
             this.dataContext.SaveChanges();
 
             // Send email with confirmation
-            _ = Task.Factory.StartNew(async () =>
-              {
-                  await this.mailer.SendEmailAsync(
+            _ = this.mailer.SendEmailAsync(
                       patient.Email,
                       "Vaccination visit canceled",
                       $"Your {vaccinationForSlot.Vaccine.Disease.ToString()} vaccination visit on {slot.Date} has been canceled."
-                  );
-              });
+            );
 
             return new SuccessResponse();
         }
