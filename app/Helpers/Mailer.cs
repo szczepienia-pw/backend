@@ -17,7 +17,10 @@ namespace backend.Helpers
 
         protected Mailer() { } // Only for tests
 
-        public virtual async Task SendEmailAsync(string to, string subject, string body, List<IFormFile>? attachments = null)
+        public virtual async Task<Task> SendEmailAsync(string to, string subject, string body, List<IFormFile>? attachments = null)
+            => Task.Factory.StartNew(async () => this.sendEmailAsync(to, subject, body, attachments));
+
+        protected virtual async Task sendEmailAsync(string to, string subject, string body, List<IFormFile>? attachments = null)
         {
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress(this.mailSettings.DisplayName, this.mailSettings.DisplayEmail));

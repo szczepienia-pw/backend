@@ -8,6 +8,7 @@ using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Dto.Responses.Common.Vaccination;
 using Microsoft.EntityFrameworkCore;
+using backend.Dto.Requests.Patient;
 
 namespace backend.Services.Patient
 {
@@ -25,11 +26,15 @@ namespace backend.Services.Patient
             this.mailer = mailer;
         }
 
-        public async Task<ShowAvailableVaccinesResponse> ShowAvailableVaccines(DiseaseEnum disease)
+        public async Task<ShowAvailableVaccinesResponse> ShowAvailableVaccines(ShowVaccinesRequest request)
         {
+            List<DiseaseEnum> diseases = new List<DiseaseEnum>();
+            foreach (var disease in request.Disease.Split(','))
+                diseases.Add(DiseaseEnumAdapter.ToEnum(disease));
+
             // Find vaccines for given disese
             List<VaccineModel> vaccines = this.dataContext.Vaccines
-                                              .Where(vaccine => vaccine.Disease == disease)
+                                              .Where(vaccine => diseases.Contains(vaccine.Disease))
                                               .ToList();
 
             // Return list of vaccines
@@ -89,14 +94,11 @@ namespace backend.Services.Patient
             VaccinationService.semaphore.Release();
 
             // Send email with confirmation
-            _ = Task.Factory.StartNew(async () =>
-            {
-                await this.mailer.SendEmailAsync(
+            _ = this.mailer.SendEmailAsync(
                     patient.Email,
                     "Vaccination visit confirmation",
                     $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date} is confirmed."
-                );
-            });
+            );
 
             return new SuccessResponse();
         }
@@ -126,14 +128,11 @@ namespace backend.Services.Patient
             this.dataContext.SaveChanges();
 
             // Send email with confirmation
-            _ = Task.Factory.StartNew(async () =>
-              {
-                  await this.mailer.SendEmailAsync(
+            _ = this.mailer.SendEmailAsync(
                       patient.Email,
                       "Vaccination visit canceled",
                       $"Your {vaccinationForSlot.Vaccine.Disease.ToString()} vaccination visit on {slot.Date} has been canceled."
-                  );
-              });
+            );
 
             return new SuccessResponse();
         }

@@ -23,7 +23,7 @@ namespace backend.Controllers.Patient
         [Authorize(AccountTypeEnum.Patient)]
         public async Task<IActionResult> ShowAvailableVaccines([FromQuery] ShowVaccinesRequest request)
         {
-            return Ok(await this.vaccinationService.ShowAvailableVaccines(DiseaseEnumAdapter.ToEnum(request.Disease)));
+            return Ok(await this.vaccinationService.ShowAvailableVaccines(request));
         }
 
         // GET patient/vaccination-slots

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using backend.Database;
+using backend.Dto.Requests.Patient;
 using backend.Dto.Responses.Common.Vaccination;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Exceptions;
@@ -47,7 +49,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData("OTHER", new int[] { 8, 9, 10 })]
         public void TestShowVaccinesForValidDiseases(string diseaseName, int[] expectedIds)
         {
-            var response = this.vaccinationServiceMock.ShowAvailableVaccines(DiseaseEnumAdapter.ToEnum(diseaseName));
+            var response = this.vaccinationServiceMock.ShowAvailableVaccines(new ShowVaccinesRequest() { Disease = diseaseName });
             Assert.NotNull(response);
 
             List<VaccineResponse> vaccines = new List<VaccineResponse>(response.Result.Vaccines);
@@ -63,7 +65,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData("")]
         public void TestShowVaccinesThrowExceptionForInvalidDiseases(string diseaseName)
         {
-            Assert.ThrowsAsync<ValidationException>(() => this.vaccinationServiceMock.ShowAvailableVaccines(DiseaseEnumAdapter.ToEnum(diseaseName)));
+            Assert.ThrowsAsync<ValidationException>(() => this.vaccinationServiceMock.ShowAvailableVaccines(new ShowVaccinesRequest() { Disease = diseaseName }));
         }
 
         // Reserve vaccination slot
@@ -123,6 +125,7 @@ namespace backend_tests.Unit.Services.Patient
         {
             List<VaccinationModel> verifyList = new List<VaccinationModel>();
             this.dataContextMock.Setup(dataContext => dataContext.Vaccinations.Add(It.IsAny<VaccinationModel>())).Callback<VaccinationModel>((v) => verifyList.Add(v));
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns(Task.FromResult(Task.CompletedTask));
 
             var response = this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId).Result;
 
@@ -199,6 +202,7 @@ namespace backend_tests.Unit.Services.Patient
         public async void TestShouldCorrectlyCancelVaccination()
         {
             var vaccination = this.dataContextMock.Object.Vaccinations.First();
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns(Task.FromResult(Task.CompletedTask));
 
             await this.vaccinationServiceMock.CancelVaccinationSlot(this.patientMock, vaccination.VaccinationSlotId);
 
