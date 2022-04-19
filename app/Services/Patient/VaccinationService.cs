@@ -9,7 +9,6 @@ using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Dto.Responses.Common.Vaccination;
 using Microsoft.EntityFrameworkCore;
-using backend.Dto.Requests.Patient;
 
 namespace backend.Services.Patient
 {

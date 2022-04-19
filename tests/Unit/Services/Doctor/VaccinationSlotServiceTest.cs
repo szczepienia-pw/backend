@@ -243,7 +243,7 @@ namespace backend_tests.Unit.Services.Doctor
             dataContext.Setup(context => context.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
             var vaccinationService = new VaccinationSlotService(dataContext.Object);
 
-            var request = new FilterVaccinationsRequest()
+            var request = new FilterVaccinationSlotsRequest()
             {
                 OnlyReserved = onlyReserved,
                 StartDate = startDate,
