@@ -12,7 +12,7 @@ namespace backend.Dto.Responses.Doctor.Vaccination
         {
             this.Id = vaccinationSlotModel.Id;
             this.Date = vaccinationSlotModel.Date;
-            if (vaccination == null) this.Vaccination = new { };
+            if (vaccination == null) this.Vaccination = null;
             else this.Vaccination = new VaccinationResponse(vaccination);
         }
     }
