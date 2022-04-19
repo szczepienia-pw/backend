@@ -23,7 +23,7 @@ namespace backend.Controllers.Admin
         // GET admin/patients
         [HttpGet]
         [Authorize(AccountTypeEnum.Admin)]
-        public async Task<IActionResult> ShowPatients([FromBody] ShowPatientsRequest request)
+        public async Task<IActionResult> ShowPatients([FromQuery] ShowPatientsRequest request)
         {
             return Ok(await this.adminPatientsService.ShowPatients(request.Page));
         }

@@ -23,7 +23,7 @@ namespace backend.Controllers.Patient
         [Authorize(AccountTypeEnum.Patient)]
         public async Task<IActionResult> ShowAvailableVaccines([FromQuery] ShowVaccinesRequest request)
         {
-            return Ok(await this.vaccinationService.ShowAvailableVaccines(DiseaseEnumAdapter.ToEnum(request.Disease)));
+            return Ok(await this.vaccinationService.ShowAvailableVaccines(request));
         }
 
         // GET patient/vaccination-slots
@@ -34,12 +34,27 @@ namespace backend.Controllers.Patient
             return Ok(await this.vaccinationService.GetAvailableVaccinationSlots());
         }
 
-        //PUT patient/vaccination-slots/:{vaccinationSlotId}
+        // PUT patient/vaccination-slots/:{vaccinationSlotId}
         [HttpPut("vaccination-slots/{vaccinationSlotId:int}")]
         [Authorize(AccountTypeEnum.Patient)]
         public async Task<IActionResult> ReserveVaccinationSlot(int vaccinationSlotId, [FromBody] ReserveSlotRequest request)
         {
-            return Ok(await this.vaccinationService.ReserveVaccinationSlot((PatientModel)this.HttpContext.Items["User"], vaccinationSlotId, request.VaccineId));
+            return Ok(await this.vaccinationService.ReserveVaccinationSlot(
+                (PatientModel)this.HttpContext.Items["User"], 
+                vaccinationSlotId, 
+                request.VaccineId
+            ));
+        }
+
+        // DELETE patient/vaccination-slots/:{vaccinationSlotId}
+        [HttpDelete("vaccination-slots/{vaccinationSlotId:int}")]
+        [Authorize(AccountTypeEnum.Patient)]
+        public async Task<IActionResult> CancelVaccinationSlot(int vaccinationSlotId)
+        {
+            return Ok(await this.vaccinationService.CancelVaccinationSlot(
+                (PatientModel)this.HttpContext.Items["User"], 
+                vaccinationSlotId
+            ));
         }
 
         // GET patient/vaccinations

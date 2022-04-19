@@ -37,6 +37,7 @@ namespace backend_tests.Unit.Services
                 It.IsAny<string>(),
                 null
             ));
+            mailerMock.Setup(mailer => mailer.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns(Task.FromResult(Task.CompletedTask));
 
             var response = await service.SendBug(request, senderAccount);
 

@@ -5,7 +5,7 @@ namespace backend.Dto.Responses.Patient.Vaccination
 {
 	public class ShowAvailableVaccinesResponse
 	{
-		public List<VaccineResponse> Vaccines;
+		public List<VaccineResponse> Vaccines { get; set; }
 
 		public ShowAvailableVaccinesResponse(List<VaccineModel> vaccines)
 		{

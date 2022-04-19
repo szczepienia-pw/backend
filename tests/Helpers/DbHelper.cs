@@ -208,8 +208,10 @@ namespace backend_tests.Helpers
                 {
                     Id = 1,
                     VaccinationSlot = tmpSlot,
+                    VaccinationSlotId = tmpSlot.Id,
                     Doctor = tmpSlot.Doctor,
                     Patient = patients.First(),
+                    PatientId = patients.First().Id,
                     Vaccine = vaccines.First(),
                     Status = StatusEnum.Planned
                 }

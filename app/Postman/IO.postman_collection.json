@@ -68,6 +68,55 @@
 						},
 						{
 							"name": "Show list of available vaccines",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"vaccines\": {",
+											"      \"type\": \"array\",",
+											"      \"items\":",
+											"        {",
+											"          \"type\": \"object\",",
+											"          \"properties\": {",
+											"            \"id\": {",
+											"              \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"disease\": {",
+											"              \"type\": \"string\"",
+											"            },",
+											"            \"requiredDoses\": {",
+											"              \"type\": \"integer\"",
+											"            }",
+											"          },",
+											"          \"required\": [",
+											"            \"id\",",
+											"            \"name\",",
+											"            \"disease\",",
+											"            \"requiredDoses\"",
+											"          ]",
+											"        },",
+											"    },",
+											"  },",
+											"  \"required\": [",
+											"    \"vaccines\"",
+											"  ]",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -109,18 +158,16 @@
 							"response": []
 						},
 						{
-							"name": "Show history",
+							"name": "Cancel vaccination slot",
 							"request": {
-								"method": "GET",
+								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{IOHostURL}}/patient/vaccinations",
-									"host": [
-										"{{IOHostURL}}"
-									],
+									"raw": "{{IOHostURL}}/patient/vaccination-slots/3",
 									"path": [
 										"patient",
-										"vaccinations"
+										"vaccination-slots",
+										"3"
 									]
 								}
 							},

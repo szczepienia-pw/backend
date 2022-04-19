@@ -8,6 +8,8 @@ using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Dto.Responses.Common.Vaccination;
+using Microsoft.EntityFrameworkCore;
+using backend.Dto.Requests.Patient;
 
 namespace backend.Services.Patient
 {
@@ -25,15 +27,19 @@ namespace backend.Services.Patient
             this.mailer = mailer;
         }
 
-        public async Task<List<VaccineResponse>> ShowAvailableVaccines(DiseaseEnum disease)
+        public async Task<ShowAvailableVaccinesResponse> ShowAvailableVaccines(ShowVaccinesRequest request)
         {
+            List<DiseaseEnum> diseases = new List<DiseaseEnum>();
+            foreach (var disease in request.Disease.Split(','))
+                diseases.Add(DiseaseEnumAdapter.ToEnum(disease));
+
             // Find vaccines for given disese
             List<VaccineModel> vaccines = this.dataContext.Vaccines
-                                              .Where(vaccine => vaccine.Disease == disease)
+                                              .Where(vaccine => diseases.Contains(vaccine.Disease))
                                               .ToList();
 
             // Return list of vaccines
-            return vaccines.Select(vaccine => new VaccineResponse(vaccine)).ToList();
+            return new ShowAvailableVaccinesResponse(vaccines);
         }
 
         public async Task<List<AvailableSlotResponse>> GetAvailableVaccinationSlots()
@@ -89,10 +95,44 @@ namespace backend.Services.Patient
             VaccinationService.semaphore.Release();
 
             // Send email with confirmation
-            await this.mailer.SendEmailAsync(
-                patient.Email,
-                "Vaccination visit confirmation",
-                $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date} is confirmed."
+            _ = this.mailer.SendEmailAsync(
+                    patient.Email,
+                    "Vaccination visit confirmation",
+                    $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date} is confirmed."
+            );
+
+            return new SuccessResponse();
+        }
+
+        public async Task<SuccessResponse> CancelVaccinationSlot(PatientModel patient, int vaccinationSlotId)
+        {
+            // Find slot with matching id
+            VaccinationSlotModel slot = this.dataContext
+                .VaccinationSlots
+                .FirstOrThrow(slot => slot.Id == vaccinationSlotId, new NotFoundException("Slot not found"));
+
+            // Get vaccination connected to found vaccination slot
+            VaccinationModel? vaccinationForSlot =
+                this.dataContext
+                    .Vaccinations
+                    .Include(vaccination => vaccination.Vaccine)
+                    .FirstOrThrow(
+                        vaccination => vaccination.VaccinationSlotId == slot.Id && vaccination.PatientId == patient.Id && vaccination.Status == StatusEnum.Planned,
+                        new ConflictException("Specified vaccination slot does not belong to you")
+                    );
+
+            if (!slot.Reserved)
+                throw new ConflictException("You cannot cancel not reserved vaccination slot");
+
+            slot.Reserved = false;
+            vaccinationForSlot.Status = StatusEnum.Canceled;
+            this.dataContext.SaveChanges();
+
+            // Send email with confirmation
+            _ = this.mailer.SendEmailAsync(
+                      patient.Email,
+                      "Vaccination visit canceled",
+                      $"Your {vaccinationForSlot.Vaccine.Disease.ToString()} vaccination visit on {slot.Date} has been canceled."
             );
 
             return new SuccessResponse();

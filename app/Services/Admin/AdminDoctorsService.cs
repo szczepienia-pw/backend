@@ -16,6 +16,9 @@ namespace backend.Services.Admin
 
         private void ValidateEmail(string email, int? id = null)
         {
+            if (!Validator.ValidateEmail(email))
+                throw new ValidationException("Invalid e-mail.");
+
             var existingDoctor = this.dataContext.Doctors.FirstOrDefault(doctor => doctor.Email == email);
 
             if (existingDoctor != null)
@@ -59,6 +62,9 @@ namespace backend.Services.Admin
 
         public async Task<DoctorModel> CreateDoctor(CreateDoctorRequest request)
         {
+            if (!Validator.ValidateEmail(request.Email))
+                throw new ValidationException("Invalid e-mail.");
+
             this.dataContext.Doctors.CheckDuplicate(doctor => doctor.Email == request.Email,
                                                     new ValidationException("E-mail is already in use."));
 
