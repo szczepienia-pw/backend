@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e692f27e-a3aa-45f0-b575-2d2510a1e886",
+		"_postman_id": "e4df0364-9fe8-41ae-bea8-0cd3809d372e",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -171,6 +171,30 @@
 										"patient",
 										"vaccination-slots",
 										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Show history",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/patient/vaccinations?page=1",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"patient",
+										"vaccinations"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										}
 									]
 								}
 							},

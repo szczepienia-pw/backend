@@ -1,5 +1,6 @@
 ﻿using backend.Helpers;
 using backend.Database;
+using backend.Dto.Requests.Patient;
 using backend.Dto.Responses;
 using backend.Models.Visits;
 using backend.Exceptions;
@@ -8,7 +9,6 @@ using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Dto.Responses.Common.Vaccination;
 using Microsoft.EntityFrameworkCore;
-using backend.Dto.Requests.Patient;
 
 namespace backend.Services.Patient
 {
@@ -135,6 +135,21 @@ namespace backend.Services.Patient
             );
 
             return new SuccessResponse();
+        }
+
+        public async Task<PaginatedResponse<VaccinationModel, List<VaccinationResponse>>> GetVaccinationsHistory(PatientModel patient, FilterVaccinationsRequest request)
+        {
+            var vaccinations = this.dataContext
+                .Vaccinations
+                .Where(vaccination => vaccination.PatientId == patient.Id)
+                .OrderByDescending(vaccination => vaccination.Id);
+
+            var paginatedVaccinations = PaginatedList<VaccinationModel>.Paginate(vaccinations, request.Page);
+
+            return new PaginatedResponse<VaccinationModel, List<VaccinationResponse>>(
+                paginatedVaccinations,
+                paginatedVaccinations.Select(vaccination => new VaccinationResponse(vaccination)).ToList()
+            );
         }
     }
 }
