@@ -140,7 +140,10 @@ namespace backend.Services.Patient
 
         public async Task<PaginatedResponse<VaccinationModel, List<VaccinationResponse>>> GetVaccinationsHistory(PatientModel patient, FilterVaccinationsRequest request)
         {
-            var vaccinations = this.dataContext.Vaccinations.Where(vaccination => vaccination.PatientId == patient.Id);
+            var vaccinations = this.dataContext
+                .Vaccinations
+                .Where(vaccination => vaccination.PatientId == patient.Id)
+                .OrderByDescending(vaccination => vaccination.Id);
 
             var paginatedVaccinations = PaginatedList<VaccinationModel>.Paginate(vaccinations, request.Page);
 
