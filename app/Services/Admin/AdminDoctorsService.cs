@@ -16,6 +16,9 @@ namespace backend.Services.Admin
 
         private void ValidateEmail(string email, int? id = null)
         {
+            if (!Validator.ValidateEmail(email))
+                throw new ValidationException("Invalid e-mail.");
+
             var existingDoctor = this.dataContext.Doctors.FirstOrDefault(doctor => doctor.Email == email);
 
             if (existingDoctor != null)
@@ -59,6 +62,9 @@ namespace backend.Services.Admin
 
         public async Task<DoctorModel> CreateDoctor(CreateDoctorRequest request)
         {
+            if (!Validator.ValidateEmail(request.Email))
+                throw new ValidationException("Invalid e-mail.");
+
             this.dataContext.Doctors.CheckDuplicate(doctor => doctor.Email == request.Email,
                                                     new ValidationException("E-mail is already in use."));
 
@@ -77,10 +83,8 @@ namespace backend.Services.Admin
 
         public async Task<DoctorModel> EditDoctor(int doctorId, EditDoctorRequest request)
         {
-            var doctor = this.dataContext.Doctors.FirstOrDefault(doctor => doctor.Id == doctorId);
-            
-            if (doctor == null)
-                throw new NotFoundException();
+            var doctor = this.dataContext.Doctors.FirstOrThrow(doctor => doctor.Id == doctorId,
+                                                               new NotFoundException());
 
             if (request.FirstName != null)
                 doctor.FirstName = request.FirstName;
@@ -97,12 +101,13 @@ namespace backend.Services.Admin
             this.dataContext.Doctors.Update(doctor);
             this.dataContext.SaveChanges();
 
-            return doctor;
+            return doctor.BaseObject<DoctorModel>();
         }
 
         public async Task<DoctorResponse> ShowDoctor(int doctorId)
         {
-            var doctor = this.dataContext.Doctors.FirstOrThrow((doctor) => doctor.Id == doctorId, new NotFoundException());
+            var doctor = this.dataContext.Doctors.FirstOrThrow(doctor => doctor.Id == doctorId,
+                                                               new NotFoundException());
             return new DoctorResponse(doctor);
         }
 

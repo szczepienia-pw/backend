@@ -9,6 +9,7 @@ namespace backend.Models.Accounts
         public string Pesel { get; set; }
         public virtual AddressModel Address { get; set; }
 
+        // seeder purposes
         [JsonIgnore]
         public int AddressId { get; set; }
 
