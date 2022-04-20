@@ -4,6 +4,7 @@ using backend.Services.Patient;
 using backend.Models.Accounts;
 using backend.Dto.Requests.Patient;
 using backend.Models.Vaccines;
+using System.Net.Http.Headers;
 
 namespace backend.Controllers.Patient
 {
@@ -55,6 +56,14 @@ namespace backend.Controllers.Patient
                 (PatientModel)this.HttpContext.Items["User"], 
                 vaccinationSlotId
             ));
+        }
+
+        // GET patient/vaccinations/:{vaccinationId}/certificate
+        [HttpGet("vaccinations/{vaccinationId:int}/certificate")]
+        public async Task<IActionResult> DownloadVaccinationCertificate(int vaccinationId)
+        {
+            Response.ContentType = new MediaTypeHeaderValue("application/pdf").ToString(); // Content type
+            return Ok(await this.vaccinationService.DownloadVaccinationCertificate((PatientModel)this.HttpContext.Items["User"], vaccinationId));
         }
     }
 }

@@ -9,6 +9,10 @@ using backend.Dto.Responses.Patient.Vaccination;
 using backend.Dto.Responses.Common.Vaccination;
 using Microsoft.EntityFrameworkCore;
 using backend.Dto.Requests.Patient;
+using Microsoft.AspNetCore.Mvc;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 
 namespace backend.Services.Patient
 {
@@ -135,6 +139,40 @@ namespace backend.Services.Patient
             );
 
             return new SuccessResponse();
+        }
+
+        public async Task<FileContentResult> DownloadVaccinationCertificate(PatientModel patient, int vaccinationId)
+        {
+            // Find vaccination with matching id
+            VaccinationModel vaccination = this.dataContext.Vaccinations.FirstOrThrow(vaccination => vaccination.Id == vaccinationId && vaccination.Patient == patient,
+                                                                                      new NotFoundException("Vaccination entry not found"));
+
+            // Check if vaccination process is finished
+            if (vaccination.Status != StatusEnum.Completed)
+                throw new ConflictException("Vaccination has not been taken yet.");
+
+            // Generate PDF
+            var certificateStream = VaccinationService.GeneratePDF(vaccination);
+
+            // Send PDF in response
+            return new FileContentResult(certificateStream, "application/pdf");
+        }
+
+        private static byte[] GeneratePDF(VaccinationModel vaccination)
+        {
+            // Initialize structures
+            MemoryStream workStream = new MemoryStream();
+            PdfWriter writer = new PdfWriter(workStream);
+            writer.SetCloseStream(false);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+
+            string line = "Hello! Welcome to iTextPdf";
+            document.Add(new Paragraph(line));
+
+            document.Close();
+
+            return workStream.ToArray();
         }
     }
 }
