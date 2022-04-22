@@ -22,6 +22,7 @@ namespace backend_tests.Unit.Services.Admin
         private Mock<DataContext> dataContextMock { get; set; }
         private AdminDoctorsService adminDoctorsServiceMock { get; set; }
         private SecurePasswordHasher securePasswordHasherMock { get; set; }
+        private Mock<Mailer> mailerMock { get; set; }
 
         private DoctorModel? FindDoctor(int doctorId)
         {
@@ -33,7 +34,14 @@ namespace backend_tests.Unit.Services.Admin
             // constructor is being executed before each test
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.securePasswordHasherMock = SecurePasswordHasherHelper.Hasher;
-            this.adminDoctorsServiceMock = new AdminDoctorsService(this.dataContextMock.Object, this.securePasswordHasherMock);
+            this.mailerMock = new Mock<Mailer>();
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                null
+            ));
+            this.adminDoctorsServiceMock = new AdminDoctorsService(this.dataContextMock.Object, this.securePasswordHasherMock, this.mailerMock.Object);
         }
 
         // Delete Doctor
