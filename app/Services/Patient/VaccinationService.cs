@@ -157,7 +157,7 @@ namespace backend.Services.Patient
             );
         }
 
-        public async Task<FileContentResult> DownloadVaccinationCertificate(PatientModel patient, int vaccinationId)
+        public byte[] DownloadVaccinationCertificate(PatientModel patient, int vaccinationId)
         {
             // Find vaccination with matching id
             VaccinationModel vaccination = this.dataContext.Vaccinations.FirstOrThrow(vaccination => vaccination.Id == vaccinationId && vaccination.Patient == patient,
@@ -171,7 +171,8 @@ namespace backend.Services.Patient
             var certificateStream = CertificateGenerator.GeneratePDF(vaccination);
 
             // Send PDF in response
-            return new FileContentResult(certificateStream, "application/pdf");
+            return certificateStream;
+            //return new FileContentResult(certificateStream, "application/pdf");
         }
     }
 }

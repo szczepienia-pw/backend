@@ -41,11 +41,6 @@ namespace backend.Helpers
 
             Paragraph vaccinationDetails = new Paragraph($"Disease: {vaccination.Vaccine.Disease}\nVaccine: {vaccination.Vaccine.Name}\nVaccination date: {vaccination.VaccinationSlot.Date.ToShortDateString()}");
 
-            var imgStream = CertificateGenerator.GenerateQRCode(vaccination);
-            byte[] imageBytes = imgStream.ToArray();
-            ImageData rawImage = ImageDataFactory.Create(imageBytes);
-            Image image = new Image(rawImage);
-
 
             // Generate document
             document.Add(header);
@@ -53,7 +48,6 @@ namespace backend.Helpers
             document.Add(patientDetails);
             document.Add(vaccinationDetailsHeader);
             document.Add(vaccinationDetails);
-            document.Add(image);
             document.Close();
 
             #region Debug
@@ -65,15 +59,6 @@ namespace backend.Helpers
             #endregion
 
             return workStream.ToArray();
-        }
-
-        public static MemoryStream GenerateQRCode(VaccinationModel vaccination)
-        {
-            var MyBarCode = IronBarCode.BarcodeWriter.CreateBarcode("https://ironsoftware.com/csharp/barcode", BarcodeEncoding.Code128);
-            var stream = MyBarCode.ToPngStream();
-            MemoryStream result = new MemoryStream();
-            stream.CopyTo(result);
-            return result;
         }
     }
 }

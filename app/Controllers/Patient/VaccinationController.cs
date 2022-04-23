@@ -73,8 +73,11 @@ namespace backend.Controllers.Patient
         [HttpGet("vaccinations/{vaccinationId:int}/certificate")]
         public async Task<IActionResult> DownloadVaccinationCertificate(int vaccinationId)
         {
+            Response.Headers.Accept = new MediaTypeHeaderValue("application/pdf").ToString();
             Response.ContentType = new MediaTypeHeaderValue("application/pdf").ToString(); // Content type
-            return Ok(await this.vaccinationService.DownloadVaccinationCertificate((PatientModel)this.HttpContext.Items["User"], vaccinationId));
+            byte[] payload = this.vaccinationService.DownloadVaccinationCertificate((PatientModel)this.HttpContext.Items["User"], vaccinationId);
+            await Response.BodyWriter.WriteAsync(payload);
+            return Ok();
         }
     }
 }
