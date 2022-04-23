@@ -27,10 +27,21 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="itext7" Version="7.2.2" />
+    <PackageReference Include="ZXing.Net" Version="0.16.8" />
+    <PackageReference Include="BarCode" Version="2022.3.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\app\backend.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="itext7" />
+    <None Remove="QRCoder" />
+    <None Remove="ZXing.Net" />
+    <None Remove="BarCode" />
+    <None Remove="SixLabors.ImageSharp" />
+  </ItemGroup>
 </Project>

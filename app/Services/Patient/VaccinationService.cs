@@ -152,27 +152,10 @@ namespace backend.Services.Patient
                 throw new ConflictException("Vaccination has not been taken yet.");
 
             // Generate PDF
-            var certificateStream = VaccinationService.GeneratePDF(vaccination);
+            var certificateStream = CertificateGenerator.GeneratePDF(vaccination);
 
             // Send PDF in response
             return new FileContentResult(certificateStream, "application/pdf");
-        }
-
-        private static byte[] GeneratePDF(VaccinationModel vaccination)
-        {
-            // Initialize structures
-            MemoryStream workStream = new MemoryStream();
-            PdfWriter writer = new PdfWriter(workStream);
-            writer.SetCloseStream(false);
-            PdfDocument pdf = new PdfDocument(writer);
-            Document document = new Document(pdf);
-
-            string line = "Hello! Welcome to iTextPdf";
-            document.Add(new Paragraph(line));
-
-            document.Close();
-
-            return workStream.ToArray();
         }
     }
 }
