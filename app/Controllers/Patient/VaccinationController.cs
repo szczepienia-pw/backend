@@ -73,10 +73,14 @@ namespace backend.Controllers.Patient
         [HttpGet("vaccinations/{vaccinationId:int}/certificate")]
         public async Task<IActionResult> DownloadVaccinationCertificate(int vaccinationId)
         {
-            Response.Headers.Accept = new MediaTypeHeaderValue("application/pdf").ToString();
-            Response.ContentType = new MediaTypeHeaderValue("application/pdf").ToString(); // Content type
+            // Generate payload and load it to response body
             byte[] payload = this.vaccinationService.DownloadVaccinationCertificate((PatientModel)this.HttpContext.Items["User"], vaccinationId);
             await Response.BodyWriter.WriteAsync(payload);
+
+            // Set accept header and content type to PDF
+            Response.Headers.Accept = new MediaTypeHeaderValue("application/pdf").ToString();
+            Response.ContentType = new MediaTypeHeaderValue("application/pdf").ToString();
+
             return Ok();
         }
     }

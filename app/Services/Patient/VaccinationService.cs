@@ -167,12 +167,8 @@ namespace backend.Services.Patient
             if (vaccination.Status != StatusEnum.Completed)
                 throw new ConflictException("Vaccination has not been taken yet.");
 
-            // Generate PDF
-            var certificateStream = CertificateGenerator.GeneratePDF(vaccination);
-
-            // Send PDF in response
-            return certificateStream;
-            //return new FileContentResult(certificateStream, "application/pdf");
+            // Generate PDF and return byte array
+            return CertificateGenerator.GeneratePDF(vaccination);
         }
     }
 }
