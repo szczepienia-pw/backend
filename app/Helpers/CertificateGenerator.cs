@@ -12,9 +12,6 @@ namespace backend.Helpers
     {
         private static readonly int headerSize = 24;
         private static readonly int subheaderSize = 16;
-        private static readonly PdfFont headerFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
-        private static readonly PdfFont textfont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
-
 
         public static byte[] GeneratePDF(VaccinationModel vaccination)
         {
@@ -24,6 +21,12 @@ namespace backend.Helpers
             writer.SetCloseStream(false);
             PdfDocument pdf = new PdfDocument(writer);
             Document document = new Document(pdf);
+
+            // Prepare font objects
+            // Unfortunately due to limitation of iText these objects cannot be shared by
+            // multiple PDF documents, therefore they cannot be declared as static.
+            PdfFont headerFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+            PdfFont textfont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
 
             // Prepare elements
             Paragraph header = new Paragraph("Vaccination certificate")
