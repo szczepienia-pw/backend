@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e4df0364-9fe8-41ae-bea8-0cd3809d372e",
+		"_postman_id": "2ff3bf8d-3287-43ba-a449-a1f41452c59b",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -558,6 +558,26 @@
 							"path": [
 								"patient",
 								"account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download vaccination certificate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{IOHostURL}}/patient/vaccinations/6/certificate",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"patient",
+								"vaccinations",
+								"6",
+								"certificate"
 							]
 						}
 					},
