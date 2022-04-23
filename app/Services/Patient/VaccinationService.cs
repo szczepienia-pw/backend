@@ -41,18 +41,6 @@ namespace backend.Services.Patient
             return new ShowAvailableVaccinesResponse(vaccines);
         }
 
-        public async Task<List<AvailableSlotResponse>> GetAvailableVaccinationSlots()
-        {
-            // Find available vaccination slots
-            List<VaccinationSlotModel> slots = this.dataContext.VaccinationSlots
-                                              .Where(slot => slot.Reserved == false &&
-                                                             slot.Date >= DateTime.Now)
-                                              .ToList();
-
-            // Return list of slots
-            return slots.Select(slot => new AvailableSlotResponse(slot)).ToList();
-        }
-
         public async Task<SuccessResponse> ReserveVaccinationSlot(PatientModel patient, int vaccinationSlotId, int vaccineId)
         {
             // Find matching vaccine

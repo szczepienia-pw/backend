@@ -10,6 +10,7 @@ using backend.Helpers;
 using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Models.Visits;
+using backend.Services;
 using backend.Services.Patient;
 using backend_tests.Helpers;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -23,6 +24,7 @@ namespace backend_tests.Unit.Services.Patient
         private Mock<DataContext> dataContextMock { get; set; }
         private Mock<Mailer> mailerMock { get; set; }
         private VaccinationService vaccinationServiceMock { get; set; }
+        private CommonVaccinationService commonVaccinationServiceMock { get; set; }
         private PatientModel patientMock { get; set; }
 
         public VaccinationServiceTest()
@@ -38,6 +40,7 @@ namespace backend_tests.Unit.Services.Patient
             ));
 
             this.vaccinationServiceMock = new VaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
+            this.commonVaccinationServiceMock = new CommonVaccinationService(this.dataContextMock.Object);
             this.patientMock = this.dataContextMock.Object.Patients.First();
         }
 
@@ -178,7 +181,7 @@ namespace backend_tests.Unit.Services.Patient
         [Fact]
         public void TestGetAvailableVaccinationSlots()
         {
-            var response = this.vaccinationServiceMock.GetAvailableVaccinationSlots();
+            var response = this.commonVaccinationServiceMock.GetAvailableVaccinationSlots();
             Assert.NotNull(response);
             
             List<AvailableSlotResponse> slots = new List<AvailableSlotResponse>(response.Result);

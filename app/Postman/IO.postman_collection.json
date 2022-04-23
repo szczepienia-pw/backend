@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e4df0364-9fe8-41ae-bea8-0cd3809d372e",
+		"_postman_id": "f31a64ac-6146-4d63-bd0a-b65c432fc9e4",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -134,24 +134,6 @@
 											"key": "disease",
 											"value": "COVID-19"
 										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get available vaccination slots",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{IOHostURL}}/patient/vaccination-slots",
-									"host": [
-										"{{IOHostURL}}"
-									],
-									"path": [
-										"patient",
-										"vaccination-slots"
 									]
 								}
 							},
@@ -1792,6 +1774,23 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Get available vaccination slots",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{IOHostURL}}/vaccination-slots",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"vaccination-slots"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
