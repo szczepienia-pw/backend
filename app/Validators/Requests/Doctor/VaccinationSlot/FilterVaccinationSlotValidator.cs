@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace backend.Validators.Requests.Doctor.VaccinationSlot
 {
-    public class FilterVaccinationSlotValidator : AbstractValidator<FilterVaccinationSlotsRequest>
+    public class FilterVaccinationValidator : AbstractValidator<FilterVaccinationSlotsRequest>
     {
-        public FilterVaccinationSlotValidator()
+        public FilterVaccinationValidator()
         {
             RuleFor(r => r.Page).GreaterThanOrEqualTo(1);
         }

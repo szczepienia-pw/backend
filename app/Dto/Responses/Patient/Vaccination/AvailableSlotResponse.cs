@@ -10,7 +10,7 @@ namespace backend.Dto.Responses.Patient.Vaccination
         public AvailableSlotResponse(VaccinationSlotModel vaccinationSlotModel)
         {
             this.Id = vaccinationSlotModel.Id;
-            this.Date = vaccinationSlotModel.Date;
+            this.Date = vaccinationSlotModel.Date.ToUniversalTime();
         }
     }
 }

@@ -57,6 +57,17 @@ namespace backend.Controllers.Patient
                 vaccinationSlotId
             ));
         }
+        
+        // GET patient/vaccinations
+        [HttpGet("vaccinations")]
+        [Authorize(AccountTypeEnum.Patient)]
+        public async Task<IActionResult> GetVaccinationsHistory([FromQuery] FilterVaccinationsRequest request)
+        {
+            return Ok(await this.vaccinationService.GetVaccinationsHistory(
+                (PatientModel)this.HttpContext.Items["User"], 
+                request
+            ));
+        }
 
         // GET patient/vaccinations/:{vaccinationId}/certificate
         [HttpGet("vaccinations/{vaccinationId:int}/certificate")]
