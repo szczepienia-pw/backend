@@ -34,11 +34,4 @@
     <ProjectReference Include="..\app\backend.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="itext7" />
-    <None Remove="QRCoder" />
-    <None Remove="ZXing.Net" />
-    <None Remove="BarCode" />
-    <None Remove="SixLabors.ImageSharp" />
-  </ItemGroup>
 </Project>
