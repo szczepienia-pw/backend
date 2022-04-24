@@ -140,24 +140,6 @@
 							"response": []
 						},
 						{
-							"name": "Get available vaccination slots",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{IOHostURL}}/patient/vaccination-slots",
-									"host": [
-										"{{IOHostURL}}"
-									],
-									"path": [
-										"patient",
-										"vaccination-slots"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Cancel vaccination slot",
 							"request": {
 								"method": "DELETE",
@@ -1812,6 +1794,23 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Get available vaccination slots",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{IOHostURL}}/vaccination-slots",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"vaccination-slots"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
