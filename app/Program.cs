@@ -42,6 +42,7 @@ builder.Services.AddScoped<BugService>();
 builder.Services.AddScoped<AdminDoctorsService>();
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<VaccinationService>();
+builder.Services.AddScoped<CommonVaccinationService>();
 
 // Connect settings to sections in appsettings.json
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));

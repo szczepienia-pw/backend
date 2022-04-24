@@ -9,6 +9,11 @@ using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Dto.Responses.Common.Vaccination;
 using Microsoft.EntityFrameworkCore;
+using backend.Dto.Requests.Patient;
+using Microsoft.AspNetCore.Mvc;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 
 namespace backend.Services.Patient
 {
@@ -39,18 +44,6 @@ namespace backend.Services.Patient
 
             // Return list of vaccines
             return new ShowAvailableVaccinesResponse(vaccines);
-        }
-
-        public async Task<List<AvailableSlotResponse>> GetAvailableVaccinationSlots()
-        {
-            // Find available vaccination slots
-            List<VaccinationSlotModel> slots = this.dataContext.VaccinationSlots
-                                              .Where(slot => slot.Reserved == false &&
-                                                             slot.Date >= DateTime.Now)
-                                              .ToList();
-
-            // Return list of slots
-            return slots.Select(slot => new AvailableSlotResponse(slot)).ToList();
         }
 
         public async Task<SuccessResponse> ReserveVaccinationSlot(PatientModel patient, int vaccinationSlotId, int vaccineId)
@@ -150,6 +143,20 @@ namespace backend.Services.Patient
                 paginatedVaccinations,
                 paginatedVaccinations.Select(vaccination => new VaccinationResponse(vaccination)).ToList()
             );
+        }
+
+        public byte[] DownloadVaccinationCertificate(PatientModel patient, int vaccinationId)
+        {
+            // Find vaccination with matching id
+            VaccinationModel vaccination = this.dataContext.Vaccinations.FirstOrThrow(vaccination => vaccination.Id == vaccinationId && vaccination.Patient == patient,
+                                                                                      new NotFoundException("Vaccination entry not found"));
+
+            // Check if vaccination process is finished
+            if (vaccination.Status != StatusEnum.Completed)
+                throw new ConflictException("Vaccination has not been taken yet.");
+
+            // Generate PDF and return byte array
+            return CertificateGenerator.GeneratePDF(vaccination);
         }
     }
 }

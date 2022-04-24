@@ -10,6 +10,7 @@ using backend.Helpers;
 using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Models.Visits;
+using backend.Services;
 using backend.Services.Patient;
 using backend_tests.Helpers;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -172,18 +173,6 @@ namespace backend_tests.Unit.Services.Patient
         public void TestReserveVaccinationSlotThrowExceptionForReservedSlot(int slotId, int vaccineId)
         {
             Assert.ThrowsAsync<ConflictException>(() => this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId));
-        }
-
-        // Get available vaccination slot
-        [Fact]
-        public void TestGetAvailableVaccinationSlots()
-        {
-            var response = this.vaccinationServiceMock.GetAvailableVaccinationSlots();
-            Assert.NotNull(response);
-            
-            List<AvailableSlotResponse> slots = new List<AvailableSlotResponse>(response.Result);
-            Assert.Equal(slots.Select(slot => slot.Id).ToArray(), this.dataContextMock.Object.VaccinationSlots.Where(slot => !slot.Reserved).Select(slot => slot.Id).ToArray());
-            Assert.Equal(slots.Select(slot => slot.Date).ToArray(), this.dataContextMock.Object.VaccinationSlots.Where(slot => !slot.Reserved).Select(slot => slot.Date.ToUniversalTime()).ToArray());
         }
 
         // Cancel reservation
