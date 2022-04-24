@@ -144,7 +144,7 @@ namespace backend_tests.Unit.Services.Patient
             this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
                 this.patientMock.Email,
                 "Vaccination visit confirmation",
-                It.Is<string>(body => body.Contains(slot.Date.ToString())),
+                It.Is<string>(body => body.Contains(slot.Date.ToShortDateString())),
                 null
             ), Times.Once);
         }
@@ -212,7 +212,7 @@ namespace backend_tests.Unit.Services.Patient
             this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
                 this.patientMock.Email,
                 "Vaccination visit canceled",
-                It.Is<string>(body => body.Contains(vaccination.VaccinationSlot.Date.ToString())),
+                It.Is<string>(body => body.Contains(vaccination.VaccinationSlot.Date.ToShortDateString())),
                 null
             ), Times.Once);
         }
