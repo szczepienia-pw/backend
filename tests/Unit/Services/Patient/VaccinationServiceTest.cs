@@ -24,7 +24,6 @@ namespace backend_tests.Unit.Services.Patient
         private Mock<DataContext> dataContextMock { get; set; }
         private Mock<Mailer> mailerMock { get; set; }
         private VaccinationService vaccinationServiceMock { get; set; }
-        private CommonVaccinationService commonVaccinationServiceMock { get; set; }
         private PatientModel patientMock { get; set; }
 
         public VaccinationServiceTest()
@@ -40,7 +39,6 @@ namespace backend_tests.Unit.Services.Patient
             ));
 
             this.vaccinationServiceMock = new VaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
-            this.commonVaccinationServiceMock = new CommonVaccinationService(this.dataContextMock.Object);
             this.patientMock = this.dataContextMock.Object.Patients.First();
         }
 
@@ -175,18 +173,6 @@ namespace backend_tests.Unit.Services.Patient
         public void TestReserveVaccinationSlotThrowExceptionForReservedSlot(int slotId, int vaccineId)
         {
             Assert.ThrowsAsync<ConflictException>(() => this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId));
-        }
-
-        // Get available vaccination slot
-        [Fact]
-        public void TestGetAvailableVaccinationSlots()
-        {
-            var response = this.commonVaccinationServiceMock.GetAvailableVaccinationSlots();
-            Assert.NotNull(response);
-            
-            List<AvailableSlotResponse> slots = new List<AvailableSlotResponse>(response.Result);
-            Assert.Equal(slots.Select(slot => slot.Id).ToArray(), this.dataContextMock.Object.VaccinationSlots.Where(slot => !slot.Reserved).Select(slot => slot.Id).ToArray());
-            Assert.Equal(slots.Select(slot => slot.Date).ToArray(), this.dataContextMock.Object.VaccinationSlots.Where(slot => !slot.Reserved).Select(slot => slot.Date.ToUniversalTime()).ToArray());
         }
 
         // Cancel reservation
