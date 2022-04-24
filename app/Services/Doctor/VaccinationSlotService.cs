@@ -97,6 +97,10 @@ namespace backend.Services.Doctor
                 .FirstOrThrow(vaccination => vaccination.VaccinationSlot.Id == vaccinationSlotId && vaccination.Doctor.Id == doctor.Id,
                               new NotFoundException());
 
+            // Check if status is valid
+            if (status == StatusEnum.Planned)
+                throw new ValidationException("Invalid status");
+
             // Set new vaccination status
             vaccination.Status = status;
 
