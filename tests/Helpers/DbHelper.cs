@@ -116,6 +116,14 @@ namespace backend_tests.Helpers
                     Doctor = doctors.First(),
                     DoctorId = doctors.First().Id,
                     Reserved = true,
+                },
+                new()
+                {
+                    Id = 3,
+                    Date = System.DateTime.Now.AddDays(1),
+                    Doctor = doctors[1],
+                    DoctorId = doctors[1].Id,
+                    Reserved = true,
                 }
             };
 
