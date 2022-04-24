@@ -4,6 +4,7 @@ using backend.Services.Patient;
 using backend.Models.Accounts;
 using backend.Dto.Requests.Patient;
 using backend.Models.Vaccines;
+using System.Net.Http.Headers;
 
 namespace backend.Controllers.Patient
 {
@@ -48,7 +49,7 @@ namespace backend.Controllers.Patient
                 vaccinationSlotId
             ));
         }
-
+        
         // GET patient/vaccinations
         [HttpGet("vaccinations")]
         [Authorize(AccountTypeEnum.Patient)]
@@ -58,6 +59,21 @@ namespace backend.Controllers.Patient
                 (PatientModel)this.HttpContext.Items["User"], 
                 request
             ));
+        }
+
+        // GET patient/vaccinations/:{vaccinationId}/certificate
+        [HttpGet("vaccinations/{vaccinationId:int}/certificate")]
+        public async Task<IActionResult> DownloadVaccinationCertificate(int vaccinationId)
+        {
+            // Generate payload and load it to response body
+            byte[] payload = this.vaccinationService.DownloadVaccinationCertificate((PatientModel)this.HttpContext.Items["User"], vaccinationId);
+            await Response.BodyWriter.WriteAsync(payload);
+
+            // Set accept header and content type to PDF
+            Response.Headers.Accept = new MediaTypeHeaderValue("application/pdf").ToString();
+            Response.ContentType = new MediaTypeHeaderValue("application/pdf").ToString();
+
+            return Ok();
         }
     }
 }

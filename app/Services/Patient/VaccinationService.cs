@@ -9,6 +9,11 @@ using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Dto.Responses.Common.Vaccination;
 using Microsoft.EntityFrameworkCore;
+using backend.Dto.Requests.Patient;
+using Microsoft.AspNetCore.Mvc;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 
 namespace backend.Services.Patient
 {
@@ -138,6 +143,20 @@ namespace backend.Services.Patient
                 paginatedVaccinations,
                 paginatedVaccinations.Select(vaccination => new VaccinationResponse(vaccination)).ToList()
             );
+        }
+
+        public byte[] DownloadVaccinationCertificate(PatientModel patient, int vaccinationId)
+        {
+            // Find vaccination with matching id
+            VaccinationModel vaccination = this.dataContext.Vaccinations.FirstOrThrow(vaccination => vaccination.Id == vaccinationId && vaccination.Patient == patient,
+                                                                                      new NotFoundException("Vaccination entry not found"));
+
+            // Check if vaccination process is finished
+            if (vaccination.Status != StatusEnum.Completed)
+                throw new ConflictException("Vaccination has not been taken yet.");
+
+            // Generate PDF and return byte array
+            return CertificateGenerator.GeneratePDF(vaccination);
         }
     }
 }
