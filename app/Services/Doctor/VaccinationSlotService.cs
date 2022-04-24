@@ -14,10 +14,12 @@ namespace backend.Services.Doctor
     {
         private readonly int slotMarginMins = 15;
         private readonly DataContext dataContext;
+        private readonly Mailer mailer;
 
-        public VaccinationSlotService(DataContext dataContext)
+        public VaccinationSlotService(DataContext dataContext, Mailer mailer)
         {
             this.dataContext = dataContext;
+            this.mailer = mailer;
         }
 
         public async Task<SuccessResponse> AddNewSlot(NewVaccinationSlotRequest request, DoctorModel doctor)
@@ -83,6 +85,36 @@ namespace backend.Services.Doctor
                 throw new ConflictException("Provided vaccination slot is already reserved and cannot be deleted");
 
             this.dataContext.VaccinationSlots.Remove(slot);
+            this.dataContext.SaveChanges();
+
+            return new SuccessResponse();
+        }
+
+        public async Task<SuccessResponse> VaccinatePatient(int vaccinationSlotId, StatusEnum status, DoctorModel doctor)
+        {
+            // Find requested vaccination
+            var vaccination = this.dataContext.Vaccinations.Include("Doctor").Include("VaccinationSlot")
+                .FirstOrThrow(vaccination => vaccination.VaccinationSlot.Id == vaccinationSlotId && vaccination.Doctor.Id == doctor.Id,
+                              new NotFoundException());
+
+            // Check if status is valid
+            if (status == StatusEnum.Planned)
+                throw new ValidationException("Invalid status");
+
+            // Set new vaccination status
+            vaccination.Status = status;
+
+            // Notify patient if visit was canceled
+            if(status == StatusEnum.Canceled)
+            {
+                _ = this.mailer.SendEmailAsync(
+                vaccination.Patient.Email,
+                "Vaccination visit canceled",
+                $"Your {vaccination.Vaccine.Disease} vaccination visit on {vaccination.VaccinationSlot.Date.ToShortDateString()} has been canceled by {vaccination.Doctor.FirstName} {vaccination.Doctor.LastName}."
+                );
+            }
+
+            // Save changes in database
             this.dataContext.SaveChanges();
 
             return new SuccessResponse();

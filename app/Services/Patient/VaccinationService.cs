@@ -90,7 +90,7 @@ namespace backend.Services.Patient
             _ = this.mailer.SendEmailAsync(
                     patient.Email,
                     "Vaccination visit confirmation",
-                    $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date} is confirmed."
+                    $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date.ToShortDateString()} is confirmed."
             );
 
             return new SuccessResponse();
@@ -124,7 +124,7 @@ namespace backend.Services.Patient
             _ = this.mailer.SendEmailAsync(
                       patient.Email,
                       "Vaccination visit canceled",
-                      $"Your {vaccinationForSlot.Vaccine.Disease.ToString()} vaccination visit on {slot.Date} has been canceled."
+                      $"Your {vaccinationForSlot.Vaccine.Disease.ToString()} vaccination visit on {slot.Date.ToShortDateString()} has been canceled."
             );
 
             return new SuccessResponse();

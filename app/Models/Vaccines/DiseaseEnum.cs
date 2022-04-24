@@ -49,5 +49,4 @@ namespace backend.Models.Vaccines
             }
         }
     }
-
 }

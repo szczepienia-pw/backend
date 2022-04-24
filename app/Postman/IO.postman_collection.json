@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2ff3bf8d-3287-43ba-a449-a1f41452c59b",
+		"_postman_id": "e340bff3-81d1-46cd-872f-030d4c0a3ccb",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -893,6 +893,61 @@
 										"doctor",
 										"vaccination-slots",
 										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vaccinate patient",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"success\": {",
+											"      \"type\": \"boolean\"",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"pm.test(\"Response returned success\", () => {",
+											"    const responseJson = pm.response.json();",
+											"    pm.expect(responseJson.success).to.be.equal(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"COMPLETED\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/doctor/vaccination-slots/5",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"doctor",
+										"vaccination-slots",
+										"5"
 									]
 								}
 							},
