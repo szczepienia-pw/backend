@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "87dd8c71-ed67-41e5-b253-b4c8f4b14110",
+		"_postman_id": "e340bff3-81d1-46cd-872f-030d4c0a3ccb",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -134,24 +134,6 @@
 											"key": "disease",
 											"value": "COVID-19"
 										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get available vaccination slots",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{IOHostURL}}/patient/vaccination-slots",
-									"host": [
-										"{{IOHostURL}}"
-									],
-									"path": [
-										"patient",
-										"vaccination-slots"
 									]
 								}
 							},
@@ -562,6 +544,26 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Download vaccination certificate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{IOHostURL}}/patient/vaccinations/6/certificate",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"patient",
+								"vaccinations",
+								"6",
+								"certificate"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
@@ -898,6 +900,33 @@
 						},
 						{
 							"name": "Vaccinate patient",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {",
+											"  \"type\": \"object\",",
+											"  \"properties\": {",
+											"    \"success\": {",
+											"      \"type\": \"boolean\"",
+											"    }",
+											"  }",
+											"}",
+											"",
+											"pm.test(\"Response structure is valid\", () => {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"pm.test(\"Response returned success\", () => {",
+											"    const responseJson = pm.response.json();",
+											"    pm.expect(responseJson.success).to.be.equal(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "PUT",
 								"header": [],
@@ -1820,6 +1849,23 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Get available vaccination slots",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{IOHostURL}}/vaccination-slots",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"vaccination-slots"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
