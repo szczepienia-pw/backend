@@ -16,7 +16,7 @@ namespace backend.Helpers
         private static readonly int headerSize = 24;
         private static readonly int subheaderSize = 16;
 
-        public static byte[] GeneratePDF(VaccinationModel vaccination)
+        public static byte[] GeneratePDF(VaccinationModel vaccination, bool generateQrCode = true)
         {
             // Initialize structures
             MemoryStream workStream = new MemoryStream();
@@ -53,18 +53,27 @@ namespace backend.Helpers
             Paragraph vaccinationDetails = new Paragraph(CertificateGenerator.GenerateVaccinationDataString(vaccination))
                 .SetFont(textfont);
 
-            // Prepare QR code
-            byte[] qrCodeData = CertificateGenerator.GenerateQRCode(vaccination);
-            ImageData imageData = ImageDataFactory.Create(qrCodeData);
-            Image image = new Image(imageData).SetHorizontalAlignment(HorizontalAlignment.CENTER);
-
             // Generate document
             document.Add(header);
             document.Add(patientDetailsHeader);
             document.Add(patientDetails);
             document.Add(vaccinationDetailsHeader);
             document.Add(vaccinationDetails);
-            document.Add(image);
+
+            // Prepare QR code
+            // Due to licensing limitations of IronBarCode, generating QR code during
+            // unit testing is treated as usage outside of Visual Studio development
+            // environment, which is not covered by free license. When generating
+            // certificate for unit tests flag "generateQrCode" should be set to false.
+            if(generateQrCode)
+            {
+                byte[] qrCodeData = CertificateGenerator.GenerateQRCode(vaccination);
+                ImageData imageData = ImageDataFactory.Create(qrCodeData);
+                Image image = new Image(imageData).SetHorizontalAlignment(HorizontalAlignment.CENTER);
+                document.Add(image);
+            }
+
+            // Save document
             document.Close();
 
             // Return byte array
