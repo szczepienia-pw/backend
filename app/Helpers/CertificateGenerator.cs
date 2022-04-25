@@ -5,6 +5,9 @@ using iText.Layout.Properties;
 using iText.Kernel.Pdf;
 using iText.Kernel.Font;
 using iText.IO.Font.Constants;
+using IronBarCode;
+using iText.IO.Image;
+using backend.Models.Accounts;
 
 namespace backend.Helpers
 {
@@ -44,11 +47,16 @@ namespace backend.Helpers
                 .SetFontSize(CertificateGenerator.subheaderSize)
                 .SetFont(headerFont);
 
-            Paragraph patientDetails = new Paragraph($"First name: {vaccination.Patient.FirstName} \nLast name: {vaccination.Patient.LastName}\nPESEL: {vaccination.Patient.Pesel}")
+            Paragraph patientDetails = new Paragraph(CertificateGenerator.GeneratePatientDataString(vaccination.Patient))
                 .SetFont(textfont);
 
-            Paragraph vaccinationDetails = new Paragraph($"Disease: {vaccination.Vaccine.Disease}\nVaccine: {vaccination.Vaccine.Name}\nVaccination date: {vaccination.VaccinationSlot.Date.ToShortDateString()}")
+            Paragraph vaccinationDetails = new Paragraph(CertificateGenerator.GenerateVaccinationDataString(vaccination))
                 .SetFont(textfont);
+
+            // Prepare QR code
+            byte[] qrCodeData = CertificateGenerator.GenerateQRCode(vaccination);
+            ImageData imageData = ImageDataFactory.Create(qrCodeData);
+            Image image = new Image(imageData).SetHorizontalAlignment(HorizontalAlignment.CENTER);
 
             // Generate document
             document.Add(header);
@@ -56,10 +64,31 @@ namespace backend.Helpers
             document.Add(patientDetails);
             document.Add(vaccinationDetailsHeader);
             document.Add(vaccinationDetails);
+            document.Add(image);
             document.Close();
 
             // Return byte array
             return workStream.ToArray();
+        }
+
+        private static byte[] GenerateQRCode(VaccinationModel vaccination)
+        {
+            return BarcodeWriter.CreateBarcode(CertificateGenerator.GenerateQRCodeDataString(vaccination), BarcodeWriterEncoding.QRCode).ToPngBinaryData();
+        }
+
+        private static string GeneratePatientDataString(PatientModel patient)
+        {
+            return $"First name: {patient.FirstName} \nLast name: {patient.LastName}\nPESEL: {patient.Pesel}";
+        }
+
+        private static string GenerateVaccinationDataString(VaccinationModel vaccination)
+        {
+            return $"Disease: {vaccination.Vaccine.Disease}\nVaccine: {vaccination.Vaccine.Name}\nVaccination date: {vaccination.VaccinationSlot.Date.ToShortDateString()}";
+        }
+
+        private static string GenerateQRCodeDataString(VaccinationModel vaccination)
+        {
+            return $"[Digital Vaccination Certificate]\n{CertificateGenerator.GeneratePatientDataString(vaccination.Patient)}\n{CertificateGenerator.GenerateVaccinationDataString(vaccination)}";
         }
     }
 }
