@@ -60,9 +60,23 @@ namespace backend_tests.Helpers
                 }
             };
 
+            var p2 = new PatientModel()
+            {
+                Id = 2,
+                FirstName = Faker.Name.First(),
+                LastName = Faker.Name.Last(),
+                Email = "john2@patient.com",
+                Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
+                Pesel = "83020545496",
+                Address = new AddressModel()
+                {
+
+                }
+            };
+
             var patients = new List<PatientModel>()
             {
-                p1
+                p1, p2
             };
 
             #endregion
@@ -123,6 +137,22 @@ namespace backend_tests.Helpers
                     Date = System.DateTime.Now.AddDays(1),
                     Doctor = doctors[1],
                     DoctorId = doctors[1].Id,
+                    Reserved = true,
+                },
+                new()
+                {
+                    Id = 4,
+                    Date = System.DateTime.Now.AddDays(3),
+                    Doctor = doctors[1],
+                    DoctorId = doctors[1].Id,
+                    Reserved = true,
+                },
+                new()
+                {
+                    Id = 5,
+                    Date = System.DateTime.Now.AddDays(2),
+                    Doctor = doctors.First(),
+                    DoctorId = doctors.First().Id,
                     Reserved = true,
                 }
             };
@@ -209,19 +239,51 @@ namespace backend_tests.Helpers
 
             #region Vaccinations
 
-            var tmpSlot = vaccinationSlots.First(slot => slot.Reserved == true);
             var vaccinations = new List<VaccinationModel>()
             {
                 new()
                 {
                     Id = 1,
-                    VaccinationSlot = tmpSlot,
-                    VaccinationSlotId = tmpSlot.Id,
-                    Doctor = tmpSlot.Doctor,
+                    VaccinationSlot = vaccinationSlots[1],
+                    VaccinationSlotId = vaccinationSlots[1].Id,
+                    Doctor = vaccinationSlots[1].Doctor,
                     Patient = patients.First(),
                     PatientId = patients.First().Id,
                     Vaccine = vaccines.First(),
                     Status = StatusEnum.Planned
+                },
+                new()
+                {
+                    Id = 2,
+                    VaccinationSlot = vaccinationSlots[2],
+                    VaccinationSlotId = vaccinationSlots[2].Id,
+                    Doctor = vaccinationSlots[2].Doctor,
+                    Patient = patients.First(),
+                    PatientId = patients.First().Id,
+                    Vaccine = vaccines.First(),
+                    Status = StatusEnum.Canceled
+                },
+                new()
+                {
+                    Id = 3,
+                    VaccinationSlot = vaccinationSlots[3],
+                    VaccinationSlotId = vaccinationSlots[3].Id,
+                    Doctor = vaccinationSlots[3].Doctor,
+                    Patient = patients.First(),
+                    PatientId = patients.First().Id,
+                    Vaccine = vaccines.First(),
+                    Status = StatusEnum.Completed
+                },
+                new()
+                {
+                    Id = 4,
+                    VaccinationSlot = vaccinationSlots[4],
+                    VaccinationSlotId = vaccinationSlots[4].Id,
+                    Doctor = vaccinationSlots[4].Doctor,
+                    Patient = patients[1],
+                    PatientId = patients[1].Id,
+                    Vaccine = vaccines.First(),
+                    Status = StatusEnum.Completed
                 }
             };
 
