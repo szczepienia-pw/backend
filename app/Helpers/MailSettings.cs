@@ -1,5 +1,8 @@
-﻿namespace backend.Helpers
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace backend.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public class MailSettings
     {
         public string Mail { get; set; }

@@ -5,9 +5,9 @@ using System.Reflection;
 
 namespace backend.Database
 {
+    [ExcludeFromCodeCoverage]
     public static class DataContextExtensions
     {
-        [ExcludeFromCodeCoverage]
         public static IQueryable<T> LoadFields<T>(this DbSet<T> dataContext, string[]? fields = null)
             where T : BaseModel
         {

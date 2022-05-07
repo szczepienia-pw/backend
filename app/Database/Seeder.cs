@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Database
 {
+    [ExcludeFromCodeCoverage]
     public class Seeder
     {
         private readonly SecurePasswordHasher securePasswordHasher;
@@ -18,7 +19,6 @@ namespace backend.Database
             this.securePasswordHasher = securePasswordHasher;
         }
 
-        [ExcludeFromCodeCoverage]
         public void Seed(ModelBuilder modelBuilder)
         {
             #region Addresses

@@ -8,6 +8,7 @@ namespace backend.Helpers
 {
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    [ExcludeFromCodeCoverage]
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     {
         private readonly AccountTypeEnum? accountType = null;

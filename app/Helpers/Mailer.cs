@@ -7,6 +7,7 @@ using MimeKit;
 
 namespace backend.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public class Mailer
     {
         private readonly MailSettings mailSettings;
