@@ -22,13 +22,5 @@ namespace backend.Controllers.Patient
         {
             return Ok(await this.authService.Authenticate(request));
         }
-
-        // GET patient/auth-test
-        [HttpGet("auth-test")]
-        [Authorize(AccountTypeEnum.Patient)]
-        public async Task<IActionResult> AuthTest()
-        {
-            return Ok();
-        }
     }
 }

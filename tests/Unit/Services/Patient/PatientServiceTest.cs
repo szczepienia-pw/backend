@@ -11,15 +11,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using backend.Controllers.Patient;
+using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace backend_tests.Unit.Services.Admin
+namespace backend_tests.Patient
 {
-    public class PatientServiceTest
+    public partial class PatientTest
     {
         private readonly Mock<DataContext> dataContextMock;
         private readonly SecurePasswordHasher securePasswordHasherMock;
         private readonly PatientService patientServiceMock;
+        private readonly PatientController patientController;
 
         private T TestInputParse<T,U>(params string?[] input) 
             where T : PatientRequest, new()
@@ -44,17 +47,19 @@ namespace backend_tests.Unit.Services.Admin
             };
         }
 
-        public PatientServiceTest()
+        public PatientTest()
         {
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.securePasswordHasherMock = SecurePasswordHasherHelper.Hasher;
             this.patientServiceMock = new PatientService(this.dataContextMock.Object, this.securePasswordHasherMock);
+            this.patientController = new PatientController(this.patientServiceMock);
+            this.patientController.ControllerContext.HttpContext = new DefaultHttpContext();
         }
 
         [Theory]
         [InlineData("Warszawa", "00-528", "Hoża", "5a", "3", "BB", "BB", "bb@hot.com", "passwd", "67062675913")]
         [InlineData("Warszawa", "00-528", "Hoża", "5a", "", "BB", "BB", "bb2@hot.com", "passwd", "78121898585")]
-        public void PatientShouldBeRegistered(params string?[] input)
+        public void UtPatientShouldBeRegistered(params string?[] input)
         {
             var patientRequest = this.TestInputParse<PatientRegistrationRequest, PatientRegistrationAddressRequest>(input);
             patientRequest.Password = input[8];
@@ -94,7 +99,7 @@ namespace backend_tests.Unit.Services.Admin
 
         [Theory]
         [InlineData(1, null, null, "Hoża", null, null, "BB", "BB",null, null, "78121898585")]
-        public void ShouldEditPatientData(int patientId, params string[] input)
+        public void UtShouldEditPatientData(int patientId, params string[] input)
         {
             var patientRequest = this.TestInputParse<PatientRequest, PatientAddressRequest>(input);
             var patient = this.dataContextMock.Object.Patients.Where(patient => patient.Id == patientId).First();
@@ -134,7 +139,7 @@ namespace backend_tests.Unit.Services.Admin
         [Theory]
         [InlineData("john@patient.com", null)]
         [InlineData(null, "22222222222")]
-        public void ValidationShouldThrowConflictException(string? email, string? pesel)
+        public void UtValidationShouldThrowConflictException(string? email, string? pesel)
         {
             Assert.Throws<ConflictException>(() => this.patientServiceMock.ValidatePatient(email, pesel));
         }
@@ -145,7 +150,7 @@ namespace backend_tests.Unit.Services.Admin
         [InlineData("john@", null)]
         [InlineData("@patient.com", null)]
         [InlineData("johnpatientcom", null)]
-        public void ValidationShouldThrowValidationException(string? email, string? pesel)
+        public void UtValidationShouldThrowValidationException(string? email, string? pesel)
         {
             Assert.Throws<ValidationException>(() => this.patientServiceMock.ValidatePatient(email, pesel));
         }

@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -6,6 +7,7 @@ namespace backend.Database
 {
     public static class DataContextExtensions
     {
+        [ExcludeFromCodeCoverage]
         public static IQueryable<T> LoadFields<T>(this DbSet<T> dataContext, string[]? fields = null)
             where T : BaseModel
         {

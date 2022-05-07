@@ -1,4 +1,5 @@
-﻿using backend.Helpers;
+﻿using System.Diagnostics.CodeAnalysis;
+using backend.Helpers;
 using backend.Models;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
@@ -11,14 +12,13 @@ namespace backend.Database
     public class Seeder
     {
         private readonly SecurePasswordHasher securePasswordHasher;
-
         
-
         public Seeder(SecurePasswordHasher securePasswordHasher)
         {
             this.securePasswordHasher = securePasswordHasher;
         }
 
+        [ExcludeFromCodeCoverage]
         public void Seed(ModelBuilder modelBuilder)
         {
             #region Addresses

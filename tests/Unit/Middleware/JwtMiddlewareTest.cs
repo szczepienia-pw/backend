@@ -10,12 +10,12 @@ using Microsoft.Extensions.Primitives;
 using Moq;
 using Xunit;
 
-namespace backend_tests.Unit.Middleware
+namespace backend_tests.Middleware
 {
     public class JwtMiddlewareTest
     {
         [Fact]
-        public async Task TestShouldAttachUserAndAccountTypeToTheContext()
+        public async Task UtTestShouldAttachUserAndAccountTypeToTheContext()
         {
             var httpContextMock = new Mock<HttpContext>();
             string superSecret = "super-secret-token";

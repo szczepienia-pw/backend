@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.Controllers;
 using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses.Common.Vaccination;
@@ -17,23 +18,25 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Xunit;
 
-namespace backend_tests.Unit.Services.Patient
+namespace backend_tests.Vaccination
 {
-    public class CommonVaccinationServiceTest
+    public partial class CommonVaccinationTest
     {
-        private Mock<DataContext> dataContextMock { get; set; }
-        private CommonVaccinationService commonVaccinationServiceMock { get; set; }
+        private readonly Mock<DataContext> dataContextMock;
+        private readonly CommonVaccinationService commonVaccinationServiceMock;
+        private readonly CommonVaccinationController commonVaccinationController;
 
-        public CommonVaccinationServiceTest()
+        public CommonVaccinationTest()
         {
             // Constructor is being executed before each test
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.commonVaccinationServiceMock = new CommonVaccinationService(this.dataContextMock.Object);
+            this.commonVaccinationController = new CommonVaccinationController(this.commonVaccinationServiceMock);
         }
 
         // Get available vaccination slot
         [Fact]
-        public void TestGetAvailableVaccinationSlots()
+        public void UtTestGetAvailableVaccinationSlots()
         {
             var response = this.commonVaccinationServiceMock.GetAvailableVaccinationSlots();
             Assert.NotNull(response);

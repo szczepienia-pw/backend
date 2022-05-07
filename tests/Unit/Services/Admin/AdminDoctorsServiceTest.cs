@@ -13,23 +13,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using backend.Controllers.Admin;
 using Xunit;
 
-namespace backend_tests.Unit.Services.Admin
+namespace backend_tests.Admin
 {
-    public class AdminDoctorsServiceTest
+    public partial class AdminDoctorsTest
     {
-        private Mock<DataContext> dataContextMock { get; set; }
-        private AdminDoctorsService adminDoctorsServiceMock { get; set; }
-        private SecurePasswordHasher securePasswordHasherMock { get; set; }
-        private Mock<Mailer> mailerMock { get; set; }
+        private readonly Mock<DataContext> dataContextMock;
+        private readonly AdminDoctorsService adminDoctorsServiceMock;
+        private readonly SecurePasswordHasher securePasswordHasherMock;
+        private readonly Mock<Mailer> mailerMock;
+        private readonly AdminDoctorsController adminDoctorsController;
 
         private DoctorModel? FindDoctor(int doctorId)
         {
             return this.dataContextMock.Object.Doctors.FirstOrDefault(doctor => doctor.Id == doctorId);
         }
 
-        public AdminDoctorsServiceTest()
+        public AdminDoctorsTest()
         {
             // constructor is being executed before each test
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
@@ -42,13 +44,14 @@ namespace backend_tests.Unit.Services.Admin
                 null
             ));
             this.adminDoctorsServiceMock = new AdminDoctorsService(this.dataContextMock.Object, this.securePasswordHasherMock, this.mailerMock.Object);
+            this.adminDoctorsController = new AdminDoctorsController(this.adminDoctorsServiceMock);
         }
 
         // Delete Doctor
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        public void TestShouldDeleteExistingDoctorWithNoSlots(int doctorId)
+        public void UtTestShouldDeleteExistingDoctorWithNoSlots(int doctorId)
         {
             var rsp = this.adminDoctorsServiceMock.DeleteDoctor(doctorId).Result;
             
@@ -60,14 +63,14 @@ namespace backend_tests.Unit.Services.Admin
 
         [Theory]
         [InlineData(3)]
-        public void TestShouldThrowNotFoundExceptionWhenDeleteingANonExistingDoctor(int doctorId)
+        public void UtTestShouldThrowNotFoundExceptionWhenDeleteingANonExistingDoctor(int doctorId)
         {
             Assert.ThrowsAsync<NotFoundException>(() => this.adminDoctorsServiceMock.DeleteDoctor(doctorId));
         }
 
         [Theory]
         [InlineData(1)]
-        public void TestShouldDeleteDoctorAndTheirSlots(int doctorId)
+        public void UtTestShouldDeleteDoctorAndTheirSlots(int doctorId)
         {
             var doctor = this.FindDoctor(doctorId);
             Assert.NotNull(doctor);
@@ -109,7 +112,7 @@ namespace backend_tests.Unit.Services.Admin
         // Create Doctor
         [Theory]
         [InlineData("foo", "bar", "foo@bar.org", "asdf")]
-        public void TestShouldCreateDoctorsAccount(string firstName, string lastName, string email, string password)
+        public void UtTestShouldCreateDoctorsAccount(string firstName, string lastName, string email, string password)
         {
             List<DoctorModel> verifyList = new List<DoctorModel>();
             this.dataContextMock.Setup(dataContext => dataContext.Add(It.IsAny<DoctorModel>())).Callback<DoctorModel>((d) => verifyList.Add(d));
@@ -130,7 +133,7 @@ namespace backend_tests.Unit.Services.Admin
 
         [Theory]
         [InlineData("foo", "bar", "john@doctor.com", "asdf")]
-        public void TestCreatingDoctorWithOccupiedEmailShouldCauseValidationException(string firstName, string lastName, string email, string password)
+        public void UtTestCreatingDoctorWithOccupiedEmailShouldCauseValidationException(string firstName, string lastName, string email, string password)
         {
             Assert.ThrowsAsync<ValidationException>(() => this.adminDoctorsServiceMock.CreateDoctor(new CreateDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email, Password = password }));
         }
@@ -140,7 +143,7 @@ namespace backend_tests.Unit.Services.Admin
         [InlineData("foo", "bar", "@doctor.com", "asdf")]
         [InlineData("foo", "bar", "john@", "asdf")]
         [InlineData("foo", "bar", "johndoctorcom", "asdf")]
-        public void TestCreatingDoctorWithInvalidEmailShouldCauseValidationException(string firstName, string lastName, string email, string password)
+        public void UtTestCreatingDoctorWithInvalidEmailShouldCauseValidationException(string firstName, string lastName, string email, string password)
         {
             Assert.ThrowsAsync<ValidationException>(() => this.adminDoctorsServiceMock.CreateDoctor(new CreateDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email, Password = password }));
         }
@@ -156,7 +159,7 @@ namespace backend_tests.Unit.Services.Admin
         [InlineData(1, "foo", null, null)]
         [InlineData(1, "foo", null, "john_new@doctor.com")]
         [InlineData(1, null, null, "john@doctor.com")]
-        public void TestShouldEditDoctorsData(int doctorId, string firstName, string lastName, string email)
+        public void UtTestShouldEditDoctorsData(int doctorId, string firstName, string lastName, string email)
         {
             List<DoctorModel> verifyList = new List<DoctorModel>();
             this.dataContextMock.Setup(dataContext => dataContext.Doctors.Update(It.IsAny<DoctorModel>())).Callback<DoctorModel>((param) => verifyList.Add(param));
@@ -178,14 +181,14 @@ namespace backend_tests.Unit.Services.Admin
 
         [Theory]
         [InlineData(10, null, null, null)]
-        public void TestEditingNonExistentDoctorShouldCauseNotFoundException(int doctorId, string firstName, string lastName, string email)
+        public void UtTestEditingNonExistentDoctorShouldCauseNotFoundException(int doctorId, string firstName, string lastName, string email)
         {
             Assert.ThrowsAsync<NotFoundException>(() => this.adminDoctorsServiceMock.EditDoctor(doctorId, new EditDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email }));
         }
 
         [Theory]
         [InlineData(2, null, null, "john@doctor.com")]
-        public void TestEditingDoctorWithOccupiedEmailShouldCauseValidationException(int doctorId, string firstName, string lastName, string email)
+        public void UtTestEditingDoctorWithOccupiedEmailShouldCauseValidationException(int doctorId, string firstName, string lastName, string email)
         {
             Assert.ThrowsAsync<ValidationException>(() => this.adminDoctorsServiceMock.EditDoctor(doctorId, new EditDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email }));
         }
@@ -195,14 +198,14 @@ namespace backend_tests.Unit.Services.Admin
         [InlineData(2, null, null, "@doctor.com")]
         [InlineData(2, null, null, "john@")]
         [InlineData(2, null, null, "johndoctorcom")]
-        public void TestEditingDoctorWithInvalidEmailShouldCauseValidationException(int doctorId, string firstName, string lastName, string email)
+        public void UtTestEditingDoctorWithInvalidEmailShouldCauseValidationException(int doctorId, string firstName, string lastName, string email)
         {
             Assert.ThrowsAsync<ValidationException>(() => this.adminDoctorsServiceMock.EditDoctor(doctorId, new EditDoctorRequest() { FirstName = firstName, LastName = lastName, Email = email }));
         }
 
         [Theory]
         [InlineData(1)]
-        public void TestShowDoctorWorks(int doctorId)
+        public void UtTestShowDoctorWorks(int doctorId)
         {
             var doctor = this.adminDoctorsServiceMock.ShowDoctor(doctorId).Result;
 
@@ -211,7 +214,7 @@ namespace backend_tests.Unit.Services.Admin
 
         [Theory]
         [InlineData(10)]
-        public void TestShowDoctorThrowsNotFoundException(int doctorId)
+        public void UtTestShowDoctorThrowsNotFoundException(int doctorId)
         {
             Assert.ThrowsAsync<NotFoundException>(() => this.adminDoctorsServiceMock.ShowDoctor(doctorId));
         }

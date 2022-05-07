@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
@@ -17,9 +18,11 @@ namespace backend.Helpers
 
         protected Mailer() { } // Only for tests
 
+        [ExcludeFromCodeCoverage]
         public virtual async Task<Task> SendEmailAsync(string to, string subject, string body, List<IFormFile>? attachments = null)
             => Task.Factory.StartNew(async () => this.sendEmailAsync(to, subject, body, attachments));
 
+        [ExcludeFromCodeCoverage]
         protected virtual async Task sendEmailAsync(string to, string subject, string body, List<IFormFile>? attachments = null)
         {
             var email = new MimeMessage();
