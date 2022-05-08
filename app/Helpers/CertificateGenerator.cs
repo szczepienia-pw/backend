@@ -5,9 +5,11 @@ using iText.Layout.Properties;
 using iText.Kernel.Pdf;
 using iText.Kernel.Font;
 using iText.IO.Font.Constants;
-using IronBarCode;
 using iText.IO.Image;
 using backend.Models.Accounts;
+using iText.Barcodes;
+using iText.Kernel.Colors;
+using iText.Kernel.Pdf.Xobject;
 
 namespace backend.Helpers
 {
@@ -67,9 +69,12 @@ namespace backend.Helpers
             // certificate for unit tests flag "generateQrCode" should be set to false.
             if(generateQrCode)
             {
-                byte[] qrCodeData = CertificateGenerator.GenerateQRCode(vaccination);
-                ImageData imageData = ImageDataFactory.Create(qrCodeData);
-                Image image = new Image(imageData).SetHorizontalAlignment(HorizontalAlignment.CENTER);
+                BarcodeQRCode qrCodeData = CertificateGenerator.GenerateQRCode(vaccination);
+                PdfFormXObject qrCodeObject = qrCodeData.CreateFormXObject(ColorConstants.BLACK, pdf);
+                Image image = new Image(qrCodeObject)
+                    .SetWidth(200f)
+                    .SetHeight(200f)
+                    .SetHorizontalAlignment(HorizontalAlignment.CENTER);
                 document.Add(image);
             }
 
@@ -80,9 +85,9 @@ namespace backend.Helpers
             return workStream.ToArray();
         }
 
-        private static byte[] GenerateQRCode(VaccinationModel vaccination)
+        private static BarcodeQRCode GenerateQRCode(VaccinationModel vaccination)
         {
-            return BarcodeWriter.CreateBarcode(CertificateGenerator.GenerateQRCodeDataString(vaccination), BarcodeWriterEncoding.QRCode).ToPngBinaryData();
+            return new BarcodeQRCode(CertificateGenerator.GenerateQRCodeDataString(vaccination));
         }
 
         private static string GeneratePatientDataString(PatientModel patient)
