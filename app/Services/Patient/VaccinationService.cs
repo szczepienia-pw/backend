@@ -145,11 +145,6 @@ namespace backend.Services.Patient
 
             var paginatedVaccinations = PaginatedList<VaccinationModel>.Paginate(vaccinations, request.Page);
 
-            foreach (var vaccination in paginatedVaccinations)
-            {
-                Debug.WriteLine(vaccination.VaccinationSlot);
-            }
-            
             return new PaginatedResponse<VaccinationModel, List<VaccinationResponse>>(
                 paginatedVaccinations,
                 paginatedVaccinations.Select(vaccination => new VaccinationResponse(vaccination)).ToList()
