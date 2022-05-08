@@ -1,4 +1,5 @@
-﻿using backend.Helpers;
+﻿using System.Diagnostics;
+using backend.Helpers;
 using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses;
@@ -115,9 +116,13 @@ namespace backend.Services.Patient
 
             if (!slot.Reserved)
                 throw new ConflictException("You cannot cancel not reserved vaccination slot");
-
-            slot.Reserved = false;
+            
             vaccinationForSlot.Status = StatusEnum.Canceled;
+
+            // Duplicate vaccination slot
+            VaccinationSlotModel newSlot = new VaccinationSlotModel { Date = slot.Date, Doctor = slot.Doctor, Reserved = false };
+            this.dataContext.Add(newSlot);
+            
             this.dataContext.SaveChanges();
 
             // Send email with confirmation
@@ -135,6 +140,7 @@ namespace backend.Services.Patient
             var vaccinations = this.dataContext
                 .Vaccinations
                 .Where(vaccination => vaccination.PatientId == patient.Id)
+                .Include(vaccination => vaccination.VaccinationSlot)
                 .OrderByDescending(vaccination => vaccination.Id);
 
             var paginatedVaccinations = PaginatedList<VaccinationModel>.Paginate(vaccinations, request.Page);

@@ -196,7 +196,9 @@ namespace backend_tests.Unit.Services.Patient
 
             await this.vaccinationServiceMock.CancelVaccinationSlot(this.patientMock, vaccination.VaccinationSlotId);
 
-            Assert.Equal(false, vaccination.VaccinationSlot?.Reserved);
+            this.dataContextMock.Verify(dataContext => dataContext.Add(It.IsAny<VaccinationSlotModel>()), Times.Once());
+            
+            Assert.Equal(true, vaccination.VaccinationSlot?.Reserved);
             Assert.Equal(StatusEnum.Canceled, vaccination.Status);
 
             this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
