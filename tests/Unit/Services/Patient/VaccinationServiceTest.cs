@@ -215,7 +215,7 @@ namespace backend_tests.Unit.Services.Patient
         public void TestDownloadCertificateThrowExceptionForNotCompletedVisit(StatusEnum status)
         {
             var vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Patient.Id == this.patientMock.Id && vaccination.Status == status);
-            Assert.Throws<ConflictException>(() => this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccination.Id, false));
+            Assert.Throws<ConflictException>(() => this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccination.Id));
         }
 
         [Theory]
@@ -224,7 +224,7 @@ namespace backend_tests.Unit.Services.Patient
         {
             var patient = this.dataContextMock.Object.Patients.First(patient => patient.Id != this.patientMock.Id);
             var vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Patient.Id == patient.Id && vaccination.Status == status);
-            Assert.Throws<NotFoundException>(() => this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccination.Id, false));
+            Assert.Throws<NotFoundException>(() => this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccination.Id));
         }
 
         [Theory]
