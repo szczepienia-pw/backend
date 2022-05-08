@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using backend.Dto.Responses.Common.Vaccination;
+﻿using backend.Dto.Responses.Common.Vaccination;
 using backend.Models.Accounts;
 using backend.Models.Visits;
 
@@ -18,7 +17,7 @@ namespace backend.Dto.Responses.Patient.Vaccination
 		{
 			this.Id = vaccination.Id;
 			this.Vaccine = new VaccineResponse(vaccination.Vaccine);
-			this.VaccinationSlot = new AvailableSlotResponse(vaccination.VaccinationSlot);
+            this.VaccinationSlot = new AvailableSlotResponse(vaccination.VaccinationSlot);
 			this.Status = vaccination.Status.ToString();
 			this.Patient = vaccination.Patient;
             this.Doctor = vaccination.Doctor;
