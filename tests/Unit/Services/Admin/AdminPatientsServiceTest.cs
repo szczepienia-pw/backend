@@ -70,7 +70,7 @@ namespace backend_tests.Unit.Services.Admin
 
             Assert.True(rsp.Success);
             Assert.Single(patientValidationList);
-            Assert.Single(slotValidationList);
+            Assert.Equal(3, slotValidationList.Count);
             Assert.Equal(patientId, patientValidationList[0].Id);
             Assert.Equal(2, slotValidationList[0].Id);
         }

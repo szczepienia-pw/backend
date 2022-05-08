@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using backend.Database;
 using backend.Dto.Requests.Patient;
@@ -204,6 +205,51 @@ namespace backend_tests.Unit.Services.Patient
                 It.Is<string>(body => body.Contains(vaccination.VaccinationSlot.Date.ToShortDateString())),
                 null
             ), Times.Once);
+        }
+
+        // Download certificate
+
+        [Theory]
+        [InlineData(StatusEnum.Canceled)]
+        [InlineData(StatusEnum.Planned)]
+        public void TestDownloadCertificateThrowExceptionForNotCompletedVisit(StatusEnum status)
+        {
+            var vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Patient.Id == this.patientMock.Id && vaccination.Status == status);
+            Assert.Throws<ConflictException>(() => this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccination.Id, false));
+        }
+
+        [Theory]
+        [InlineData(StatusEnum.Completed)]
+        public void TestDownloadCertificateThrowExceptionForAnotherPatientsVisit(StatusEnum status)
+        {
+            var patient = this.dataContextMock.Object.Patients.First(patient => patient.Id != this.patientMock.Id);
+            var vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Patient.Id == patient.Id && vaccination.Status == status);
+            Assert.Throws<NotFoundException>(() => this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccination.Id, false));
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(int.MaxValue)]
+        [InlineData(int.MinValue)]
+        public void TestDownloadCertificateThrowExceptionForInvalidVaccination(int vaccinationId)
+        {
+            Assert.Throws<NotFoundException>(() => this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccinationId, false));
+        }
+
+        [Fact]
+        public void TestDownloadCertificateShouldReturnPdfFile()
+        {
+            var vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Patient.Id == this.patientMock.Id && vaccination.Status == StatusEnum.Completed);
+            byte[] payload = this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccination.Id, false);
+
+            // Check payload
+            Assert.NotNull(payload);
+            Assert.NotEmpty(payload);
+
+            // Check file header
+            string header = Encoding.UTF8.GetString(payload[0..5]);
+            Assert.Equal("%PDF-", header);
         }
     }
 }

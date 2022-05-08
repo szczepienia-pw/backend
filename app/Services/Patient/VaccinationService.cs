@@ -145,7 +145,7 @@ namespace backend.Services.Patient
             );
         }
 
-        public byte[] DownloadVaccinationCertificate(PatientModel patient, int vaccinationId)
+        public byte[] DownloadVaccinationCertificate(PatientModel patient, int vaccinationId, bool generateQrCode = true)
         {
             // Find vaccination with matching id
             VaccinationModel vaccination = this.dataContext.Vaccinations.FirstOrThrow(vaccination => vaccination.Id == vaccinationId && vaccination.Patient == patient,
@@ -156,7 +156,7 @@ namespace backend.Services.Patient
                 throw new ConflictException("Vaccination has not been taken yet.");
 
             // Generate PDF and return byte array
-            return CertificateGenerator.GeneratePDF(vaccination);
+            return CertificateGenerator.GeneratePDF(vaccination, generateQrCode);
         }
     }
 }

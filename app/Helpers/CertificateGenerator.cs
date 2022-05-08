@@ -5,6 +5,9 @@ using iText.Layout.Properties;
 using iText.Kernel.Pdf;
 using iText.Kernel.Font;
 using iText.IO.Font.Constants;
+using IronBarCode;
+using iText.IO.Image;
+using backend.Models.Accounts;
 
 namespace backend.Helpers
 {
@@ -13,7 +16,7 @@ namespace backend.Helpers
         private static readonly int headerSize = 24;
         private static readonly int subheaderSize = 16;
 
-        public static byte[] GeneratePDF(VaccinationModel vaccination)
+        public static byte[] GeneratePDF(VaccinationModel vaccination, bool generateQrCode = true)
         {
             // Initialize structures
             MemoryStream workStream = new MemoryStream();
@@ -44,10 +47,10 @@ namespace backend.Helpers
                 .SetFontSize(CertificateGenerator.subheaderSize)
                 .SetFont(headerFont);
 
-            Paragraph patientDetails = new Paragraph($"First name: {vaccination.Patient.FirstName} \nLast name: {vaccination.Patient.LastName}\nPESEL: {vaccination.Patient.Pesel}")
+            Paragraph patientDetails = new Paragraph(CertificateGenerator.GeneratePatientDataString(vaccination.Patient))
                 .SetFont(textfont);
 
-            Paragraph vaccinationDetails = new Paragraph($"Disease: {vaccination.Vaccine.Disease}\nVaccine: {vaccination.Vaccine.Name}\nVaccination date: {vaccination.VaccinationSlot.Date.ToShortDateString()}")
+            Paragraph vaccinationDetails = new Paragraph(CertificateGenerator.GenerateVaccinationDataString(vaccination))
                 .SetFont(textfont);
 
             // Generate document
@@ -56,10 +59,45 @@ namespace backend.Helpers
             document.Add(patientDetails);
             document.Add(vaccinationDetailsHeader);
             document.Add(vaccinationDetails);
+
+            // Prepare QR code
+            // Due to licensing limitations of IronBarCode, generating QR code during
+            // unit testing is treated as usage outside of Visual Studio development
+            // environment, which is not covered by free license. When generating
+            // certificate for unit tests flag "generateQrCode" should be set to false.
+            if(generateQrCode)
+            {
+                byte[] qrCodeData = CertificateGenerator.GenerateQRCode(vaccination);
+                ImageData imageData = ImageDataFactory.Create(qrCodeData);
+                Image image = new Image(imageData).SetHorizontalAlignment(HorizontalAlignment.CENTER);
+                document.Add(image);
+            }
+
+            // Save document
             document.Close();
 
             // Return byte array
             return workStream.ToArray();
+        }
+
+        private static byte[] GenerateQRCode(VaccinationModel vaccination)
+        {
+            return BarcodeWriter.CreateBarcode(CertificateGenerator.GenerateQRCodeDataString(vaccination), BarcodeWriterEncoding.QRCode).ToPngBinaryData();
+        }
+
+        private static string GeneratePatientDataString(PatientModel patient)
+        {
+            return $"First name: {patient.FirstName} \nLast name: {patient.LastName}\nPESEL: {patient.Pesel}";
+        }
+
+        private static string GenerateVaccinationDataString(VaccinationModel vaccination)
+        {
+            return $"Disease: {vaccination.Vaccine.Disease}\nVaccine: {vaccination.Vaccine.Name}\nVaccination date: {vaccination.VaccinationSlot.Date.ToShortDateString()}";
+        }
+
+        private static string GenerateQRCodeDataString(VaccinationModel vaccination)
+        {
+            return $"[Digital Vaccination Certificate]\n{CertificateGenerator.GeneratePatientDataString(vaccination.Patient)}\n{CertificateGenerator.GenerateVaccinationDataString(vaccination)}";
         }
     }
 }
