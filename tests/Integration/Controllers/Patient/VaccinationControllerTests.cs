@@ -170,8 +170,7 @@ public partial class VaccinationTest
 
         var rsp = this.vaccinationController.DownloadVaccinationCertificate(vaccinationId).Result;
         
-        Assert.IsType<OkResult>(rsp);
-        Assert.Equal(200, ((OkResult) rsp).StatusCode);
+        Assert.IsType<FileContentResult>(rsp);
     }
     
     
