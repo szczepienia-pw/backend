@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using backend.Models;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
 using backend.Models.Vaccines;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Database
 {
+    [ExcludeFromCodeCoverage]
     public class DataContext : DbContext
     {
         private readonly Seeder seeder;

@@ -1,4 +1,5 @@
-﻿using backend.Models.Visits;
+﻿using System.Diagnostics.CodeAnalysis;
+using backend.Models.Visits;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
@@ -13,11 +14,12 @@ using iText.Kernel.Pdf.Xobject;
 
 namespace backend.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public static class CertificateGenerator
     {
         private static readonly int headerSize = 24;
         private static readonly int subheaderSize = 16;
-
+        
         public static byte[] GeneratePDF(VaccinationModel vaccination, bool generateQrCode = true)
         {
             // Initialize structures

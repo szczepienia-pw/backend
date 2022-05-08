@@ -1,4 +1,6 @@
-﻿namespace backend.Helpers
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace backend.Helpers
 {
     public class PaginatedList<T> : List<T>
     {
@@ -17,6 +19,7 @@
             this.AddRange(items);
         }
 
+        [ExcludeFromCodeCoverage]
         public static PaginatedList<T> Paginate(IQueryable<T> source, int pageNumber, int pageSize = 10)
         {
             var count = source.Count();

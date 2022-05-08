@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
@@ -15,6 +16,7 @@ namespace backend.Helpers
             this.jwtSettings = jwtSettings.Value;
         }
 
+        [ExcludeFromCodeCoverage]
         public string GenerateJwtToken(int id, AccountTypeEnum accountType)
         {
             // Generate token that is valid for 7 days

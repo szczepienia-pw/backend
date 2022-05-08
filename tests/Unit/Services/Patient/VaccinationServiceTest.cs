@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using backend.Controllers.Patient;
 using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses.Common.Vaccination;
@@ -14,20 +15,22 @@ using backend.Models.Visits;
 using backend.Services;
 using backend.Services.Patient;
 using backend_tests.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Xunit;
 
-namespace backend_tests.Unit.Services.Patient
+namespace backend_tests.Patient
 {
-    public class VaccinationServiceTest
+    public partial class VaccinationTest
     {
-        private Mock<DataContext> dataContextMock { get; set; }
-        private Mock<Mailer> mailerMock { get; set; }
-        private VaccinationService vaccinationServiceMock { get; set; }
-        private PatientModel patientMock { get; set; }
+        private readonly Mock<DataContext> dataContextMock;
+        private readonly Mock<Mailer> mailerMock;
+        private readonly VaccinationService vaccinationServiceMock;
+        private readonly PatientModel patientMock;
+        private readonly VaccinationController vaccinationController;
 
-        public VaccinationServiceTest()
+        public VaccinationTest()
         {
             // Constructor is being executed before each test
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
@@ -41,6 +44,8 @@ namespace backend_tests.Unit.Services.Patient
 
             this.vaccinationServiceMock = new VaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
             this.patientMock = this.dataContextMock.Object.Patients.First();
+            this.vaccinationController = new VaccinationController(this.vaccinationServiceMock);
+            this.vaccinationController.ControllerContext.HttpContext = new DefaultHttpContext();
         }
 
         // Show available vaccination slots
@@ -49,7 +54,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData("COVID-21", new int[] { 4, 5 })]
         [InlineData("Flu", new int[] { 6, 7 })]
         [InlineData("OTHER", new int[] { 8, 9, 10 })]
-        public void TestShowVaccinesForValidDiseases(string diseaseName, int[] expectedIds)
+        public void UtTestShowVaccinesForValidDiseases(string diseaseName, int[] expectedIds)
         {
             var response = this.vaccinationServiceMock.ShowAvailableVaccines(new ShowVaccinesRequest() { Disease = diseaseName });
             Assert.NotNull(response);
@@ -65,7 +70,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData("Other")]
         [InlineData("RSV")]
         [InlineData("")]
-        public void TestShowVaccinesThrowExceptionForInvalidDiseases(string diseaseName)
+        public void UtTestShowVaccinesThrowExceptionForInvalidDiseases(string diseaseName)
         {
             Assert.ThrowsAsync<ValidationException>(() => this.vaccinationServiceMock.ShowAvailableVaccines(new ShowVaccinesRequest() { Disease = diseaseName }));
         }
@@ -82,7 +87,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData(1, 8)]
         [InlineData(1, 9)]
         [InlineData(1, 10)]
-        public void TestReserveVaccinationSlotForAvailableSlotAndValidVaccineReturnsSuccess(int slotId, int vaccineId)
+        public void UtTestReserveVaccinationSlotForAvailableSlotAndValidVaccineReturnsSuccess(int slotId, int vaccineId)
         {
             var response = this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId).Result;
 
@@ -101,7 +106,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData(1, 8)]
         [InlineData(1, 9)]
         [InlineData(1, 10)]
-        public void TestReserveVaccinationSlotForAvailableSlotAndValidVaccineReservesSlot(int slotId, int vaccineId)
+        public void UtTestReserveVaccinationSlotForAvailableSlotAndValidVaccineReservesSlot(int slotId, int vaccineId)
         {
             var response = this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId).Result;
 
@@ -123,7 +128,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData(1, 8)]
         [InlineData(1, 9)]
         [InlineData(1, 10)]
-        public void TestReserveVaccinationSlotForAvailableSlotAndValidVaccineCreatesVaccinationRecord(int slotId, int vaccineId)
+        public void UtTestReserveVaccinationSlotForAvailableSlotAndValidVaccineCreatesVaccinationRecord(int slotId, int vaccineId)
         {
             List<VaccinationModel> verifyList = new List<VaccinationModel>();
             this.dataContextMock.Setup(dataContext => dataContext.Vaccinations.Add(It.IsAny<VaccinationModel>())).Callback<VaccinationModel>((v) => verifyList.Add(v));
@@ -155,7 +160,7 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData(3, 1)]
         [InlineData(-1, 2)]
         [InlineData(0, 3)]
-        public void TestReserveVaccinationSlotThrowExceptionForInvalidSlot(int slotId, int vaccineId)
+        public void UtTestReserveVaccinationSlotThrowExceptionForInvalidSlot(int slotId, int vaccineId)
         {
             Assert.ThrowsAsync<NotFoundException>(() => this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId));
         }
@@ -164,14 +169,14 @@ namespace backend_tests.Unit.Services.Patient
         [InlineData(1, -1)]
         [InlineData(1, 0)]
         [InlineData(1, 11)]
-        public void TestReserveVaccinationSlotThrowExceptionForInvalidVaccine(int slotId, int vaccineId)
+        public void UtTestReserveVaccinationSlotThrowExceptionForInvalidVaccine(int slotId, int vaccineId)
         {
             Assert.ThrowsAsync<NotFoundException>(() => this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId));
         }
 
         [Theory]
         [InlineData(2, 0)]
-        public void TestReserveVaccinationSlotThrowExceptionForReservedSlot(int slotId, int vaccineId)
+        public void UtTestReserveVaccinationSlotThrowExceptionForReservedSlot(int slotId, int vaccineId)
         {
             Assert.ThrowsAsync<ConflictException>(() => this.vaccinationServiceMock.ReserveVaccinationSlot(this.patientMock, slotId, vaccineId));
         }
@@ -179,7 +184,7 @@ namespace backend_tests.Unit.Services.Patient
         // Cancel reservation
 
         [Fact]
-        public void TestShouldThrowAnExceptionWhenCancelingNotHisVaccination()
+        public void UtTestShouldThrowAnExceptionWhenCancelingNotHisVaccination()
         {
             var vaccinationSlot = this.dataContextMock.Object.VaccinationSlots.First();
 
@@ -189,7 +194,7 @@ namespace backend_tests.Unit.Services.Patient
         }
 
         [Fact]
-        public async void TestShouldCorrectlyCancelVaccination()
+        public async void UtTestShouldCorrectlyCancelVaccination()
         {
             var vaccination = this.dataContextMock.Object.Vaccinations.First();
             this.mailerMock.Setup(mailer => mailer.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns(Task.FromResult(Task.CompletedTask));

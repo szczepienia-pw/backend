@@ -1,4 +1,5 @@
-﻿using backend.Helpers;
+﻿using System.Diagnostics.CodeAnalysis;
+using backend.Helpers;
 using backend.Models;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
@@ -8,12 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Database
 {
+    [ExcludeFromCodeCoverage]
     public class Seeder
     {
         private readonly SecurePasswordHasher securePasswordHasher;
-
         
-
         public Seeder(SecurePasswordHasher securePasswordHasher)
         {
             this.securePasswordHasher = securePasswordHasher;

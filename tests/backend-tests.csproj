@@ -36,4 +36,16 @@
     <ProjectReference Include="..\app\backend.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Integration\Controllers\Docto\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Integration\Controllers\Docto\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Integration\Controllers\Docto\**" />
+  </ItemGroup>
+
 </Project>

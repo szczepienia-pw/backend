@@ -22,13 +22,5 @@ namespace backend.Controllers.Admin
         {
             return Ok(await this.authService.Authenticate(request));
         }
-
-        // GET admin/auth-test
-        [HttpGet("auth-test")]
-        [Authorize(AccountTypeEnum.Admin)]
-        public async Task<IActionResult> AuthTest()
-        {
-            return Ok();
-        }
     }
 }

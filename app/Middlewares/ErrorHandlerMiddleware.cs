@@ -3,12 +3,14 @@ using backend.Exceptions;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace backend.Middlewares
 {
+    [ExcludeFromCodeCoverage]
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate next;

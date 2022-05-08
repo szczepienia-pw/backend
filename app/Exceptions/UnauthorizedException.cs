@@ -1,7 +1,9 @@
-﻿using backend.Dto.Responses;
+﻿using System.Diagnostics.CodeAnalysis;
+using backend.Dto.Responses;
 
 namespace backend.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     public class UnauthorizedException : BasicException
     {
         public override ErrorResponse Render(HttpResponse response)
