@@ -1,4 +1,5 @@
-﻿using backend.Helpers;
+﻿using System.Diagnostics;
+using backend.Helpers;
 using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses;
@@ -9,6 +10,11 @@ using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
 using backend.Dto.Responses.Common.Vaccination;
 using Microsoft.EntityFrameworkCore;
+using backend.Dto.Requests.Patient;
+using Microsoft.AspNetCore.Mvc;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 
 namespace backend.Services.Patient
 {
@@ -39,18 +45,6 @@ namespace backend.Services.Patient
 
             // Return list of vaccines
             return new ShowAvailableVaccinesResponse(vaccines);
-        }
-
-        public async Task<List<AvailableSlotResponse>> GetAvailableVaccinationSlots()
-        {
-            // Find available vaccination slots
-            List<VaccinationSlotModel> slots = this.dataContext.VaccinationSlots
-                                              .Where(slot => slot.Reserved == false &&
-                                                             slot.Date >= DateTime.Now)
-                                              .ToList();
-
-            // Return list of slots
-            return slots.Select(slot => new AvailableSlotResponse(slot)).ToList();
         }
 
         public async Task<SuccessResponse> ReserveVaccinationSlot(PatientModel patient, int vaccinationSlotId, int vaccineId)
@@ -97,7 +91,7 @@ namespace backend.Services.Patient
             _ = this.mailer.SendEmailAsync(
                     patient.Email,
                     "Vaccination visit confirmation",
-                    $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date} is confirmed."
+                    $"Your {vaccine.Disease.ToString()} vaccination visit on {slot.Date.ToShortDateString()} is confirmed."
             );
 
             return new SuccessResponse();
@@ -122,16 +116,20 @@ namespace backend.Services.Patient
 
             if (!slot.Reserved)
                 throw new ConflictException("You cannot cancel not reserved vaccination slot");
-
-            slot.Reserved = false;
+            
             vaccinationForSlot.Status = StatusEnum.Canceled;
+
+            // Duplicate vaccination slot
+            VaccinationSlotModel newSlot = new VaccinationSlotModel { Date = slot.Date, Doctor = slot.Doctor, Reserved = false };
+            this.dataContext.Add(newSlot);
+            
             this.dataContext.SaveChanges();
 
             // Send email with confirmation
             _ = this.mailer.SendEmailAsync(
                       patient.Email,
                       "Vaccination visit canceled",
-                      $"Your {vaccinationForSlot.Vaccine.Disease.ToString()} vaccination visit on {slot.Date} has been canceled."
+                      $"Your {vaccinationForSlot.Vaccine.Disease.ToString()} vaccination visit on {slot.Date.ToShortDateString()} has been canceled."
             );
 
             return new SuccessResponse();
@@ -142,6 +140,7 @@ namespace backend.Services.Patient
             var vaccinations = this.dataContext
                 .Vaccinations
                 .Where(vaccination => vaccination.PatientId == patient.Id)
+                .Include(vaccination => vaccination.VaccinationSlot)
                 .OrderByDescending(vaccination => vaccination.Id);
 
             var paginatedVaccinations = PaginatedList<VaccinationModel>.Paginate(vaccinations, request.Page);
@@ -150,6 +149,20 @@ namespace backend.Services.Patient
                 paginatedVaccinations,
                 paginatedVaccinations.Select(vaccination => new VaccinationResponse(vaccination)).ToList()
             );
+        }
+
+        public byte[] DownloadVaccinationCertificate(PatientModel patient, int vaccinationId, bool generateQrCode = true)
+        {
+            // Find vaccination with matching id
+            VaccinationModel vaccination = this.dataContext.Vaccinations.FirstOrThrow(vaccination => vaccination.Id == vaccinationId && vaccination.Patient == patient,
+                                                                                      new NotFoundException("Vaccination entry not found"));
+
+            // Check if vaccination process is finished
+            if (vaccination.Status != StatusEnum.Completed)
+                throw new ConflictException("Vaccination has not been taken yet.");
+
+            // Generate PDF and return byte array
+            return CertificateGenerator.GeneratePDF(vaccination, generateQrCode);
         }
     }
 }

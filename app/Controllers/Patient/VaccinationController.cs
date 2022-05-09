@@ -4,6 +4,7 @@ using backend.Services.Patient;
 using backend.Models.Accounts;
 using backend.Dto.Requests.Patient;
 using backend.Models.Vaccines;
+using System.Net.Http.Headers;
 
 namespace backend.Controllers.Patient
 {
@@ -24,14 +25,6 @@ namespace backend.Controllers.Patient
         public async Task<IActionResult> ShowAvailableVaccines([FromQuery] ShowVaccinesRequest request)
         {
             return Ok(await this.vaccinationService.ShowAvailableVaccines(request));
-        }
-
-        // GET patient/vaccination-slots
-        [HttpGet("vaccination-slots")]
-        [Authorize(AccountTypeEnum.Patient)]
-        public async Task<IActionResult> GetAvailableVaccinationSlots()
-        {
-            return Ok(await this.vaccinationService.GetAvailableVaccinationSlots());
         }
 
         // PUT patient/vaccination-slots/:{vaccinationSlotId}
@@ -56,7 +49,7 @@ namespace backend.Controllers.Patient
                 vaccinationSlotId
             ));
         }
-
+        
         // GET patient/vaccinations
         [HttpGet("vaccinations")]
         [Authorize(AccountTypeEnum.Patient)]
@@ -66,6 +59,17 @@ namespace backend.Controllers.Patient
                 (PatientModel)this.HttpContext.Items["User"], 
                 request
             ));
+        }
+
+        // GET patient/vaccinations/:{vaccinationId}/certificate
+        [HttpGet("vaccinations/{vaccinationId:int}/certificate")]
+        public async Task<IActionResult> DownloadVaccinationCertificate(int vaccinationId)
+        {
+            // Generate payload
+            byte[] payload = this.vaccinationService.DownloadVaccinationCertificate((PatientModel)this.HttpContext.Items["User"], vaccinationId);
+
+            // Return PDF file
+            return File(payload, new MediaTypeHeaderValue("application/pdf").ToString());
         }
     }
 }

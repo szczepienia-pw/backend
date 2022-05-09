@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using backend.Services.Doctor;
 using backend.Helpers;
 using backend.Dto.Requests.Doctor.VaccinationSlot;
 using backend.Models.Accounts;
+using backend.Models.Visits;
 
 namespace backend.Controllers.Doctor
 {
@@ -18,6 +18,14 @@ namespace backend.Controllers.Doctor
             this.vaccinationSlotService = vaccinationSlotService;
         }
 
+        // GET doctor/vaccination-slots
+        [HttpGet]
+        [Authorize(AccountTypeEnum.Doctor)]
+        public async Task<IActionResult> GetVaccinationSlots([FromQuery] FilterVaccinationSlotsRequest request)
+        {
+            return Ok(await this.vaccinationSlotService.GetSlots(request, (DoctorModel)this.HttpContext.Items["User"]));
+        }
+
         // POST doctor/vaccination-slots
         [HttpPost]
         [Authorize(AccountTypeEnum.Doctor)]
@@ -26,12 +34,12 @@ namespace backend.Controllers.Doctor
             return Ok(await this.vaccinationSlotService.AddNewSlot(request, (DoctorModel)this.HttpContext.Items["User"]));
         }
 
-        // GET doctor/vaccination-slots
-        [HttpGet]
+        // PUT doctor/vaccination-slots/:vaccination-slot
+        [HttpPut("{vaccinationSlotId:int}")]
         [Authorize(AccountTypeEnum.Doctor)]
-        public async Task<IActionResult> GetVaccinationSlots([FromQuery] FilterVaccinationSlotsRequest request)
+        public async Task<IActionResult> VaccinatePatient(int vaccinationSlotId, [FromBody] VaccinatePatientRequest request)
         {
-            return Ok(await this.vaccinationSlotService.GetSlots(request, (DoctorModel)this.HttpContext.Items["User"]));
+            return Ok(await this.vaccinationSlotService.VaccinatePatient(vaccinationSlotId, StatusEnumAdapter.ToEnum(request.Status), (DoctorModel)this.HttpContext.Items["User"]));
         }
 
         // DELETE doctor/vaccination-slots/:vaccination-slot

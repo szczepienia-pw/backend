@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using backend.Database;
 using backend.Exceptions;
 using backend.Models;
@@ -8,7 +9,8 @@ namespace backend.Helpers
 {
 	public static class EnumberableExtensions
 	{
-		public static void CheckDuplicate<TSource>(this DbSet<TSource> source, Func<TSource, bool> predicate, BasicException exception, string[]? relatedFields = null)
+        [ExcludeFromCodeCoverage]
+        public static void CheckDuplicate<TSource>(this DbSet<TSource> source, Func<TSource, bool> predicate, BasicException exception, string[]? relatedFields = null)
             where TSource : BaseModel
         {
             if (source != null)
@@ -21,6 +23,7 @@ namespace backend.Helpers
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public static TSource FirstOrThrow<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, BasicException exception)
         {
             if (source == null)

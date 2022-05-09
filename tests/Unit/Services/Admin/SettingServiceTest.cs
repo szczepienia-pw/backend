@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using backend.Controllers.Admin;
 using backend.Database;
 using backend.Exceptions;
 using backend.Services.Admin;
 using backend_tests.Helpers;
 using Xunit;
 
-namespace backend_tests.Unit.Services.Admin
+namespace backend_tests.Admin
 {
-    public class SettingServiceTest
+    public partial class SettingTest
     {
         private readonly DataContext dataContext;
         private readonly SettingService service;
+        private readonly SettingController settingController;
 
-        public SettingServiceTest()
+        public SettingTest()
         {
             this.dataContext = DbHelper.GetMockedDataContextWithAccounts().Object;
             this.service = new SettingService(this.dataContext);
+            this.settingController = new SettingController(this.service);
         }
 
         [Fact]
-        public async Task TestShouldThrowAnExceptionWhenPassingNotExistingSettingToUpdate()
+        public async Task UtTestShouldThrowAnExceptionWhenPassingNotExistingSettingToUpdate()
         {
             var request = new Dictionary<string, string>()
             {
@@ -34,7 +37,7 @@ namespace backend_tests.Unit.Services.Admin
         }
 
         [Fact]
-        public async Task TestShouldReturnSettingsAsDictionary()
+        public async Task UtTestShouldReturnSettingsAsDictionary()
         {
             var response = await this.service.Get();
 

@@ -1,7 +1,9 @@
-﻿using backend.Dto.Responses;
+﻿using System.Diagnostics.CodeAnalysis;
+using backend.Dto.Responses;
 
 namespace backend.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     public class ConflictException : BasicException
     {
         public ConflictException(string message) : base(message) { }

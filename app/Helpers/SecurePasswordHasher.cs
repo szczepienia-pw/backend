@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 using Microsoft.Extensions.Options;
 
 namespace backend.Helpers
@@ -15,6 +16,7 @@ namespace backend.Helpers
             this.hashSize = hasherSettings.Value.HashSize;
         }
 
+        [ExcludeFromCodeCoverage]
         public string Hash(string password, int iterations)
         {
             // Create salt
@@ -37,16 +39,19 @@ namespace backend.Helpers
             return string.Format("$MYHASH$V1${0}${1}", iterations, base64Hash);
         }
 
+        [ExcludeFromCodeCoverage]
         public string Hash(string password)
         {
             return Hash(password, 10000);
         }
 
+        [ExcludeFromCodeCoverage]
         public bool IsHashSupported(string hashString)
         {
             return hashString.Contains("$MYHASH$V1$");
         }
 
+        [ExcludeFromCodeCoverage]
         public bool Verify(string password, string hashedPassword)
         {
             // Check hash

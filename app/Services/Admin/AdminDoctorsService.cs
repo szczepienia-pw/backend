@@ -1,4 +1,5 @@
-﻿using backend.Database;
+﻿using System.Diagnostics;
+using backend.Database;
 using backend.Dto.Requests.Admin;
 using backend.Dto.Requests.Admin.Doctor;
 using backend.Dto.Responses;
@@ -6,6 +7,7 @@ using backend.Dto.Responses.Doctor;
 using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Admin
 {
@@ -13,6 +15,7 @@ namespace backend.Services.Admin
     {
         private readonly DataContext dataContext;
         private readonly SecurePasswordHasher securePasswordHasher;
+        private readonly Mailer mailer;
 
         private void ValidateEmail(string email, int? id = null)
         {
@@ -31,10 +34,11 @@ namespace backend.Services.Admin
             }
         }
 
-        public AdminDoctorsService(DataContext dataContext, SecurePasswordHasher securePasswordHasher)
+        public AdminDoctorsService(DataContext dataContext, SecurePasswordHasher securePasswordHasher, Mailer mailer)
         {
             this.dataContext = dataContext;
             this.securePasswordHasher = securePasswordHasher;
+            this.mailer = mailer;
         }
 
         public async Task<SuccessResponse> DeleteDoctor(int doctorId)
@@ -48,10 +52,34 @@ namespace backend.Services.Admin
                                                                             slot.Reserved == false);
             this.dataContext.RemoveRange(freeSlots);
 
-            var reservedSlots = this.dataContext.VaccinationSlots.Where(slot => slot.Doctor.Id == doctorId &&
-                                                                                slot.Reserved == true &&
-                                                                                slot.Date > DateTime.Now);
-            this.dataContext.RemoveRange(reservedSlots); // Add patient notification, when visit cancellation logic is implemented.
+            var reservedSlots = this.dataContext.VaccinationSlots
+                .Where(slot => slot.Doctor.Id == doctorId && slot.Reserved == true && slot.Date > DateTime.Now)
+                .Include(slot => slot.Vaccination.Patient)
+                .Include(slot => slot.Vaccination.Vaccine);
+
+            var slotsGroupedByPatients = reservedSlots
+                .ToList()
+                .GroupBy(slot => slot.Vaccination?.Patient);
+
+            foreach (var slotsGroup in slotsGroupedByPatients)
+            {
+                var patient = slotsGroup.Key;
+                if (patient == null) continue;
+
+                var visitDates = String.Join(
+                    ", ", 
+                    slotsGroup.Select(slot => $"{slot.Date.ToString()} ({slot.Vaccination.Vaccine.Disease})")
+                );
+                
+                // Send email with info about canceling visit
+                _ = this.mailer.SendEmailAsync(
+                    patient.Email,
+                    "Vaccination visits deleted",
+                    $"Your vaccination visits on {visitDates} has been deleted."
+                );
+            }
+            
+            this.dataContext.RemoveRange(reservedSlots);
 
             // Remove doctor
             (doctor as ISoftDelete).SoftDelete();

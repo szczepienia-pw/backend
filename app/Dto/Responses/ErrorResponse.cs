@@ -1,5 +1,8 @@
-﻿namespace backend.Dto.Responses
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace backend.Dto.Responses
 {
+    [ExcludeFromCodeCoverage]
     public class ErrorResponse
     {
         public bool Success { get; set; } = false;

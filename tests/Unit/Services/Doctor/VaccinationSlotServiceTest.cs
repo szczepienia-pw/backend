@@ -2,29 +2,57 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.Controllers.Doctor;
+using backend.Database;
 using backend.Dto.Requests.Doctor.VaccinationSlot;
 using backend.Dto.Responses;
 using backend.Dto.Responses.Doctor.Vaccination;
 using backend.Exceptions;
+using backend.Helpers;
 using backend.Models.Visits;
 using backend.Services.Doctor;
 using backend_tests.Helpers;
+using Microsoft.AspNetCore.Http;
+using Moq;
 using Xunit;
 
-namespace backend_tests.Unit.Services.Doctor
+namespace backend_tests.Doctor
 {
-    public class VaccinationSlotServiceTest
+    public partial class VaccinationSlotTest
     {
+        private readonly Mock<Mailer> mailerMock;
+        private readonly Mock<DataContext> dbContext;
+        private readonly VaccinationSlotService vaccinationSlotService;
+        private readonly VaccinationSlotsController vaccinationSlotsController;
+        
+        public VaccinationSlotTest()
+        {
+            // Constructor is being executed before each test
+            this.mailerMock = new Mock<Mailer>();
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                null
+            ));
+
+            this.dbContext = Helpers.DbHelper.GetMockedDataContextWithAccounts();
+            this.vaccinationSlotService = new VaccinationSlotService(this.dbContext.Object, this.mailerMock.Object);
+            this.vaccinationSlotsController = new VaccinationSlotsController(this.vaccinationSlotService);
+
+            var doctor = this.dbContext.Object.Doctors.First(d => d.Id == 1);
+            this.vaccinationSlotsController.ControllerContext.HttpContext = new DefaultHttpContext();
+            this.vaccinationSlotsController.HttpContext.Items = new Dictionary<object, object?>() { {"User", doctor} };
+        }
+
         [Theory]
         [InlineData("2023-04-01T14:15:00Z")]
         [InlineData("2023-04-15T14:15:00Z")]
-        public async Task TestShouldAddNewDateSlot(string date)
+        public async Task UtTestShouldAddNewDateSlot(string date)
         {
-            var dataContext = DbHelper.GetMockedDataContextWithAccounts().Object;
-            var vaccinationSlotService = new VaccinationSlotService(dataContext);
-            var doctorModel = dataContext.Doctors.First();
+            var doctorModel = this.dbContext.Object.Doctors.First();
 
-            var response = await vaccinationSlotService.AddNewSlot(
+            var response = await this.vaccinationSlotService.AddNewSlot(
                 new NewVaccinationSlotRequest() { Date = date },
                 doctorModel
             );
@@ -41,10 +69,9 @@ namespace backend_tests.Unit.Services.Doctor
         [InlineData("2023-04-01T14:00:00Z", "2023-04-01T13:46:00Z", true)]
         [InlineData("2023-04-01T14:00:00Z", "2023-04-01T13:45:01Z", true)]
         [InlineData("2023-04-01T14:00:00Z", "2023-04-01T13:45:00Z", false)]
-        public async Task TestShouldThrowAnExceptionWhenAddingNewDateSlotWithin15Minutes(string firstDate, string secondDate, bool shouldThrow)
+        public async Task UtTestShouldThrowAnExceptionWhenAddingNewDateSlotWithin15Minutes(string firstDate, string secondDate, bool shouldThrow)
         {
-            var dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
-            var doctorModel = dataContextMock.Object.Doctors.First();
+            var doctorModel = this.dbContext.Object.Doctors.First();
             var vaccinationSlots = new List<VaccinationSlotModel>()
             {
                 new()
@@ -55,21 +82,21 @@ namespace backend_tests.Unit.Services.Doctor
                 }
             };
 
-            dataContextMock
+            this.dbContext
                 .Setup(dbContext => dbContext.VaccinationSlots)
                 .Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
 
-            var vaccinationSlotService = new VaccinationSlotService(dataContextMock.Object);
+            var vaccinationSlotService = new VaccinationSlotService(this.dbContext.Object, this.mailerMock.Object);
 
             // Add second date
             var request = new NewVaccinationSlotRequest() {Date = secondDate};
             if (shouldThrow)
             {
-                await Assert.ThrowsAsync<ValidationException>(() => vaccinationSlotService.AddNewSlot(request, doctorModel));
+                await Assert.ThrowsAsync<ValidationException>(() => this.vaccinationSlotService.AddNewSlot(request, doctorModel));
             }
             else
             {
-                await vaccinationSlotService.AddNewSlot(request, doctorModel);
+                await this.vaccinationSlotService.AddNewSlot(request, doctorModel);
                 Assert.True(true);
             }
         }
@@ -80,31 +107,28 @@ namespace backend_tests.Unit.Services.Doctor
         [InlineData("2022-03-01T07:00:00Z", true)]
         [InlineData("2022-09-01T08:00:00Z", false)]
         [InlineData("2032-04-01T20:00:00Z", false)]
-        public async Task TestShouldThrowAnExceptionWhenAddingNewDateSlotInPast(string date, bool shouldThrow)
+        public async Task UtTestShouldThrowAnExceptionWhenAddingNewDateSlotInPast(string date, bool shouldThrow)
         {
-            var dataContext = DbHelper.GetMockedDataContextWithAccounts().Object;
-            var vaccinationSlotService = new VaccinationSlotService(dataContext);
-            var doctorModel = dataContext.Doctors.First();
+            var doctorModel = this.dbContext.Object.Doctors.First();
 
             // Add second date
             var request = new NewVaccinationSlotRequest() { Date = date };
             if (shouldThrow)
             {
-                await Assert.ThrowsAsync<ValidationException>(() => vaccinationSlotService.AddNewSlot(request, doctorModel));
+                await Assert.ThrowsAsync<ValidationException>(() => this.vaccinationSlotService.AddNewSlot(request, doctorModel));
             }
             else
             {
-                await vaccinationSlotService.AddNewSlot(request, doctorModel);
+                await this.vaccinationSlotService.AddNewSlot(request, doctorModel);
                 Assert.True(true);
             }
         }
 
         [Fact]
-        public async Task TestShouldDeleteOnlyDoctorNotReservedSlots()
+        public async Task UtTestShouldDeleteOnlyDoctorNotReservedSlots()
         {
-            var dataContext = DbHelper.GetMockedDataContextWithAccounts();
-            var firstDoctor = dataContext.Object.Doctors.First(doctor => doctor.Id == 1);
-            var secondDoctor = dataContext.Object.Doctors.First(doctor => doctor.Id == 2);
+            var firstDoctor = this.dbContext.Object.Doctors.First(doctor => doctor.Id == 1);
+            var secondDoctor = this.dbContext.Object.Doctors.First(doctor => doctor.Id == 2);
 
             var vaccinationSlots = new List<VaccinationSlotModel>()
             {
@@ -131,26 +155,25 @@ namespace backend_tests.Unit.Services.Doctor
                 }
             };
 
-            dataContext.Setup(context => context.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
-            var vaccinationService = new VaccinationSlotService(dataContext.Object);
+            this.dbContext.Setup(context => context.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
 
             // Test correct deletion
-            var response = await vaccinationService.DeleteSlot(1, firstDoctor);
+            var response = await this.vaccinationSlotService.DeleteSlot(1, firstDoctor);
             Assert.IsType<SuccessResponse>(response);
 
             // Test reserved
             await Assert.ThrowsAsync<ConflictException>(
-                () => vaccinationService.DeleteSlot(2, firstDoctor)
+                () => this.vaccinationSlotService.DeleteSlot(2, firstDoctor)
             );
 
             // Test another doctor
             await Assert.ThrowsAsync<NotFoundException>(
-                () => vaccinationService.DeleteSlot(3, firstDoctor)
+                () => this.vaccinationSlotService.DeleteSlot(3, firstDoctor)
             );
 
             // Test not existing vaccination slot
             await Assert.ThrowsAsync<NotFoundException>(
-                () => vaccinationService.DeleteSlot(4, firstDoctor)
+                () => this.vaccinationSlotService.DeleteSlot(4, firstDoctor)
             );
         }
 
@@ -174,11 +197,10 @@ namespace backend_tests.Unit.Services.Doctor
         // Edge cases
         [InlineData(null, "2022-04-20T14:00:01Z", null, new int[] {})]
         [InlineData(null, null, "2022-04-01T13:59:59Z", new int[] { })]
-        public async Task TestShouldCorrectlyFilterVaccinationSlots(int? onlyReserved, string? startDate, string? endDate, int[] shownIds)
+        public async Task UtTestShouldCorrectlyFilterVaccinationSlots(int? onlyReserved, string? startDate, string? endDate, int[] shownIds)
         {
-            var dataContext = DbHelper.GetMockedDataContextWithAccounts();
-            var firstDoctor = dataContext.Object.Doctors.First(doctor => doctor.Id == 1);
-            var secondDoctor = dataContext.Object.Doctors.First(doctor => doctor.Id == 2);
+            var firstDoctor = this.dbContext.Object.Doctors.First(doctor => doctor.Id == 1);
+            var secondDoctor = this.dbContext.Object.Doctors.First(doctor => doctor.Id == 2);
 
             var vaccinationSlots = new List<VaccinationSlotModel>()
             {
@@ -240,8 +262,7 @@ namespace backend_tests.Unit.Services.Doctor
                 }
             };
 
-            dataContext.Setup(context => context.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
-            var vaccinationService = new VaccinationSlotService(dataContext.Object);
+            this.dbContext.Setup(context => context.VaccinationSlots).Returns(vaccinationSlots.AsQueryable().BuildMockDbSet().Object);
 
             var request = new FilterVaccinationSlotsRequest()
             {
@@ -249,12 +270,84 @@ namespace backend_tests.Unit.Services.Doctor
                 StartDate = startDate,
                 EndDate = endDate
             };
-            var result = await vaccinationService.GetSlots(request, firstDoctor);
+            var result = await this.vaccinationSlotService.GetSlots(request, firstDoctor);
 
             Assert.IsType<PaginatedResponse<VaccinationSlotModel, List<VaccinationSlotResponse>>>(result);
 
             var vaccinationSlotIds = result.Data.Select(vaccinationSlotResponse => vaccinationSlotResponse.Id).ToArray();
             Assert.Equal(shownIds, vaccinationSlotIds);
+        }
+
+        // Vaccinate patient
+        [Theory]
+        [InlineData(-1, StatusEnum.Completed)]
+        [InlineData(0, StatusEnum.Completed)]
+        [InlineData(int.MaxValue, StatusEnum.Completed)]
+        [InlineData(int.MinValue, StatusEnum.Completed)]
+        [InlineData(-1, StatusEnum.Canceled)]
+        [InlineData(0, StatusEnum.Canceled)]
+        [InlineData(int.MaxValue, StatusEnum.Canceled)]
+        [InlineData(int.MinValue, StatusEnum.Canceled)]
+        public void UtTestVaccinatePatientSlotThrowExceptionForNotExistingSlot(int slotId, StatusEnum status)
+        {
+            var doctor = this.dbContext.Object.Doctors.First(doctor => doctor.Id == 1);
+            Assert.ThrowsAsync<NotFoundException>(() => vaccinationSlotService.VaccinatePatient(slotId, status, doctor));
+        }
+
+        [Theory]
+        [InlineData(1, StatusEnum.Completed)]
+        [InlineData(1, StatusEnum.Canceled)]
+        [InlineData(2, StatusEnum.Completed)]
+        [InlineData(2, StatusEnum.Canceled)]
+        public void UtTestVaccinatePatientSlotThrowExceptionForAnotherDoctorsSlot(int doctorId, StatusEnum status)
+        {
+            var doctor = this.dbContext.Object.Doctors.First(doctor => doctor.Id == doctorId);
+            var slot = this.dbContext.Object.VaccinationSlots.First(slot => slot.Doctor.Id != doctor.Id);
+
+            Assert.ThrowsAsync<NotFoundException>(() => vaccinationSlotService.VaccinatePatient(slot.Id, status, doctor));
+        }
+
+        [Theory]
+        [InlineData(1, StatusEnum.Planned)]
+        [InlineData(2, StatusEnum.Planned)]
+        [InlineData(0, StatusEnum.Planned)]
+        [InlineData(-1, StatusEnum.Planned)]
+        public void UtTestVaccinatePatientSlotThrowExceptionForPlannedStatus(int slotId, StatusEnum status)
+        {
+            var doctor = this.dbContext.Object.Doctors.First(doctor => doctor.Id == 1);
+            Assert.ThrowsAsync<ValidationException>(() => vaccinationSlotService.VaccinatePatient(slotId, status, doctor));
+        }
+
+        [Theory]
+        [InlineData(2, StatusEnum.Completed)]
+        [InlineData(2, StatusEnum.Canceled)]
+        public async void UtTestVaccinatePatientShouldSlotChangeVisitStatus(int slotId, StatusEnum status)
+        {
+            var doctor = this.dbContext.Object.Doctors.First(doctor => doctor.Id == 1);
+            await this.vaccinationSlotService.VaccinatePatient(slotId, status, doctor);
+
+            Assert.Equal(status, this.dbContext.Object.Vaccinations.First(vaccination => vaccination.VaccinationSlot.Id == slotId).Status);
+        }
+
+        [Theory]
+        [InlineData(2)]
+        public async void TestVaccinatePatientShouldSendEmailAfterCancellation(int slotId)
+        {
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns(Task.FromResult(Task.CompletedTask));
+            var doctor = this.dbContext.Object.Doctors.First(doctor => doctor.Id == 1);
+            var vaccination = this.dbContext.Object.Vaccinations.First(vaccination => vaccination.VaccinationSlot.Id == slotId);
+
+            await this.vaccinationSlotService.VaccinatePatient(slotId, StatusEnum.Canceled, doctor);
+
+            this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
+                vaccination.Patient.Email,
+                "Vaccination visit canceled",
+                It.Is<string>(body => body.Contains(vaccination.Vaccine.Disease.ToString()) && 
+                                      body.Contains(vaccination.VaccinationSlot.Date.ToShortDateString()) &&
+                                      body.Contains(vaccination.Doctor.FirstName) &&
+                                      body.Contains(vaccination.Doctor.LastName)),
+                null
+            ), Times.Once);
         }
     }
 }

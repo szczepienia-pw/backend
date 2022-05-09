@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using backend.Controllers.Patient;
+using backend.Database;
 using backend.Dto.Requests;
 using backend.Dto.Responses.Patient;
 using backend.Exceptions;
@@ -8,27 +10,37 @@ using backend.Models.Accounts;
 using backend.Services.Patient;
 using backend_tests.Helpers;
 using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
-namespace backend_tests.Unit.Services.Patient
+namespace backend_tests.Patient
 {
-    public class PatientAuthServiceTest
+    public partial class PatientAuthTest
     {
+        private readonly Mock<DataContext> dbContext;
+        private readonly PatientAuthService patientAuthService;
+        private readonly PatientAuthController patientAuthController;
+        
+        public PatientAuthTest()
+        {
+            this.dbContext = Helpers.DbHelper.GetMockedDataContextWithAccounts();
+            this.patientAuthService = new PatientAuthService(
+                new JwtGenerator(Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" })),
+                SecurePasswordHasherHelper.Hasher,
+                this.dbContext.Object
+            );
+            this.patientAuthController = new PatientAuthController(this.patientAuthService);
+        }
+        
         [Theory]
         [InlineData("john@patient.com", "password1")]
         [InlineData("john@patient1.com", "password")]
         [InlineData("john@doctor.com", "password")]
         [InlineData("john@admin.com", "password")]
-        public async Task TestAuthenticationWithWrongCredentials(string email, string password)
+        public async Task UtTestAuthenticationWithWrongCredentials(string email, string password)
         {
-            var service = new PatientAuthService(
-                new JwtGenerator(Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" })),
-                SecurePasswordHasherHelper.Hasher,
-                DbHelper.GetMockedDataContextWithAccounts().Object
-            );
-
             await Assert.ThrowsAsync<UnauthorizedException>(
-                () => service.Authenticate(new AuthenticateRequest()
+                () => this.patientAuthService.Authenticate(new AuthenticateRequest()
                 {
                     Email = email,
                     Password = password
@@ -38,18 +50,10 @@ namespace backend_tests.Unit.Services.Patient
 
         [Theory]
         [InlineData("john@patient.com", "password")]
-        public async Task TestAuthenticationWithCorrectCredentials(string email, string password)
+        public async Task UtTestAuthenticationWithCorrectCredentials(string email, string password)
         {
-            var dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
-            PatientModel loggedPatient = dataContextMock.Object.Patients.First();
-
-            var service = new PatientAuthService(
-                new JwtGenerator(Options.Create(new JwtSettings() { SecretToken = "super-random-and-long-secret-token" })),
-                SecurePasswordHasherHelper.Hasher,
-                dataContextMock.Object
-            );
-
-            var response = (AuthenticateResponse)await service.Authenticate(new AuthenticateRequest()
+            PatientModel loggedPatient = this.dbContext.Object.Patients.First();
+            var response = (AuthenticateResponse)await this.patientAuthService.Authenticate(new AuthenticateRequest()
             {
                 Email = email,
                 Password = password

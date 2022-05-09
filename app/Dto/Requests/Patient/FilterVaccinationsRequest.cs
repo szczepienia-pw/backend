@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace backend.Dto.Requests.Patient
 {
+    [ExcludeFromCodeCoverage]
     public class FilterVaccinationsRequest : PaginationRequest
     {
         [Range(0, 1)]
