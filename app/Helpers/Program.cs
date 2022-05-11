@@ -36,18 +36,17 @@ public class ProgramHelper
         builder.Services.AddScoped<AdminAuthService>();
         builder.Services.AddScoped<AdminDoctorsService>();
         builder.Services.AddScoped<AdminPatientsService>();
+        builder.Services.AddScoped<AdminVaccinationService>();
+        builder.Services.AddScoped<SettingService>();
 
         builder.Services.AddScoped<PatientAuthService>();
         builder.Services.AddScoped<PatientService>();
+        builder.Services.AddScoped<PatientVaccinationService>();
 
         builder.Services.AddScoped<DoctorAuthService>();
-
         builder.Services.AddScoped<VaccinationSlotService>();
-        builder.Services.AddScoped<SettingService>();
+
         builder.Services.AddScoped<BugService>();
-        builder.Services.AddScoped<AdminDoctorsService>();
-        builder.Services.AddScoped<PatientService>();
-        builder.Services.AddScoped<VaccinationService>();
         builder.Services.AddScoped<CommonVaccinationService>();
 
         // Connect settings to sections in appsettings.json
