@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e340bff3-81d1-46cd-872f-030d4c0a3ccb",
+		"_postman_id": "a59a97ff-f528-48ef-aae2-3eb1930f2e6e",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1644,6 +1644,40 @@
 										"admin",
 										"patients",
 										"3"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Vaccinations",
+					"item": [
+						{
+							"name": "Change vaccination slot",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"vaccinationSlotId\": 5\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/admin/vaccinations/1/change-slot",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"vaccinations",
+										"1",
+										"change-slot"
 									]
 								}
 							},
