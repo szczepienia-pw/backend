@@ -12,9 +12,9 @@ namespace backend.Controllers.Patient
     [ApiController]
     public class VaccinationController : ControllerBase
     {
-        private readonly PatientVaccinationService vaccinationService;
+        private readonly VaccinationService vaccinationService;
 
-        public VaccinationController(PatientVaccinationService vaccinationService)
+        public VaccinationController(VaccinationService vaccinationService)
         {
             this.vaccinationService = vaccinationService;
         }
