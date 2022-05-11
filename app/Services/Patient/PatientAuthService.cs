@@ -1,6 +1,7 @@
 ﻿using backend.Helpers;
 using backend.Database;
 using backend.Dto.Responses.Patient;
+using backend.Exceptions;
 using backend.Models.Accounts;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,14 @@ namespace backend.Services.Patient
         {
             this.dataContext.Entry(model)?.Reference("Address")?.Load();
             return new AuthenticateResponse(token, model);
+        }
+
+        protected override void Validate(AccountModel? user, string password)
+        {
+            base.Validate(user, password);
+            
+            if (user != null && ((PatientModel)user).VerificationToken != null)
+                throw new UnauthorizedException("Please verify your email first");
         }
     }
 }

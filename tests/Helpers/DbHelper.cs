@@ -54,6 +54,7 @@ namespace backend_tests.Helpers
                 Email = "john@patient.com",
                 Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
                 Pesel = "22222222222",
+                VerificationToken = null,
                 Address = new AddressModel()
                 {
 
@@ -68,6 +69,7 @@ namespace backend_tests.Helpers
                 Email = "john2@patient.com",
                 Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
                 Pesel = "83020545496",
+                VerificationToken = null,
                 Address = new AddressModel()
                 {
 

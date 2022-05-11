@@ -23,6 +23,7 @@ namespace backend_tests.Patient
         private readonly SecurePasswordHasher securePasswordHasherMock;
         private readonly PatientService patientServiceMock;
         private readonly PatientController patientController;
+        private readonly Mock<Mailer> mailerMock;
 
         private T TestInputParse<T,U>(params string?[] input) 
             where T : PatientRequest, new()
@@ -49,9 +50,17 @@ namespace backend_tests.Patient
 
         public PatientTest()
         {
+            this.mailerMock = new Mock<Mailer>();
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                null
+            ));
+            
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.securePasswordHasherMock = SecurePasswordHasherHelper.Hasher;
-            this.patientServiceMock = new PatientService(this.dataContextMock.Object, this.securePasswordHasherMock);
+            this.patientServiceMock = new PatientService(this.dataContextMock.Object, this.securePasswordHasherMock, this.mailerMock.Object);
             this.patientController = new PatientController(this.patientServiceMock);
             this.patientController.ControllerContext.HttpContext = new DefaultHttpContext();
         }

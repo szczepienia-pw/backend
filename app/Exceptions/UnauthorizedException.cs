@@ -6,10 +6,13 @@ namespace backend.Exceptions
     [ExcludeFromCodeCoverage]
     public class UnauthorizedException : BasicException
     {
+        public UnauthorizedException(string message) : base(message) { }
+        public UnauthorizedException() : base("Invalid credentials") { }
+        
         public override ErrorResponse Render(HttpResponse response)
         {
             response.StatusCode = StatusCodes.Status401Unauthorized;
-            return new ErrorResponse("Invalid credentials");
+            return new ErrorResponse(this.Message);
         }
     }
 }
