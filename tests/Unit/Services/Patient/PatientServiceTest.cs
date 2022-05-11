@@ -112,6 +112,16 @@ namespace backend_tests.Patient
             Assert.Equal(input[9], rsp.Pesel);
             
             Assert.NotNull(added.VerificationToken);
+            
+            // Verify if mailer has been called with correct params
+            this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
+                added.Email,
+                "Verify your email",
+                It.Is<string>(
+                    body => body.Contains(added.VerificationToken)
+                ),
+                null
+            ), Times.Once);
         }
 
         [Theory]
