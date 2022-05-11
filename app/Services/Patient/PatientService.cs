@@ -95,6 +95,7 @@ namespace backend.Services.Patient
             if (patient == null) throw new UnauthorizedException("Provided token is not valid");
 
             patient.VerificationToken = null;
+            this.dataContext.Update(patient);
             this.dataContext.SaveChanges();
 
             return new SuccessResponse();

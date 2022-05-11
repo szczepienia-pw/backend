@@ -110,6 +110,8 @@ namespace backend_tests.Patient
             Assert.Equal(input[6], rsp.LastName);
             Assert.Equal(input[7], rsp.Email);
             Assert.Equal(input[9], rsp.Pesel);
+            
+            Assert.NotNull(added.VerificationToken);
         }
 
         [Theory]
@@ -168,6 +170,35 @@ namespace backend_tests.Patient
         public void UtValidationShouldThrowValidationException(string? email, string? pesel)
         {
             Assert.Throws<ValidationException>(() => this.patientServiceMock.ValidatePatient(email, pesel));
+        }
+
+        [Fact]
+        public void UtShouldConfirmRegistration()
+        {
+            var patient = this.dataContextMock.Object.Patients.First(patient => patient.Id == 3);
+            var request = new ConfirmRegistrationRequest() {Token = patient.VerificationToken};
+
+            List<PatientModel> verifyList = new List<PatientModel>();
+            this.dataContextMock.Setup(dataContext => dataContext.Update(It.IsAny<PatientModel>())).Callback<PatientModel>(patient => verifyList.Add(patient));
+            
+            var rsp = this.patientServiceMock.ConfirmRegistration(request).Result;
+            
+            this.dataContextMock.Verify(dataContext => dataContext.Update(It.IsAny<PatientModel>()), Times.Once());
+            this.dataContextMock.Verify(dataContext => dataContext.SaveChanges(), Times.Once());
+         
+            Assert.Single(verifyList);
+            var updated = verifyList[0];
+            
+            Assert.Null(updated.VerificationToken);
+        }
+
+        [Fact]
+        public void UtShouldThrowExceptionWhenConfirmingWrongToken()
+        {
+            var patient = this.dataContextMock.Object.Patients.First(patient => patient.Id == 3);
+            var request = new ConfirmRegistrationRequest() {Token = Guid.NewGuid().ToString()};
+            
+            Assert.ThrowsAsync<UnauthorizedException>(() => this.patientServiceMock.ConfirmRegistration(request));
         }
     }
 }
