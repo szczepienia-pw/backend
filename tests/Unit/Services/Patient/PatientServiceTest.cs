@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using backend.Controllers.Patient;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace backend_tests.Patient
@@ -60,7 +61,12 @@ namespace backend_tests.Patient
             
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.securePasswordHasherMock = SecurePasswordHasherHelper.Hasher;
-            this.patientServiceMock = new PatientService(this.dataContextMock.Object, this.securePasswordHasherMock, this.mailerMock.Object);
+            this.patientServiceMock = new PatientService(
+                this.dataContextMock.Object, 
+                this.securePasswordHasherMock, 
+                this.mailerMock.Object,
+                Options.Create(new FrontendUrlsSettings() { ConfirmRegistration = "http://localhost/{token}"})
+            );
             this.patientController = new PatientController(this.patientServiceMock);
             this.patientController.ControllerContext.HttpContext = new DefaultHttpContext();
         }

@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using backend.Controllers.Admin;
 using backend.Services.Patient;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace backend_tests.Admin
@@ -45,7 +46,12 @@ namespace backend_tests.Admin
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.securePasswordHasherMock = SecurePasswordHasherHelper.Hasher;
             this.adminPatientsService = new AdminPatientsService(this.dataContextMock.Object);
-            this.patientService = new PatientService(this.dataContextMock.Object, this.securePasswordHasherMock, this.mailerMock.Object);
+            this.patientService = new PatientService(
+                this.dataContextMock.Object, 
+                this.securePasswordHasherMock, 
+                this.mailerMock.Object,
+                Options.Create(new FrontendUrlsSettings() { ConfirmRegistration = "http://localhost/{token}"})
+            );
             this.adminPatientController = new AdminPatientController(this.patientService, this.adminPatientsService);
         }
 

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e340bff3-81d1-46cd-872f-030d4c0a3ccb",
+		"_postman_id": "275a598b-3ce4-4144-abb2-d152e7e64e6f",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -560,6 +560,34 @@
 								"vaccinations",
 								"6",
 								"certificate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"be7d9bc8-50db-4d7f-933c-78e854185e63\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{IOHostURL}}/patient/registration/confirm",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"patient",
+								"registration",
+								"confirm"
 							]
 						}
 					},
