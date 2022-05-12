@@ -58,6 +58,12 @@ namespace backend.Services.Admin
             vaccination.VaccinationSlot = newSlot;
             vaccination.VaccinationSlotId = newSlot.Id;
 
+            currentSlot.Vaccination = null;
+            newSlot.Vaccination = vaccination;
+
+            vaccination.Doctor = newSlot.Doctor;
+            vaccination.DoctorId = newSlot.Doctor.Id;
+
             // Save changes
             this.dataContext.SaveChanges();
 
