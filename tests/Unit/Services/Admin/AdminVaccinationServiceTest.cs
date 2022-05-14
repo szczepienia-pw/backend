@@ -15,7 +15,7 @@ namespace backend_tests.Patient
     {
         private readonly Mock<DataContext> dataContextMock;
         private readonly Mock<Mailer> mailerMock;
-        private readonly AdminVaccinationService adminVaccinationService;
+        private readonly DoctorVaccinationService adminVaccinationService;
 
         public AdminVaccinationServiceTest()
         {

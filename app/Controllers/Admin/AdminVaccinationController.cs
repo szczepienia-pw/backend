@@ -1,9 +1,6 @@
 ﻿using backend.Dto.Requests;
-using backend.Dto.Requests.Admin.Patient;
-using backend.Dto.Requests.Patient;
 using backend.Helpers;
 using backend.Services.Admin;
-using backend.Services.Patient;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers.Admin
