@@ -6,17 +6,13 @@ using backend.Controllers.Patient;
 using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses.Common.Vaccination;
-using backend.Dto.Responses.Patient.Vaccination;
 using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
-using backend.Models.Vaccines;
 using backend.Models.Visits;
-using backend.Services;
 using backend.Services.Patient;
 using backend_tests.Helpers;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Xunit;
 
@@ -26,7 +22,7 @@ namespace backend_tests.Patient
     {
         private readonly Mock<DataContext> dataContextMock;
         private readonly Mock<Mailer> mailerMock;
-        private readonly VaccinationService vaccinationServiceMock;
+        private readonly PatientVaccinationService vaccinationServiceMock;
         private readonly PatientModel patientMock;
         private readonly VaccinationController vaccinationController;
 
@@ -42,7 +38,7 @@ namespace backend_tests.Patient
                 null
             ));
 
-            this.vaccinationServiceMock = new VaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
+            this.vaccinationServiceMock = new PatientVaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
             this.patientMock = this.dataContextMock.Object.Patients.First();
             this.vaccinationController = new VaccinationController(this.vaccinationServiceMock);
             this.vaccinationController.ControllerContext.HttpContext = new DefaultHttpContext();
