@@ -1,15 +1,20 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using backend.Database;
+using backend.Dto.Requests.Admin;
+using backend.Dto.Responses;
+using backend.Dto.Responses.Admin.Vaccination;
 using backend.Exceptions;
 using backend.Helpers;
+using backend.Models.Vaccines;
 using backend.Models.Visits;
 using backend.Services.Admin;
 using backend_tests.Helpers;
 using Moq;
 using Xunit;
 
-namespace backend_tests.Patient
+namespace backend_tests.Admin
 {
     public partial class AdminVaccinationServiceTest
     {
@@ -123,6 +128,92 @@ namespace backend_tests.Patient
         public void UtTestChangeVaccinationSlotForNotValidVaccinationSlotThrowsException(int vaccinationId, int newSlotId)
         {
             Assert.ThrowsAsync<NotFoundException>(() => this.adminVaccinationService.ChangeVaccinationSlot(vaccinationId, newSlotId));
+        }
+
+        // Get vaccinations
+        [Theory]
+        [InlineData(null, null, null, null)]
+        [InlineData("COVID-19", null, null, null)]
+        [InlineData("Flu", null, null, null)]
+        [InlineData(null, 1, null, null)]
+        [InlineData(null, null, 1, null)]
+        [InlineData(null, 1, 1, null)]
+        [InlineData(null, 1, 1, 1)]
+        [InlineData("COVID-19", null, null, 1)]
+        [InlineData("COVID-19", null, null, 2)]
+        public async Task UtTestGetVaccinationsShouldReturnPaginatedVaccinationVisits(string? disease, int? patientId, int? doctorId, int? pageNo)
+        {
+            var request = new FilterVaccinationsRequest()
+            {
+                Disease = disease,
+                PatientId = patientId,
+                DoctorId = doctorId
+            };
+            if (pageNo != null)
+                request.Page = (int)pageNo;
+
+            var result = await this.adminVaccinationService.GetVaccinations(request);
+
+            Assert.IsType<PaginatedResponse<GetVaccinationsResponse, List<GetVaccinationsResponse>>>(result);
+        }
+
+        [Theory]
+        [InlineData(null, null, null, null)]
+        [InlineData("COVID-19", null, null, null)]
+        [InlineData("Flu", null, null, null)]
+        [InlineData(null, 1, null, null)]
+        [InlineData(null, null, 1, null)]
+        [InlineData(null, 1, 1, null)]
+        [InlineData(null, 1, 1, 1)]
+        [InlineData("COVID-19", null, null, 1)]
+        [InlineData("COVID-19", null, null, 2)]
+        public async Task UtTestGetVaccinationsShouldCorrectlyFilterVaccinationVisits(string? disease, int? patientId, int? doctorId, int? pageNo)
+        {
+            var request = new FilterVaccinationsRequest()
+            {
+                Disease = disease,
+                PatientId = patientId,
+                DoctorId = doctorId
+            };
+            if (pageNo != null)
+                request.Page = (int)pageNo;
+
+            var result = await this.adminVaccinationService.GetVaccinations(request);
+
+            Assert.IsType<PaginatedResponse<GetVaccinationsResponse, List<GetVaccinationsResponse>>>(result);
+
+            var controlResult = this.dataContextMock.Object.Vaccinations.AsQueryable();
+            if (disease != null)
+                controlResult = controlResult.Where(visit => visit.Vaccine.Disease == DiseaseEnumAdapter.ToEnum(disease));
+            if (patientId != null)
+                controlResult = controlResult.Where(visit => visit.Patient.Id == patientId);
+            if (doctorId != null)
+                controlResult = controlResult.Where(visit => visit.Doctor.Id == doctorId);
+
+            var resultIds = result.Data.AsQueryable().Select(visit => visit.Id);
+            var controlIds = controlResult.Select(visit => visit.Id);
+
+            Assert.Subset(controlIds.ToHashSet(), resultIds.ToHashSet());
+        }
+
+
+
+        [Theory]
+        [InlineData("COVID-23", null, null, null)]
+        [InlineData("Covid-21", null, null, null)]
+        [InlineData("", null, null, null)]
+        public async Task UtTestGetVaccinationsThrowsExceptionForInvalidDisease(string? disease, int? patientId, int? doctorId, int? pageNo)
+        {
+            var request = new FilterVaccinationsRequest()
+            {
+                Disease = disease,
+                PatientId = patientId,
+                DoctorId = doctorId
+            };
+            if (pageNo != null)
+                request.Page = (int)pageNo;
+
+            Assert.ThrowsAsync<NotFoundException>(() => this.adminVaccinationService.GetVaccinations(request));
         }
     }
 }
