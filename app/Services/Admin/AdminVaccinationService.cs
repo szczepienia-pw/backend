@@ -1,8 +1,12 @@
 ﻿using backend.Database;
+using backend.Dto.Requests.Admin;
 using backend.Dto.Responses;
+using backend.Dto.Responses.Admin.Vaccination;
 using backend.Exceptions;
 using backend.Helpers;
+using backend.Models.Vaccines;
 using backend.Models.Visits;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Admin
 {
@@ -78,6 +82,31 @@ namespace backend.Services.Admin
             );
 
             return new SuccessResponse();
+        }
+
+        public async Task<PaginatedResponse<GetVaccinationsResponse, List<GetVaccinationsResponse>>> GetVaccinations(FilterVaccinationsRequest request)
+        {
+            var vaccinations = this.dataContext.Vaccinations
+                                               .Include("Vaccine")
+                                               .Include("VaccinationSlot")
+                                               .Include("Patient")
+                                               .Include("Patient.Address")
+                                               .Include("Doctor")
+                                               .AsQueryable();
+
+            if (request.Disease != null)
+            {
+                DiseaseEnum diseaseEnum = DiseaseEnumAdapter.ToEnum(request.Disease);
+                vaccinations = vaccinations.Where(visit => visit.Vaccine.Disease == diseaseEnum);
+            }
+            if (request.DoctorId != null)
+                vaccinations = vaccinations.Where(visit => visit.Doctor.Id == request.DoctorId);
+            if (request.PatientId != null)
+                vaccinations = vaccinations.Where(visit => visit.Patient.Id == request.PatientId);
+
+            var paginatedVaccinations = PaginatedList<GetVaccinationsResponse>.Paginate(vaccinations.Select(visit => new GetVaccinationsResponse(visit)), request.Page);
+
+            return new PaginatedResponse<GetVaccinationsResponse, List<GetVaccinationsResponse>>(paginatedVaccinations, paginatedVaccinations);
         }
     }
 }
