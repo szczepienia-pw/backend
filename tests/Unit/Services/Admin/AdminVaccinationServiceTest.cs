@@ -9,13 +9,13 @@ using backend_tests.Helpers;
 using Moq;
 using Xunit;
 
-namespace backend_tests.Patient
+namespace backend_tests.Admin
 {
     public partial class AdminVaccinationServiceTest
     {
         private readonly Mock<DataContext> dataContextMock;
         private readonly Mock<Mailer> mailerMock;
-        private readonly DoctorVaccinationService adminVaccinationService;
+        private readonly AdminVaccinationService adminVaccinationService;
 
         public AdminVaccinationServiceTest()
         {
