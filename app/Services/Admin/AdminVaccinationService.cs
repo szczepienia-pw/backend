@@ -19,23 +19,23 @@ namespace backend.Services.Admin
 
         public async Task<SuccessResponse> ChangeVaccinationSlot(int vaccinationId, int newVaccinationSlotId)
         {
+            // Block concurrent access
+            Semaphores.slotSemaphore.WaitOne();
+
             // Find vaccination visit with matching id
             VaccinationModel vaccination = this.dataContext
                 .Vaccinations
-                .FirstOrThrow(vaccination => vaccination.Id == vaccinationId, new NotFoundException("Vaccination visit not found"));
+                .FirstOrThrow(vaccination => vaccination.Id == vaccinationId, new NotFoundException("Vaccination visit not found"), true);
 
             // Get slot connected to found vaccination visit
             VaccinationSlotModel currentSlot = this.dataContext
                 .VaccinationSlots
-                .FirstOrThrow(slot => slot.Id == vaccination.VaccinationSlotId, new NotFoundException("Current vaccination slot not found"));
+                .FirstOrThrow(slot => slot.Id == vaccination.VaccinationSlotId, new NotFoundException("Current vaccination slot not found"), true);
 
             // Get new slot
             VaccinationSlotModel newSlot = this.dataContext
                 .VaccinationSlots
-                .FirstOrThrow(slot => slot.Id == newVaccinationSlotId, new NotFoundException("New vaccination slot not found"));
-
-            // Block concurrent access
-            Semaphores.slotSemaphore.WaitOne();
+                .FirstOrThrow(slot => slot.Id == newVaccinationSlotId, new NotFoundException("New vaccination slot not found"), true);
 
             // Check if visit is still pending
             if (vaccination.Status != StatusEnum.Planned)
