@@ -1,4 +1,4 @@
-﻿using backend.Database;
+using backend.Database;
 using backend.Dto.Requests.Admin;
 using backend.Dto.Responses;
 using backend.Dto.Responses.Admin.Vaccination;
