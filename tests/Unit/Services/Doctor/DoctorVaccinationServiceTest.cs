@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using backend.Database;
 using backend.Exceptions;
@@ -33,6 +34,8 @@ namespace backend_tests.Doctor
 
             this.doctorVaccinationService = new DoctorVaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
             this.doctor = this.dataContextMock.Object.Doctors.First();
+
+            Semaphores.slotSemaphore = new Semaphore(1, 1);
         }
 
         // Change vaccination slot

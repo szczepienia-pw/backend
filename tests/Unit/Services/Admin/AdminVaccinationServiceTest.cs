@@ -30,6 +30,8 @@ namespace backend_tests.Admin
             ));
 
             this.adminVaccinationService = new AdminVaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
+
+            Semaphores.slotSemaphore = new Semaphore(1, 1);
         }
 
         // Change vaccination slot

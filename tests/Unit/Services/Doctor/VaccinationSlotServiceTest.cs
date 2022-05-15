@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using backend.Controllers.Doctor;
 using backend.Database;
@@ -43,6 +44,8 @@ namespace backend_tests.Doctor
             var doctor = this.dbContext.Object.Doctors.First(d => d.Id == 1);
             this.vaccinationSlotsController.ControllerContext.HttpContext = new DefaultHttpContext();
             this.vaccinationSlotsController.HttpContext.Items = new Dictionary<object, object?>() { {"User", doctor} };
+
+            Semaphores.slotSemaphore = new Semaphore(1, 1);
         }
 
         [Theory]
