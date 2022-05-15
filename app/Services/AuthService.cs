@@ -25,9 +25,7 @@ namespace backend.Services
         {
             var user = this.GetDataContextDbSet().SingleOrDefault(user => user.Email == request.Email);
 
-            // Return null if user not found or password is invalid
-            if (user == null || !this.securePasswordHasher.Verify(request.Password, user.Password))
-                throw new UnauthorizedException();
+            this.Validate(user, request.Password);
 
             // Authentication successful so generate jwt token
             var token = this.jwtGenerator.GenerateJwtToken(user.Id, user.GetEnum());
@@ -35,6 +33,13 @@ namespace backend.Services
             return this.GetResponse(token, user);
         }
 
+        protected virtual void Validate(AccountModel? user, string password)
+        {
+            // Return null if user not found or password is invalid
+            if (user == null || !this.securePasswordHasher.Verify(password, user.Password))
+                throw new UnauthorizedException();
+        }
+        
         protected abstract DbSet<T> GetDataContextDbSet();
 
         protected abstract AuthenticateResponse GetResponse(string token, T model);

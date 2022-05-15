@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using backend.Controllers.Admin;
 using backend.Services.Patient;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace backend_tests.Admin
@@ -23,7 +24,8 @@ namespace backend_tests.Admin
         private readonly AdminPatientsService adminPatientsService;
         private readonly PatientService patientService;
         private readonly SecurePasswordHasher securePasswordHasherMock;
-        private readonly AdminPatientController adminPatientController ;
+        private readonly AdminPatientController adminPatientController;
+        private readonly Mock<Mailer> mailerMock;
 
         private DoctorModel? FindDoctor(int doctorId)
         {
@@ -32,11 +34,24 @@ namespace backend_tests.Admin
 
         public AdminPatientsTest()
         {
+            this.mailerMock = new Mock<Mailer>();
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                null
+            ));
+            
             // constructor is being executed before each test
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.securePasswordHasherMock = SecurePasswordHasherHelper.Hasher;
             this.adminPatientsService = new AdminPatientsService(this.dataContextMock.Object);
-            this.patientService = new PatientService(this.dataContextMock.Object, this.securePasswordHasherMock);
+            this.patientService = new PatientService(
+                this.dataContextMock.Object, 
+                this.securePasswordHasherMock, 
+                this.mailerMock.Object,
+                Options.Create(new FrontendUrlsSettings() { ConfirmRegistration = "http://localhost/{token}"})
+            );
             this.adminPatientController = new AdminPatientController(this.patientService, this.adminPatientsService);
         }
 

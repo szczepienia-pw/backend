@@ -54,6 +54,7 @@ public class ProgramHelper
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
         builder.Services.Configure<HasherSettings>(builder.Configuration.GetSection("HasherSettings"));
         builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+        builder.Services.Configure<FrontendUrlsSettings>(builder.Configuration.GetSection("FrontendUrls"));
 
         // Connect to MySQL database
         string connectionString = builder.Configuration.GetConnectionString("MySQLConnection").ToString();
