@@ -1,9 +1,7 @@
 ﻿using backend.Dto.Requests;
-using backend.Dto.Requests.Admin.Patient;
-using backend.Dto.Requests.Patient;
+using backend.Dto.Requests.Admin;
 using backend.Helpers;
 using backend.Services.Admin;
-using backend.Services.Patient;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers.Admin
@@ -25,6 +23,14 @@ namespace backend.Controllers.Admin
         public async Task<IActionResult> ChangeSlot(int vaccinationId, [FromBody] ChangeSlotRequest request)
         {
             return Ok(await this.adminVaccinationService.ChangeVaccinationSlot(vaccinationId, request.VaccinationSlotId));
+        }
+
+        // GET admin/vaccinations
+        [HttpGet]
+        [Authorize(AccountTypeEnum.Admin)]
+        public async Task<IActionResult> GetVaccinations([FromQuery] FilterVaccinationsRequest request)
+        {
+            return Ok(await this.adminVaccinationService.GetVaccinations(request));
         }
     }
 }
