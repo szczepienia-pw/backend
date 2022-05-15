@@ -150,6 +150,6 @@ namespace backend.Services.Patient
             var patient = this.dataContext.Patients.FirstOrThrow((patient) => patient.Id == patientId, new NotFoundException());
             return this.EditPatient(patient, request);
         }
-    }
+    } 
 }
 

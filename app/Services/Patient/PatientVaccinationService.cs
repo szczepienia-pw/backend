@@ -155,6 +155,40 @@ namespace backend.Services.Patient
             // Generate PDF and return byte array
             return CertificateGenerator.GeneratePDF(vaccination, generateQrCode);
         }
+        
+        public async Task<SuccessResponse> DeletePatient(PatientModel patient)
+        {
+            var slots = this.dataContext.VaccinationSlots
+                .Include(vs => vs.Doctor)
+                .Include(vs => vs.Vaccination)
+                .Join(
+                    this.dataContext.Vaccinations.AsQueryable(),
+                    vaccinationSlot => vaccinationSlot.Id,
+                    vaccination => vaccination.VaccinationSlotId,
+                    (vaccinationSlot, vaccination) =>
+                        new {
+                            PatientId = vaccination.PatientId, vaccination = vaccination, vaccinationSlot = vaccinationSlot
+                        })
+                .Where(t => 
+                    t.PatientId == patient.Id && 
+                    t.vaccination.Status == StatusEnum.Planned &&
+                    t.vaccinationSlot.Reserved);
+
+            // free all reserved slots
+            foreach (var slot in slots)
+            {
+                slot.vaccination.Status = StatusEnum.Canceled;
+
+                // Duplicate vaccination slot
+                VaccinationSlotModel newSlot = new VaccinationSlotModel { Date = slot.vaccinationSlot.Date, Doctor = slot.vaccinationSlot.Doctor, Reserved = false };
+                this.dataContext.Add(newSlot);
+            }
+            
+            ((ISoftDelete)patient).SoftDelete();
+            this.dataContext.SaveChanges();
+
+            return new SuccessResponse();
+        }
     }
 }
 
