@@ -25,6 +25,13 @@ namespace backend.Controllers.Patient
         {
             return Ok(await this.patientService.Register(request));
         }
+        
+        // POST patient/registration/confirm
+        [HttpPost("registration/confirm")]
+        public async Task<IActionResult> ConfirmRegistration([FromBody] ConfirmRegistrationRequest request)
+        {
+            return Ok(await this.patientService.ConfirmRegistration(request));
+        }
 
         // PUT patient/account
         [HttpPut("account")]

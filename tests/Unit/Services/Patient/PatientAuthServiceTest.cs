@@ -37,6 +37,7 @@ namespace backend_tests.Patient
         [InlineData("john@patient1.com", "password")]
         [InlineData("john@doctor.com", "password")]
         [InlineData("john@admin.com", "password")]
+        [InlineData("john3@admin.com", "password")] // Not verified
         public async Task UtTestAuthenticationWithWrongCredentials(string email, string password)
         {
             await Assert.ThrowsAsync<UnauthorizedException>(

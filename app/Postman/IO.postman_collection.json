@@ -564,6 +564,34 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Confirm email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"be7d9bc8-50db-4d7f-933c-78e854185e63\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{IOHostURL}}/patient/registration/confirm",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"patient",
+								"registration",
+								"confirm"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {

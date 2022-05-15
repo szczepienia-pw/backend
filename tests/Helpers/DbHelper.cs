@@ -54,6 +54,7 @@ namespace backend_tests.Helpers
                 Email = "john@patient.com",
                 Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
                 Pesel = "22222222222",
+                VerificationToken = null,
                 Address = new AddressModel()
                 {
 
@@ -68,6 +69,22 @@ namespace backend_tests.Helpers
                 Email = "john2@patient.com",
                 Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
                 Pesel = "83020545496",
+                VerificationToken = null,
+                Address = new AddressModel()
+                {
+
+                }
+            };
+            
+            var p3 = new PatientModel()
+            {
+                Id = 3,
+                FirstName = Faker.Name.First(),
+                LastName = Faker.Name.Last(),
+                Email = "john3@patient.com",
+                Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
+                Pesel = "83020545496",
+                VerificationToken = Guid.NewGuid().ToString(),
                 Address = new AddressModel()
                 {
 
@@ -76,7 +93,7 @@ namespace backend_tests.Helpers
 
             var patients = new List<PatientModel>()
             {
-                p1, p2
+                p1, p2, p3
             };
 
             #endregion

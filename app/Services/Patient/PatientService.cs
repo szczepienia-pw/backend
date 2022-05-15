@@ -1,10 +1,12 @@
 ﻿using backend.Database;
 using backend.Dto.Requests.Patient;
+using backend.Dto.Responses;
 using backend.Dto.Responses.Patient;
 using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
 using backend.Models.Accounts.AdditionalData;
+using Microsoft.Extensions.Options;
 
 namespace backend.Services.Patient
 {
@@ -12,6 +14,8 @@ namespace backend.Services.Patient
 	{
         private readonly DataContext dataContext;
         private readonly SecurePasswordHasher securePasswordHasher;
+        private readonly Mailer mailer;
+        private readonly FrontendUrlsSettings frontendUrlsSettings;
 
         // Exposed for UTs
         public void ValidatePatient(string? email = null, string? pesel = null)
@@ -35,10 +39,12 @@ namespace backend.Services.Patient
             }
         }
 
-        public PatientService(DataContext dataContext, SecurePasswordHasher securePasswordHasher)
+        public PatientService(DataContext dataContext, SecurePasswordHasher securePasswordHasher, Mailer mailer, IOptions<FrontendUrlsSettings> frontendUrlsSettings)
         {
             this.dataContext = dataContext;
             this.securePasswordHasher = securePasswordHasher;
+            this.mailer = mailer;
+            this.frontendUrlsSettings = frontendUrlsSettings.Value;
         }
 
         public async Task<PatientResponse> Register(PatientRegistrationRequest request)
@@ -55,6 +61,8 @@ namespace backend.Services.Patient
                 LocalNumber = request.Address.LocalNumber
             };
 
+            var verificationToken = Guid.NewGuid().ToString();
+            
             PatientModel patient = new PatientModel()
             {
                 FirstName = request.FirstName,
@@ -62,13 +70,35 @@ namespace backend.Services.Patient
                 Email = request.Email,
                 Password = this.securePasswordHasher.Hash(request.Password),
                 Address = address,
-                Pesel = request.Pesel
+                Pesel = request.Pesel,
+                VerificationToken = verificationToken
             };
 
             this.dataContext.Patients.Add(patient);
             this.dataContext.SaveChanges();
 
+            var confirmUrl = this.frontendUrlsSettings.ConfirmRegistration.Replace("{token}", verificationToken);
+            _ = this.mailer.SendEmailAsync(
+                request.Email,
+                "Verify your email",
+                $"Your account has been created. Please click link below to verify your email address. <br> <a href='{confirmUrl}'>LINK</a> <br> <br> <small>If you have trouble clicking the link, please type this into your searchbar: {confirmUrl}</small>"
+            );
+
             return new PatientResponse(patient);
+        }
+
+        public async Task<SuccessResponse> ConfirmRegistration(ConfirmRegistrationRequest request)
+        {
+            var patient = this.dataContext.Patients
+                .FirstOrDefault(patient => patient.VerificationToken == request.Token);
+
+            if (patient == null) throw new UnauthorizedException("Provided token is not valid");
+
+            patient.VerificationToken = null;
+            this.dataContext.Update(patient);
+            this.dataContext.SaveChanges();
+
+            return new SuccessResponse();
         }
 
         public async Task<PatientResponse> EditPatient(PatientModel patient, PatientRequest request)

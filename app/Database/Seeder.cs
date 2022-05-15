@@ -54,7 +54,8 @@ namespace backend.Database
                     LastName = "Patient",
                     Password = this.securePasswordHasher.Hash("password"),
                     Pesel = "22222222222",
-                    AddressId = 1
+                    AddressId = 1,
+                    VerificationToken = null
                 }
             );
 
