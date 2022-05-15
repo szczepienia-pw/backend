@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using backend.Helpers;
+﻿using backend.Helpers;
 using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses;
@@ -8,25 +7,17 @@ using backend.Exceptions;
 using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
-using backend.Dto.Responses.Common.Vaccination;
 using Microsoft.EntityFrameworkCore;
-using backend.Dto.Requests.Patient;
-using Microsoft.AspNetCore.Mvc;
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
 
 namespace backend.Services.Patient
 {
-	public class VaccinationService
+	public class PatientVaccinationService
 	{
-        private static Semaphore semaphore = new Semaphore(1, 1);
-
         private readonly DataContext dataContext;
         private readonly Mailer mailer;
 
 
-        public VaccinationService(DataContext dataContext, Mailer mailer)
+        public PatientVaccinationService(DataContext dataContext, Mailer mailer)
         {
             this.dataContext = dataContext;
             this.mailer = mailer;
@@ -60,12 +51,12 @@ namespace backend.Services.Patient
                                             new NotFoundException("Slot not found"));
 
             // Block concurrent access
-            VaccinationService.semaphore.WaitOne();
+            Semaphores.slotSemaphore.WaitOne();
 
             // Check if slot is still available
             if (slot.Reserved)
             {
-                VaccinationService.semaphore.Release();
+                Semaphores.slotSemaphore.Release();
                 throw new ConflictException("Slot is already taken.");
             }
 
@@ -85,7 +76,7 @@ namespace backend.Services.Patient
             this.dataContext.SaveChanges();
 
             // Release semaphore
-            VaccinationService.semaphore.Release();
+            Semaphores.slotSemaphore.Release();
 
             // Send email with confirmation
             _ = this.mailer.SendEmailAsync(
