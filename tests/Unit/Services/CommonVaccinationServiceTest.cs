@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using backend.Controllers;
 using backend.Database;
@@ -32,6 +33,8 @@ namespace backend_tests.Vaccination
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.commonVaccinationServiceMock = new CommonVaccinationService(this.dataContextMock.Object);
             this.commonVaccinationController = new CommonVaccinationController(this.commonVaccinationServiceMock);
+
+            Semaphores.slotSemaphore = new Semaphore(1, 1);
         }
 
         // Get available vaccination slot

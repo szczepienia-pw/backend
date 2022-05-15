@@ -1,27 +1,24 @@
-using backend.Database;
-using backend.Dto.Requests.Admin;
+﻿using backend.Database;
 using backend.Dto.Responses;
-using backend.Dto.Responses.Admin.Vaccination;
 using backend.Exceptions;
 using backend.Helpers;
-using backend.Models.Vaccines;
+using backend.Models.Accounts;
 using backend.Models.Visits;
-using Microsoft.EntityFrameworkCore;
 
-namespace backend.Services.Admin
+namespace backend.Services.Doctor
 {
-    public class AdminVaccinationService
+    public class DoctorVaccinationService
     {
         private readonly DataContext dataContext;
         private readonly Mailer mailer;
 
-        public AdminVaccinationService(DataContext dataContext, Mailer mailer)
+        public DoctorVaccinationService(DataContext dataContext, Mailer mailer)
         {
             this.dataContext = dataContext;
             this.mailer = mailer;
         }
 
-        public async Task<SuccessResponse> ChangeVaccinationSlot(int vaccinationId, int newVaccinationSlotId)
+        public async Task<SuccessResponse> ChangeVaccinationSlot(int vaccinationId, int newVaccinationSlotId, DoctorModel doctor)
         {
             // Block concurrent access
             Semaphores.slotSemaphore.WaitOne();
@@ -30,6 +27,12 @@ namespace backend.Services.Admin
             VaccinationModel vaccination = this.dataContext
                 .Vaccinations
                 .FirstOrThrow(vaccination => vaccination.Id == vaccinationId, new NotFoundException("Vaccination visit not found"), true);
+
+            // Check if vaccination visit belongs to editing doctor
+            if(vaccination.Doctor != doctor)
+            {
+                throw new ConflictException("Vaccination visit is assigned to another doctor.");
+            }
 
             // Get slot connected to found vaccination visit
             VaccinationSlotModel currentSlot = this.dataContext
@@ -78,35 +81,10 @@ namespace backend.Services.Admin
             _ = this.mailer.SendEmailAsync(
                     vaccination.Patient.Email,
                     "Vaccination visit slot changed",
-                    $"Your {vaccination.Vaccine.Disease.ToString()} vaccination visit on {currentSlot.Date.ToShortDateString()} was changed to {newSlot.Date.ToShortDateString()} by System Administrator."
+                    $"Your {vaccination.Vaccine.Disease.ToString()} vaccination visit on {currentSlot.Date.ToShortDateString()} was changed to {newSlot.Date.ToShortDateString()} by doctor {doctor.FirstName} {doctor.LastName}."
             );
 
             return new SuccessResponse();
-        }
-
-        public async Task<PaginatedResponse<GetVaccinationsResponse, List<GetVaccinationsResponse>>> GetVaccinations(FilterVaccinationsRequest request)
-        {
-            var vaccinations = this.dataContext.Vaccinations
-                                               .Include("Vaccine")
-                                               .Include("VaccinationSlot")
-                                               .Include("Patient")
-                                               .Include("Patient.Address")
-                                               .Include("Doctor")
-                                               .AsQueryable();
-
-            if (request.Disease != null)
-            {
-                DiseaseEnum diseaseEnum = DiseaseEnumAdapter.ToEnum(request.Disease);
-                vaccinations = vaccinations.Where(visit => visit.Vaccine.Disease == diseaseEnum);
-            }
-            if (request.DoctorId != null)
-                vaccinations = vaccinations.Where(visit => visit.Doctor.Id == request.DoctorId);
-            if (request.PatientId != null)
-                vaccinations = vaccinations.Where(visit => visit.Patient.Id == request.PatientId);
-
-            var paginatedVaccinations = PaginatedList<GetVaccinationsResponse>.Paginate(vaccinations.Select(visit => new GetVaccinationsResponse(visit)), request.Page);
-
-            return new PaginatedResponse<GetVaccinationsResponse, List<GetVaccinationsResponse>>(paginatedVaccinations, paginatedVaccinations);
         }
     }
 }

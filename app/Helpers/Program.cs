@@ -44,6 +44,7 @@ public class ProgramHelper
         builder.Services.AddScoped<PatientVaccinationService>();
 
         builder.Services.AddScoped<DoctorAuthService>();
+        builder.Services.AddScoped<DoctorVaccinationService>();
         builder.Services.AddScoped<VaccinationSlotService>();
 
         builder.Services.AddScoped<BugService>();

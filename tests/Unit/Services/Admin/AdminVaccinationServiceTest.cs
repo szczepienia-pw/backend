@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using backend.Database;
 using backend.Dto.Requests.Admin;
@@ -35,6 +36,8 @@ namespace backend_tests.Admin
             ));
 
             this.adminVaccinationService = new AdminVaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
+
+            Semaphores.slotSemaphore = new Semaphore(1, 1);
         }
 
         // Change vaccination slot
