@@ -184,4 +184,16 @@ public partial class VaccinationTest
         Assert.ThrowsAsync<NotFoundException>(() =>
             this.vaccinationController.DownloadVaccinationCertificate(vaccinationId));
     }
+
+    [Fact]
+    public void SuccessfullyDeletePatient()
+    {
+        var patient = this.dataContextMock.Object.Patients.First(p => p.Id == 1);
+        this.vaccinationController.HttpContext.Items.Add("User", patient);
+
+        var rsp = this.vaccinationController.DeletePatient().Result;
+
+        Assert.IsType<OkObjectResult>(rsp);
+        Assert.Equal(200, ((OkObjectResult) rsp).StatusCode);
+    }
 }

@@ -257,5 +257,14 @@ namespace backend_tests.Patient
             string header = Encoding.UTF8.GetString(payload[0..5]);
             Assert.Equal("%PDF-", header);
         }
+
+        [Fact]
+        public void SuccessfulyDeletePatient()
+        {
+            var patient = this.dataContextMock.Object.Patients.First(p => p.Id == 1);
+            this.vaccinationServiceMock.DeletePatient(patient);
+            
+            Assert.True(patient.IsDeleted);
+        }
     }
 }
