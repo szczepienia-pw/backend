@@ -81,19 +81,11 @@ namespace backend_tests.Admin
         [InlineData(1)]
         public void UtTestDeletePatientShouldDeletePatientAndTheirFutureSlots(int patientId)
         {
-            var patientValidationList = new List<PatientModel>();
-            var slotValidationList = new List<VaccinationSlotModel>();
-
-            this.dataContextMock.Setup(dbContext => dbContext.Remove(It.IsAny<PatientModel>())).Callback<PatientModel>(patient => patientValidationList.Add(patient));
-            this.dataContextMock.Setup(dbContext => dbContext.RemoveRange(It.IsAny<List<VaccinationSlotModel>>())).Callback<IEnumerable<object>>(slotList => slotValidationList.AddRange(slotList as List<VaccinationSlotModel>));
-
             var rsp = this.adminPatientsService.DeletePatient(patientId).Result;
+            var patient = this.dataContextMock.Object.Patients.First(p => p.Id == patientId);
 
             Assert.True(rsp.Success);
-            Assert.Single(patientValidationList);
-            Assert.Equal(3, slotValidationList.Count);
-            Assert.Equal(patientId, patientValidationList[0].Id);
-            Assert.Equal(2, slotValidationList[0].Id);
+            Assert.True(patient.IsDeleted);
         }
     }
 }

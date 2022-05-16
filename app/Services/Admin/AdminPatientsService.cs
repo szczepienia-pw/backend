@@ -6,6 +6,7 @@ using backend.Helpers;
 using backend.Models.Accounts;
 using backend.Models.Visits;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Admin
 {
@@ -41,18 +42,34 @@ namespace backend.Services.Admin
 
         public async Task<SuccessResponse> DeletePatient(int patientId)
         {
-            var patient = this.dataContext.Patients.FirstOrThrow((patient) => patient.Id == patientId, new NotFoundException());
+            var patient = this.dataContext.Patients.Include(p => p.Address).FirstOrThrow((patient) => patient.Id == patientId, new NotFoundException());
+            var address = patient.Address;
             var slots = this.dataContext.VaccinationSlots
+                .Include(slot => slot.Doctor)
                 .Join(
                     this.dataContext.Vaccinations,
                     (VaccinationSlotModel slot) => slot.Id,
                     (VaccinationModel vaccination) => vaccination.VaccinationSlot.Id,
-                    (VaccinationSlotModel slot, VaccinationModel vaccination) => new { slot = slot, vaccination = vaccination }).AsQueryable()
-                .Where(o => o.vaccination.Patient.Id == patientId && o.slot.Date >= DateTime.Now && o.slot.Reserved == true)
-                .Select(o => o.slot).ToList();
+                    (VaccinationSlotModel slot, VaccinationModel vaccination) =>
+                        new { vaccinationSlot = slot, vaccination = vaccination }).AsQueryable()
+                .Where(o => o.vaccination.Patient.Id == patientId && o.vaccinationSlot.Date >= DateTime.Now &&
+                            o.vaccinationSlot.Reserved == true);
+            
+            // free all reserved slots
+            foreach (var slot in slots)
+            {
+                slot.vaccination.Status = StatusEnum.Canceled;
 
-            this.dataContext.Remove(patient);
-            this.dataContext.RemoveRange(slots);
+                // Duplicate vaccination slot
+                VaccinationSlotModel newSlot = new VaccinationSlotModel { Date = slot.vaccinationSlot.Date, Doctor = slot.vaccinationSlot.Doctor, Reserved = false };
+                this.dataContext.Add(newSlot);
+            }
+            
+            ((ISoftDelete)patient).SoftDelete();
+
+            if ((this.dataContext.Patients.Where(p => p.AddressId == address.Id && p.Id != patient.Id)).Count() == 0)
+                this.dataContext.Remove(address);                
+            
             this.dataContext.SaveChanges();
 
             return new SuccessResponse();
