@@ -37,6 +37,7 @@ namespace backend.Database
 
             // Filter soft deleted entities
             modelBuilder.Entity<DoctorModel>().HasQueryFilter(model => !model.IsDeleted);
+            modelBuilder.Entity<PatientModel>().HasQueryFilter(model => !model.IsDeleted);
         }
     }
 }

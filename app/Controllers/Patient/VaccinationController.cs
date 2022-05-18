@@ -71,5 +71,12 @@ namespace backend.Controllers.Patient
             // Return PDF file
             return File(payload, new MediaTypeHeaderValue("application/pdf").ToString());
         }
+        
+        // DELETE patient/account
+        [HttpDelete("account")]
+        public async Task<IActionResult> DeletePatient()
+        {
+            return Ok(await this.vaccinationService.DeletePatient((PatientModel)this.HttpContext.Items["User"]));
+        }
     }
 }
