@@ -9,6 +9,7 @@ using backend.Models.Vaccines;
 using backend.Models.Visits;
 using Moq;
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend_tests.Helpers
 {
@@ -16,6 +17,21 @@ namespace backend_tests.Helpers
     {
         public static Mock<DataContext> GetMockedDataContextWithAccounts()
         {
+            #region Addresses
+
+            var address1 = new AddressModel()
+            {
+                City = "test",
+                HouseNumber = "test",
+                Id = 1,
+                LocalNumber = "test",
+                Street = "test",
+                ZipCode = "test"
+            };
+            var addresses = new List<AddressModel>() { address1 };
+
+            #endregion
+            
             #region Doctors
 
             var d1 = new DoctorModel()
@@ -55,10 +71,8 @@ namespace backend_tests.Helpers
                 Password = SecurePasswordHasherHelper.Hasher.Hash("password"),
                 Pesel = "22222222222",
                 VerificationToken = null,
-                Address = new AddressModel()
-                {
-
-                }
+                Address = address1,
+                AddressId = 1
             };
 
             var p2 = new PatientModel()
@@ -315,6 +329,8 @@ namespace backend_tests.Helpers
             contextMock.Setup(dbContext => dbContext.Settings).Returns(settings.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Vaccines).Returns(vaccines.AsQueryable().BuildMockDbSet().Object);
             contextMock.Setup(dbContext => dbContext.Vaccinations).Returns(vaccinations.AsQueryable().BuildMockDbSet().Object);
+            contextMock.Setup(dbContext => dbContext.Addresses)
+                .Returns(addresses.AsQueryable().BuildMockDbSet().Object);
             return contextMock;
         }
     }

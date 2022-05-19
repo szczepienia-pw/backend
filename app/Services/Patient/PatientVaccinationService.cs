@@ -7,6 +7,7 @@ using backend.Exceptions;
 using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
+using backend.Models.Accounts.AdditionalData;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Patient
@@ -166,13 +167,17 @@ namespace backend.Services.Patient
                     vaccinationSlot => vaccinationSlot.Id,
                     vaccination => vaccination.VaccinationSlotId,
                     (vaccinationSlot, vaccination) =>
-                        new {
-                            PatientId = vaccination.PatientId, vaccination = vaccination, vaccinationSlot = vaccinationSlot
+                        new
+                        {
+                            PatientId = vaccination.PatientId, vaccination = vaccination,
+                            vaccinationSlot = vaccinationSlot
                         })
-                .Where(t => 
-                    t.PatientId == patient.Id && 
+                .Where(t =>
+                    t.PatientId == patient.Id &&
                     t.vaccination.Status == StatusEnum.Planned &&
-                    t.vaccinationSlot.Reserved);
+                    t.vaccinationSlot.Reserved &&
+                    t.vaccinationSlot.Date >= DateTime.Now);
+            var address = this.dataContext.Addresses.First(a => a.Id == patient.AddressId);
 
             // free all reserved slots
             foreach (var slot in slots)
@@ -183,6 +188,9 @@ namespace backend.Services.Patient
                 VaccinationSlotModel newSlot = new VaccinationSlotModel { Date = slot.vaccinationSlot.Date, Doctor = slot.vaccinationSlot.Doctor, Reserved = false };
                 this.dataContext.Add(newSlot);
             }
+            
+            if ((this.dataContext.Patients.Where(p => p.AddressId == address.Id && p.Id != patient.Id)).Count() == 0)
+                this.dataContext.Remove(address);   
             
             ((ISoftDelete)patient).SoftDelete();
             this.dataContext.SaveChanges();
