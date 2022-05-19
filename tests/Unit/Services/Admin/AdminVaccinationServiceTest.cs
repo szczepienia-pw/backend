@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using backend.Controllers.Admin;
 using backend.Database;
 using backend.Dto.Requests.Admin;
 using backend.Dto.Responses;
@@ -17,13 +18,14 @@ using Xunit;
 
 namespace backend_tests.Admin
 {
-    public partial class AdminVaccinationServiceTest
+    public partial class AdminVaccinationTest
     {
         private readonly Mock<DataContext> dataContextMock;
         private readonly Mock<Mailer> mailerMock;
         private readonly AdminVaccinationService adminVaccinationService;
+        private readonly AdminVaccinationController adminVaccinationController;
 
-        public AdminVaccinationServiceTest()
+        public AdminVaccinationTest()
         {
             // Constructor is being executed before each test
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
@@ -36,6 +38,7 @@ namespace backend_tests.Admin
             ));
 
             this.adminVaccinationService = new AdminVaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
+            this.adminVaccinationController = new AdminVaccinationController(this.adminVaccinationService);
 
             Semaphores.slotSemaphore = new Semaphore(1, 1);
         }
