@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using backend.Controllers.Doctor;
 using backend.Database;
 using backend.Exceptions;
 using backend.Helpers;
@@ -8,19 +9,21 @@ using backend.Models.Accounts;
 using backend.Models.Visits;
 using backend.Services.Doctor;
 using backend_tests.Helpers;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Xunit;
 
 namespace backend_tests.Doctor
 {
-    public partial class DoctorVaccinationServiceTest
+    public partial class DoctorVaccinationTest
     {
         private readonly Mock<DataContext> dataContextMock;
         private readonly Mock<Mailer> mailerMock;
         private readonly DoctorVaccinationService doctorVaccinationService;
+        private readonly DoctorVaccinationController doctorVaccinationController;
         private readonly DoctorModel doctor;
 
-        public DoctorVaccinationServiceTest()
+        public DoctorVaccinationTest()
         {
             // Constructor is being executed before each test
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
@@ -34,6 +37,8 @@ namespace backend_tests.Doctor
 
             this.doctorVaccinationService = new DoctorVaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
             this.doctor = this.dataContextMock.Object.Doctors.First();
+            this.doctorVaccinationController = new DoctorVaccinationController(this.doctorVaccinationService);
+            this.doctorVaccinationController.ControllerContext.HttpContext = new DefaultHttpContext();
 
             Semaphores.slotSemaphore = new Semaphore(1, 1);
         }

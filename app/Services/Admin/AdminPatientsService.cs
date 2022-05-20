@@ -26,13 +26,9 @@ namespace backend.Services.Admin
 
         public async Task<PaginatedResponse<PatientModel, List<PatientResponse>>> ShowPatients(int page)
         {
-            var patients = this.dataContext.Patients;
+            var patients = this.dataContext.Patients
+                .Include(p => p.Address);
             var patientList = PaginatedList<PatientModel>.Paginate(patients, page);
-
-            // load all addresses
-            // EF lazy loading of related fields is enabled - if not loaded here, will cause db connection err later
-            foreach (var patient in patientList)
-                _ = patient.Address;
 
             return new PaginatedResponse<PatientModel, List<PatientResponse>>(
                 patientList,

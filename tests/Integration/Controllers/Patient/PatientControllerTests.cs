@@ -53,4 +53,15 @@ public partial class PatientTest
         this.patientController.HttpContext.Items.Add("User", patient);
         Assert.ThrowsAsync<ValidationException>(() => this.patientController.EditPatient(new PatientRequest() {Pesel = pesel}));
     }
+
+    [Fact]
+    public void SuccessfullyConfirmsRegistration()
+    {
+        var patient = this.dataContextMock.Object.Patients.First();
+        var rsp = this.patientController
+            .ConfirmRegistration(new ConfirmRegistrationRequest() { Token = patient.VerificationToken }).Result;
+
+        Assert.IsType<OkObjectResult>(rsp);
+        Assert.Equal(200, ((OkObjectResult) rsp).StatusCode);
+    }
 }

@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using backend.Controllers.Admin;
 using backend.Database;
 using backend.Dto.Requests.Admin;
 using backend.Dto.Responses;
@@ -17,13 +20,14 @@ using Xunit;
 
 namespace backend_tests.Admin
 {
-    public partial class AdminVaccinationServiceTest
+    public partial class AdminVaccinationTest
     {
         private readonly Mock<DataContext> dataContextMock;
         private readonly Mock<Mailer> mailerMock;
         private readonly AdminVaccinationService adminVaccinationService;
+        private readonly AdminVaccinationController adminVaccinationController;
 
-        public AdminVaccinationServiceTest()
+        public AdminVaccinationTest()
         {
             // Constructor is being executed before each test
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
@@ -36,6 +40,7 @@ namespace backend_tests.Admin
             ));
 
             this.adminVaccinationService = new AdminVaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
+            this.adminVaccinationController = new AdminVaccinationController(this.adminVaccinationService);
 
             Semaphores.slotSemaphore = new Semaphore(1, 1);
         }
@@ -217,6 +222,41 @@ namespace backend_tests.Admin
                 request.Page = (int)pageNo;
 
             Assert.ThrowsAsync<NotFoundException>(() => this.adminVaccinationService.GetVaccinations(request));
+        }
+        
+        /* Download report */
+        [Fact]
+        public void UtTestDownloadReportShouldReturnPdfFile()
+        {
+            var request = new VaccinationsReportRequest()
+            {
+                StartDate = DateTime.Now.AddYears(-10).ToString(),
+                EndDate = DateTime.Now.AddYears(10).ToString(),
+            };
+            byte[] payload = this.adminVaccinationService.DownloadVaccinationsReport(request);
+
+            // Check payload
+            Assert.NotNull(payload);
+            Assert.NotEmpty(payload);
+
+            // Check file header
+            string header = Encoding.UTF8.GetString(payload[0..5]);
+            Assert.Equal("%PDF-", header);
+        }
+        
+        /* Return report response */
+        [Fact]
+        public async Task UtTestReturnReportResult()
+        {
+            var request = new VaccinationsReportRequest()
+            {
+                StartDate = DateTime.Now.AddYears(-10).ToString(),
+                EndDate = DateTime.Now.AddYears(10).ToString(),
+            };
+            var result = await this.adminVaccinationService.GetVaccinationsReport(request);
+
+            // Check result
+            Assert.IsType<VaccinationsReportResponse>(result);
         }
     }
 }
