@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "bddf6b72-0110-4f39-91a4-4d459c3b1413",
+		"_postman_id": "04973cd7-00e4-49dc-bcfa-773296982bff",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1654,29 +1654,23 @@
 						},
 						{
 							"name": "Show Patients",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"page\": 1\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
-									"raw": "{{IOHostURL}}/admin/patients",
+									"raw": "{{IOHostURL}}/admin/patients?page=1",
 									"host": [
 										"{{IOHostURL}}"
 									],
 									"path": [
 										"admin",
 										"patients"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										}
 									]
 								}
 							},
