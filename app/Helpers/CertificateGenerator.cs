@@ -19,6 +19,7 @@ namespace backend.Helpers
     {
         private static readonly int headerSize = 24;
         private static readonly int subheaderSize = 16;
+        private static readonly string logoPath = "Resources/Logo.png";
         
         public static byte[] GeneratePDF(VaccinationModel vaccination, bool generateQrCode = true)
         {
@@ -57,7 +58,15 @@ namespace backend.Helpers
             Paragraph vaccinationDetails = new Paragraph(CertificateGenerator.GenerateVaccinationDataString(vaccination))
                 .SetFont(textfont);
 
+            // Load project logo
+            byte[] logoBytes = File.ReadAllBytes(CertificateGenerator.logoPath);
+            ImageData logoData = ImageDataFactory.Create(logoBytes);
+            Image logo = new Image(logoData)
+                    .SetHeight(100f)
+                    .SetHorizontalAlignment(HorizontalAlignment.CENTER);
+
             // Generate document
+            document.Add(logo);
             document.Add(header);
             document.Add(patientDetailsHeader);
             document.Add(patientDetails);
