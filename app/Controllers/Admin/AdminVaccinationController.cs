@@ -32,5 +32,14 @@ namespace backend.Controllers.Admin
         {
             return Ok(await this.adminVaccinationService.GetVaccinations(request));
         }
+        
+        
+        // GET admin/vaccinations/report
+        [HttpGet("report")]
+        [Authorize(AccountTypeEnum.Admin)]
+        public async Task<IActionResult> GetVaccinationsReport([FromQuery] VaccinationsReportRequest request)
+        {
+            return Ok(await this.adminVaccinationService.GetVaccinationsReport(request));
+        }
     }
 }

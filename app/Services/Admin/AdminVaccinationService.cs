@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using backend.Database;
 using backend.Dto.Requests.Admin;
 using backend.Dto.Responses;
@@ -107,6 +108,30 @@ namespace backend.Services.Admin
             var paginatedVaccinations = PaginatedList<GetVaccinationsResponse>.Paginate(vaccinations.Select(visit => new GetVaccinationsResponse(visit)), request.Page);
 
             return new PaginatedResponse<GetVaccinationsResponse, List<GetVaccinationsResponse>>(paginatedVaccinations, paginatedVaccinations);
+        }
+
+        public async Task<VaccinationsReportResponse> GetVaccinationsReport(VaccinationsReportRequest request)
+        {
+            var result = this.dataContext
+                .Vaccinations
+                .Where(vaccination => vaccination.Status == StatusEnum.Completed)
+                .Where(vaccination => vaccination.VaccinationSlot.Date >= DateTime.Parse(request.StartDate))
+                .Where(vaccination => vaccination.VaccinationSlot.Date <= DateTime.Parse(request.EndDate))
+                .GroupBy(vaccination => new {vaccination.Vaccine.Disease, vaccination.Vaccine.Name})
+                .Select(result => new
+                    {disease = result.Key.Disease, vaccineName = result.Key.Name, count = result.Count()})
+                .AsEnumerable()
+                .GroupBy(result => result.disease);
+            
+            var diseasesReport = result
+                .Select(disease => new DiseaseReportResponse(
+                    disease.Key.ToString(),
+                    disease.Count(),
+                    disease.Select(vaccine => new VaccineReportResponse(vaccine.vaccineName, vaccine.count)).ToList()
+                ))
+                .ToList();
+
+            return new VaccinationsReportResponse(diseasesReport);
         }
     }
 }
