@@ -1,10 +1,10 @@
-using System.Diagnostics;
 using backend.Database;
 using backend.Dto.Requests.Admin;
 using backend.Dto.Responses;
 using backend.Dto.Responses.Admin.Vaccination;
 using backend.Exceptions;
 using backend.Helpers;
+using backend.Helpers.PdfGenerators;
 using backend.Models.Vaccines;
 using backend.Models.Visits;
 using Microsoft.EntityFrameworkCore;
@@ -132,6 +132,24 @@ namespace backend.Services.Admin
                 .ToList();
 
             return new VaccinationsReportResponse(diseasesReport);
+        }
+        
+        public byte[] DownloadVaccinationsReport(VaccinationsReportRequest request)
+        {
+            var result = this.dataContext
+                .Vaccinations
+                .Where(vaccination => vaccination.Status == StatusEnum.Completed)
+                .Where(vaccination => vaccination.VaccinationSlot.Date >= DateTime.Parse(request.StartDate))
+                .Where(vaccination => vaccination.VaccinationSlot.Date <= DateTime.Parse(request.EndDate))
+                .OrderBy(vaccination => vaccination.VaccinationSlot.Date)
+                .ToList();
+
+            // Generate PDF and return byte array
+            return ReportGenerator.GeneratePDF(
+                result, 
+                DateTime.Parse(request.StartDate).ToString(), 
+                DateTime.Parse(request.EndDate).ToString()
+            );
         }
     }
 }

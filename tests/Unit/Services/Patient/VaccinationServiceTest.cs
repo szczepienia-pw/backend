@@ -226,7 +226,7 @@ namespace backend_tests.Patient
 
         [Theory]
         [InlineData(StatusEnum.Completed)]
-        public void TestDownloadCertificateThrowExceptionForAnotherPatientsVisit(StatusEnum status)
+        public void UtTestDownloadCertificateThrowExceptionForAnotherPatientsVisit(StatusEnum status)
         {
             var patient = this.dataContextMock.Object.Patients.First(patient => patient.Id != this.patientMock.Id);
             var vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Patient.Id == patient.Id && vaccination.Status == status);
@@ -238,13 +238,13 @@ namespace backend_tests.Patient
         [InlineData(-1)]
         [InlineData(int.MaxValue)]
         [InlineData(int.MinValue)]
-        public void TestDownloadCertificateThrowExceptionForInvalidVaccination(int vaccinationId)
+        public void UtTestDownloadCertificateThrowExceptionForInvalidVaccination(int vaccinationId)
         {
             Assert.Throws<NotFoundException>(() => this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccinationId, false));
         }
 
         [Fact]
-        public void TestDownloadCertificateShouldReturnPdfFile()
+        public void UtTestDownloadCertificateShouldReturnPdfFile()
         {
             var vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Patient.Id == this.patientMock.Id && vaccination.Status == StatusEnum.Completed);
             byte[] payload = this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccination.Id, false);
@@ -259,7 +259,7 @@ namespace backend_tests.Patient
         }
 
         [Fact]
-        public void SuccessfulyDeletePatient()
+        public void UtTestSuccessfulyDeletePatient()
         {
             var patient = this.dataContextMock.Object.Patients.First(p => p.Id == 1);
             this.vaccinationServiceMock.DeletePatient(patient);

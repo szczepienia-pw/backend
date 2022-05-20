@@ -3,6 +3,7 @@ using backend.Dto.Requests.Admin;
 using backend.Helpers;
 using backend.Services.Admin;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace backend.Controllers.Admin
 {
@@ -33,13 +34,24 @@ namespace backend.Controllers.Admin
             return Ok(await this.adminVaccinationService.GetVaccinations(request));
         }
         
-        
         // GET admin/vaccinations/report
         [HttpGet("report")]
         [Authorize(AccountTypeEnum.Admin)]
         public async Task<IActionResult> GetVaccinationsReport([FromQuery] VaccinationsReportRequest request)
         {
             return Ok(await this.adminVaccinationService.GetVaccinationsReport(request));
+        }
+        
+        // GET admin/vaccinations/report/download
+        [HttpGet("report/download")]
+        [Authorize(AccountTypeEnum.Admin)]
+        public async Task<IActionResult> DownloadVaccinationsReport([FromQuery] VaccinationsReportRequest request)
+        {
+            // Generate payload
+            byte[] payload = this.adminVaccinationService.DownloadVaccinationsReport(request);
+
+            // Return PDF file
+            return File(payload, new MediaTypeHeaderValue("application/pdf").ToString());
         }
     }
 }

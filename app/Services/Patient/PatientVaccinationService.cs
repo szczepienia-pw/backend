@@ -7,6 +7,7 @@ using backend.Exceptions;
 using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
+using backend.Helpers.PdfGenerators;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Patient

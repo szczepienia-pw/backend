@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "bddf6b72-0110-4f39-91a4-4d459c3b1413",
+		"_postman_id": "47da5208-3751-41c4-8c71-38c5afbd5fe9",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -551,14 +551,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{IOHostURL}}/patient/vaccinations/6/certificate",
+							"raw": "{{IOHostURL}}/patient/vaccinations/1/certificate",
 							"host": [
 								"{{IOHostURL}}"
 							],
 							"path": [
 								"patient",
 								"vaccinations",
-								"6",
+								"1",
 								"certificate"
 							]
 						}
@@ -1986,6 +1986,67 @@
 											"key": "page",
 											"value": "1",
 											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/vaccinations/report?startDate=2022-03-18T14:15:00Z&endDate=2022-06-20T14:15:00Z",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"vaccinations",
+										"report"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2022-03-18T14:15:00Z",
+											"description": "REQUIRED"
+										},
+										{
+											"key": "endDate",
+											"value": "2022-06-20T14:15:00Z",
+											"description": "REQUIRED"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Download report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/vaccinations/report/download?startDate=2022-03-18T14:15:00Z&endDate=2022-06-20T14:15:00Z",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"vaccinations",
+										"report",
+										"download"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2022-03-18T14:15:00Z"
+										},
+										{
+											"key": "endDate",
+											"value": "2022-06-20T14:15:00Z"
 										}
 									]
 								}

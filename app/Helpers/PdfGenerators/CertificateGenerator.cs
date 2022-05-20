@@ -1,61 +1,48 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using backend.Models.Visits;
-using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
-using iText.Kernel.Pdf;
-using iText.Kernel.Font;
-using iText.IO.Font.Constants;
-using iText.IO.Image;
 using backend.Models.Accounts;
 using iText.Barcodes;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf.Xobject;
 
-namespace backend.Helpers
+namespace backend.Helpers.PdfGenerators
 {
     [ExcludeFromCodeCoverage]
     public static class CertificateGenerator
     {
-        private static readonly int headerSize = 24;
-        private static readonly int subheaderSize = 16;
-        
         public static byte[] GeneratePDF(VaccinationModel vaccination, bool generateQrCode = true)
         {
             // Initialize structures
-            MemoryStream workStream = new MemoryStream();
-            PdfWriter writer = new PdfWriter(workStream);
-            writer.SetCloseStream(false);
-            PdfDocument pdf = new PdfDocument(writer);
-            Document document = new Document(pdf);
+            var (workStream, pdf, document) = PdfGeneratorHelper.InitDocument();
 
             // Prepare font objects
             // Unfortunately due to limitation of iText these objects cannot be shared by
             // multiple PDF documents, therefore they cannot be declared as static.
-            PdfFont headerFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
-            PdfFont textfont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
+            var (headerFont, textFont) = PdfGeneratorHelper.GetBasicFonts();
 
             // Prepare elements
             Paragraph header = new Paragraph("Vaccination certificate")
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(CertificateGenerator.headerSize)
+                .SetFontSize(PdfGeneratorHelper.headerSize)
                 .SetFont(headerFont);
 
             Paragraph patientDetailsHeader = new Paragraph("Personal information")
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(CertificateGenerator.subheaderSize)
+                .SetFontSize(PdfGeneratorHelper.subheaderSize)
                 .SetFont(headerFont);
 
             Paragraph vaccinationDetailsHeader = new Paragraph("Vaccination information")
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(CertificateGenerator.subheaderSize)
+                .SetFontSize(PdfGeneratorHelper.subheaderSize)
                 .SetFont(headerFont);
 
             Paragraph patientDetails = new Paragraph(CertificateGenerator.GeneratePatientDataString(vaccination.Patient))
-                .SetFont(textfont);
+                .SetFont(textFont);
 
             Paragraph vaccinationDetails = new Paragraph(CertificateGenerator.GenerateVaccinationDataString(vaccination))
-                .SetFont(textfont);
+                .SetFont(textFont);
 
             // Generate document
             document.Add(header);
