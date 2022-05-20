@@ -23,6 +23,9 @@ namespace backend.Helpers.PdfGenerators
             var (headerFont, textFont) = PdfGeneratorHelper.GetBasicFonts();
 
             // Prepare elements
+            Color color = PdfGeneratorHelper.GetColor();
+            Image logo = PdfGeneratorHelper.GetLogo();
+
             Paragraph header = new Paragraph("Vaccination certificate")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(PdfGeneratorHelper.headerSize)
@@ -31,11 +34,13 @@ namespace backend.Helpers.PdfGenerators
             Paragraph patientDetailsHeader = new Paragraph("Personal information")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(PdfGeneratorHelper.subheaderSize)
+                .SetFontColor(color)
                 .SetFont(headerFont);
 
             Paragraph vaccinationDetailsHeader = new Paragraph("Vaccination information")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(PdfGeneratorHelper.subheaderSize)
+                .SetFontColor(color)
                 .SetFont(headerFont);
 
             Paragraph patientDetails = new Paragraph(CertificateGenerator.GeneratePatientDataString(vaccination.Patient))
@@ -45,6 +50,7 @@ namespace backend.Helpers.PdfGenerators
                 .SetFont(textFont);
 
             // Generate document
+            document.Add(logo);
             document.Add(header);
             document.Add(patientDetailsHeader);
             document.Add(patientDetails);

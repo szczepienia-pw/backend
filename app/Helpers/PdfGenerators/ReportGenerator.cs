@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using backend.Models.Visits;
+using iText.Kernel.Colors;
 using iText.Layout.Element;
 using iText.Layout.Properties;
 
@@ -19,17 +20,36 @@ namespace backend.Helpers.PdfGenerators
             var (headerFont, textFont) = PdfGeneratorHelper.GetBasicFonts();
 
             // Prepare elements
-            Paragraph header = new Paragraph($"Vaccinations report \n {dateStart} - {dateEnd} \n")
+            Image logo = PdfGeneratorHelper.GetLogo();
+            document.Add(logo);
+
+            Paragraph header = new Paragraph($"Vaccinations report")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(PdfGeneratorHelper.headerSize)
                 .SetFont(headerFont);
 
+            Paragraph subheader = new Paragraph($"{ dateStart} - { dateEnd }")
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetFontSize(PdfGeneratorHelper.subheaderSize)
+                .SetFont(headerFont);
+
             document.Add(header);
+            document.Add(subheader);
+
+            Color color = PdfGeneratorHelper.GetColor();
 
             Table table = new Table(3, true);
-            table.AddHeaderCell("Date").SetFont(textFont).SetFontSize(PdfGeneratorHelper.subheaderSize);
+            table.AddHeaderCell("Date");
             table.AddHeaderCell("Disease");
             table.AddHeaderCell("Vaccine");
+            table.FlushContent();
+
+            table.GetHeader()
+                .SetBackgroundColor(color)
+                .SetFontColor(ColorConstants.WHITE)
+                .SetFontSize(PdfGeneratorHelper.subheaderSize)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetBold();
 
             foreach (var vaccination in vaccinations)
             {
@@ -39,6 +59,8 @@ namespace backend.Helpers.PdfGenerators
             }
 
             document.Add(table);
+
+            table.Complete();
             
             // Save document
             document.Close();
