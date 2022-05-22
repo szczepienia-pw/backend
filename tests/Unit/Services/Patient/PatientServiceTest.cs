@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using backend.Controllers.Patient;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace backend_tests.Patient
@@ -23,6 +24,7 @@ namespace backend_tests.Patient
         private readonly SecurePasswordHasher securePasswordHasherMock;
         private readonly PatientService patientServiceMock;
         private readonly PatientController patientController;
+        private readonly Mock<Mailer> mailerMock;
 
         private T TestInputParse<T,U>(params string?[] input) 
             where T : PatientRequest, new()
@@ -49,9 +51,22 @@ namespace backend_tests.Patient
 
         public PatientTest()
         {
+            this.mailerMock = new Mock<Mailer>();
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                null
+            ));
+            
             this.dataContextMock = DbHelper.GetMockedDataContextWithAccounts();
             this.securePasswordHasherMock = SecurePasswordHasherHelper.Hasher;
-            this.patientServiceMock = new PatientService(this.dataContextMock.Object, this.securePasswordHasherMock);
+            this.patientServiceMock = new PatientService(
+                this.dataContextMock.Object, 
+                this.securePasswordHasherMock, 
+                this.mailerMock.Object,
+                Options.Create(new FrontendUrlsSettings() { ConfirmRegistration = "http://localhost/{token}"})
+            );
             this.patientController = new PatientController(this.patientServiceMock);
             this.patientController.ControllerContext.HttpContext = new DefaultHttpContext();
         }
@@ -95,6 +110,18 @@ namespace backend_tests.Patient
             Assert.Equal(input[6], rsp.LastName);
             Assert.Equal(input[7], rsp.Email);
             Assert.Equal(input[9], rsp.Pesel);
+            
+            Assert.NotNull(added.VerificationToken);
+            
+            // Verify if mailer has been called with correct params
+            this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
+                added.Email,
+                "Verify your email",
+                It.Is<string>(
+                    body => body.Contains(added.VerificationToken)
+                ),
+                null
+            ), Times.Once);
         }
 
         [Theory]
@@ -153,6 +180,35 @@ namespace backend_tests.Patient
         public void UtValidationShouldThrowValidationException(string? email, string? pesel)
         {
             Assert.Throws<ValidationException>(() => this.patientServiceMock.ValidatePatient(email, pesel));
+        }
+
+        [Fact]
+        public void UtShouldConfirmRegistration()
+        {
+            var patient = this.dataContextMock.Object.Patients.First(patient => patient.Id == 3);
+            var request = new ConfirmRegistrationRequest() {Token = patient.VerificationToken};
+
+            List<PatientModel> verifyList = new List<PatientModel>();
+            this.dataContextMock.Setup(dataContext => dataContext.Update(It.IsAny<PatientModel>())).Callback<PatientModel>(patient => verifyList.Add(patient));
+            
+            var rsp = this.patientServiceMock.ConfirmRegistration(request).Result;
+            
+            this.dataContextMock.Verify(dataContext => dataContext.Update(It.IsAny<PatientModel>()), Times.Once());
+            this.dataContextMock.Verify(dataContext => dataContext.SaveChanges(), Times.Once());
+         
+            Assert.Single(verifyList);
+            var updated = verifyList[0];
+            
+            Assert.Null(updated.VerificationToken);
+        }
+
+        [Fact]
+        public void UtShouldThrowExceptionWhenConfirmingWrongToken()
+        {
+            var patient = this.dataContextMock.Object.Patients.First(patient => patient.Id == 3);
+            var request = new ConfirmRegistrationRequest() {Token = Guid.NewGuid().ToString()};
+            
+            Assert.ThrowsAsync<UnauthorizedException>(() => this.patientServiceMock.ConfirmRegistration(request));
         }
     }
 }

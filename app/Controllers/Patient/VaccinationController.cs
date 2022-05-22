@@ -12,9 +12,9 @@ namespace backend.Controllers.Patient
     [ApiController]
     public class VaccinationController : ControllerBase
     {
-        private readonly VaccinationService vaccinationService;
+        private readonly PatientVaccinationService vaccinationService;
 
-        public VaccinationController(VaccinationService vaccinationService)
+        public VaccinationController(PatientVaccinationService vaccinationService)
         {
             this.vaccinationService = vaccinationService;
         }
@@ -70,6 +70,13 @@ namespace backend.Controllers.Patient
 
             // Return PDF file
             return File(payload, new MediaTypeHeaderValue("application/pdf").ToString());
+        }
+        
+        // DELETE patient/account
+        [HttpDelete("account")]
+        public async Task<IActionResult> DeletePatient()
+        {
+            return Ok(await this.vaccinationService.DeletePatient((PatientModel)this.HttpContext.Items["User"]));
         }
     }
 }

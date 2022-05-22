@@ -1,22 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using backend.Controllers.Patient;
 using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses.Common.Vaccination;
-using backend.Dto.Responses.Patient.Vaccination;
 using backend.Exceptions;
 using backend.Helpers;
 using backend.Models.Accounts;
-using backend.Models.Vaccines;
 using backend.Models.Visits;
-using backend.Services;
 using backend.Services.Patient;
 using backend_tests.Helpers;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Xunit;
 
@@ -26,7 +23,7 @@ namespace backend_tests.Patient
     {
         private readonly Mock<DataContext> dataContextMock;
         private readonly Mock<Mailer> mailerMock;
-        private readonly VaccinationService vaccinationServiceMock;
+        private readonly PatientVaccinationService vaccinationServiceMock;
         private readonly PatientModel patientMock;
         private readonly VaccinationController vaccinationController;
 
@@ -42,10 +39,12 @@ namespace backend_tests.Patient
                 null
             ));
 
-            this.vaccinationServiceMock = new VaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
+            this.vaccinationServiceMock = new PatientVaccinationService(this.dataContextMock.Object, this.mailerMock.Object);
             this.patientMock = this.dataContextMock.Object.Patients.First();
             this.vaccinationController = new VaccinationController(this.vaccinationServiceMock);
             this.vaccinationController.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            Semaphores.slotSemaphore = new Semaphore(1, 1);
         }
 
         // Show available vaccination slots
@@ -227,7 +226,7 @@ namespace backend_tests.Patient
 
         [Theory]
         [InlineData(StatusEnum.Completed)]
-        public void TestDownloadCertificateThrowExceptionForAnotherPatientsVisit(StatusEnum status)
+        public void UtTestDownloadCertificateThrowExceptionForAnotherPatientsVisit(StatusEnum status)
         {
             var patient = this.dataContextMock.Object.Patients.First(patient => patient.Id != this.patientMock.Id);
             var vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Patient.Id == patient.Id && vaccination.Status == status);
@@ -239,13 +238,13 @@ namespace backend_tests.Patient
         [InlineData(-1)]
         [InlineData(int.MaxValue)]
         [InlineData(int.MinValue)]
-        public void TestDownloadCertificateThrowExceptionForInvalidVaccination(int vaccinationId)
+        public void UtTestDownloadCertificateThrowExceptionForInvalidVaccination(int vaccinationId)
         {
             Assert.Throws<NotFoundException>(() => this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccinationId, false));
         }
 
         [Fact]
-        public void TestDownloadCertificateShouldReturnPdfFile()
+        public void UtTestDownloadCertificateShouldReturnPdfFile()
         {
             var vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Patient.Id == this.patientMock.Id && vaccination.Status == StatusEnum.Completed);
             byte[] payload = this.vaccinationServiceMock.DownloadVaccinationCertificate(this.patientMock, vaccination.Id, false);
@@ -257,6 +256,15 @@ namespace backend_tests.Patient
             // Check file header
             string header = Encoding.UTF8.GetString(payload[0..5]);
             Assert.Equal("%PDF-", header);
+        }
+
+        [Fact]
+        public void UtTestSuccessfulyDeletePatient()
+        {
+            var patient = this.dataContextMock.Object.Patients.First(p => p.Id == 1);
+            this.vaccinationServiceMock.DeletePatient(patient);
+            
+            Assert.True(patient.IsDeleted);
         }
     }
 }

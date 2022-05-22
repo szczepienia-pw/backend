@@ -36,24 +36,25 @@ public class ProgramHelper
         builder.Services.AddScoped<AdminAuthService>();
         builder.Services.AddScoped<AdminDoctorsService>();
         builder.Services.AddScoped<AdminPatientsService>();
+        builder.Services.AddScoped<AdminVaccinationService>();
+        builder.Services.AddScoped<SettingService>();
 
         builder.Services.AddScoped<PatientAuthService>();
         builder.Services.AddScoped<PatientService>();
+        builder.Services.AddScoped<PatientVaccinationService>();
 
         builder.Services.AddScoped<DoctorAuthService>();
-
+        builder.Services.AddScoped<DoctorVaccinationService>();
         builder.Services.AddScoped<VaccinationSlotService>();
-        builder.Services.AddScoped<SettingService>();
+
         builder.Services.AddScoped<BugService>();
-        builder.Services.AddScoped<AdminDoctorsService>();
-        builder.Services.AddScoped<PatientService>();
-        builder.Services.AddScoped<VaccinationService>();
         builder.Services.AddScoped<CommonVaccinationService>();
 
         // Connect settings to sections in appsettings.json
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
         builder.Services.Configure<HasherSettings>(builder.Configuration.GetSection("HasherSettings"));
         builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+        builder.Services.Configure<FrontendUrlsSettings>(builder.Configuration.GetSection("FrontendUrls"));
 
         // Connect to MySQL database
         string connectionString = builder.Configuration.GetConnectionString("MySQLConnection").ToString();

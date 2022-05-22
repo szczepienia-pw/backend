@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using backend.Helpers;
+﻿using backend.Helpers;
 using backend.Database;
 using backend.Dto.Requests.Patient;
 using backend.Dto.Responses;
@@ -8,25 +7,19 @@ using backend.Exceptions;
 using backend.Models.Accounts;
 using backend.Models.Vaccines;
 using backend.Dto.Responses.Patient.Vaccination;
-using backend.Dto.Responses.Common.Vaccination;
+using backend.Helpers.PdfGenerators;
+using backend.Models.Accounts.AdditionalData;
 using Microsoft.EntityFrameworkCore;
-using backend.Dto.Requests.Patient;
-using Microsoft.AspNetCore.Mvc;
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
 
 namespace backend.Services.Patient
 {
-	public class VaccinationService
+	public class PatientVaccinationService
 	{
-        private static Semaphore semaphore = new Semaphore(1, 1);
-
         private readonly DataContext dataContext;
         private readonly Mailer mailer;
 
 
-        public VaccinationService(DataContext dataContext, Mailer mailer)
+        public PatientVaccinationService(DataContext dataContext, Mailer mailer)
         {
             this.dataContext = dataContext;
             this.mailer = mailer;
@@ -60,12 +53,12 @@ namespace backend.Services.Patient
                                             new NotFoundException("Slot not found"));
 
             // Block concurrent access
-            VaccinationService.semaphore.WaitOne();
+            Semaphores.slotSemaphore.WaitOne();
 
             // Check if slot is still available
             if (slot.Reserved)
             {
-                VaccinationService.semaphore.Release();
+                Semaphores.slotSemaphore.Release();
                 throw new ConflictException("Slot is already taken.");
             }
 
@@ -85,7 +78,7 @@ namespace backend.Services.Patient
             this.dataContext.SaveChanges();
 
             // Release semaphore
-            VaccinationService.semaphore.Release();
+            Semaphores.slotSemaphore.Release();
 
             // Send email with confirmation
             _ = this.mailer.SendEmailAsync(
@@ -163,6 +156,47 @@ namespace backend.Services.Patient
 
             // Generate PDF and return byte array
             return CertificateGenerator.GeneratePDF(vaccination, generateQrCode);
+        }
+        
+        public async Task<SuccessResponse> DeletePatient(PatientModel patient)
+        {
+            var slots = this.dataContext.VaccinationSlots
+                .Include(vs => vs.Doctor)
+                .Include(vs => vs.Vaccination)
+                .Join(
+                    this.dataContext.Vaccinations.AsQueryable(),
+                    vaccinationSlot => vaccinationSlot.Id,
+                    vaccination => vaccination.VaccinationSlotId,
+                    (vaccinationSlot, vaccination) =>
+                        new
+                        {
+                            PatientId = vaccination.PatientId, vaccination = vaccination,
+                            vaccinationSlot = vaccinationSlot
+                        })
+                .Where(t =>
+                    t.PatientId == patient.Id &&
+                    t.vaccination.Status == StatusEnum.Planned &&
+                    t.vaccinationSlot.Reserved &&
+                    t.vaccinationSlot.Date >= DateTime.Now);
+            var address = this.dataContext.Addresses.First(a => a.Id == patient.AddressId);
+
+            // free all reserved slots
+            foreach (var slot in slots)
+            {
+                slot.vaccination.Status = StatusEnum.Canceled;
+
+                // Duplicate vaccination slot
+                VaccinationSlotModel newSlot = new VaccinationSlotModel { Date = slot.vaccinationSlot.Date, Doctor = slot.vaccinationSlot.Doctor, Reserved = false };
+                this.dataContext.Add(newSlot);
+            }
+            
+            if ((this.dataContext.Patients.Where(p => p.AddressId == address.Id && p.Id != patient.Id)).Count() == 0)
+                this.dataContext.Remove(address);   
+            
+            ((ISoftDelete)patient).SoftDelete();
+            this.dataContext.SaveChanges();
+
+            return new SuccessResponse();
         }
     }
 }

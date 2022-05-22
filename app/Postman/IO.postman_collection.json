@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e340bff3-81d1-46cd-872f-030d4c0a3ccb",
+		"_postman_id": "47da5208-3751-41c4-8c71-38c5afbd5fe9",
 		"name": "IO",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -551,15 +551,61 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{IOHostURL}}/patient/vaccinations/6/certificate",
+							"raw": "{{IOHostURL}}/patient/vaccinations/1/certificate",
 							"host": [
 								"{{IOHostURL}}"
 							],
 							"path": [
 								"patient",
 								"vaccinations",
-								"6",
+								"1",
 								"certificate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"be7d9bc8-50db-4d7f-933c-78e854185e63\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{IOHostURL}}/patient/registration/confirm",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"patient",
+								"registration",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete patient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{IOHostURL}}/patient/account",
+							"host": [
+								"{{IOHostURL}}"
+							],
+							"path": [
+								"patient",
+								"account"
 							]
 						}
 					},
@@ -948,6 +994,40 @@
 										"doctor",
 										"vaccination-slots",
 										"5"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Vaccinations",
+					"item": [
+						{
+							"name": "Change vaccination slot",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"vaccinationSlotId\": 5\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/doctor/vaccinations/1/change-slot",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"doctor",
+										"vaccinations",
+										"1",
+										"change-slot"
 									]
 								}
 							},
@@ -1574,29 +1654,23 @@
 						},
 						{
 							"name": "Show Patients",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"page\": 1\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
-									"raw": "{{IOHostURL}}/admin/patients",
+									"raw": "{{IOHostURL}}/admin/patients?page=1",
 									"host": [
 										"{{IOHostURL}}"
 									],
 									"path": [
 										"admin",
 										"patients"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										}
 									]
 								}
 							},
@@ -1644,6 +1718,330 @@
 										"admin",
 										"patients",
 										"3"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Vaccinations",
+					"item": [
+						{
+							"name": "Change vaccination slot",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"vaccinationSlotId\": 5\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{IOHostURL}}/admin/vaccinations/1/change-slot",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"vaccinations",
+										"1",
+										"change-slot"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get list of vaccinations",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const schema = {\r",
+											"  \"type\": \"object\",\r",
+											"  \"properties\": {\r",
+											"    \"pagination\": {\r",
+											"      \"type\": \"object\",\r",
+											"      \"properties\": {\r",
+											"        \"currentPage\": {\r",
+											"          \"type\": \"integer\"\r",
+											"        },\r",
+											"        \"totalPages\": {\r",
+											"          \"type\": \"integer\"\r",
+											"        },\r",
+											"        \"currentRecords\": {\r",
+											"          \"type\": \"integer\"\r",
+											"        },\r",
+											"        \"totalRecords\": {\r",
+											"          \"type\": \"integer\"\r",
+											"        }\r",
+											"      },\r",
+											"      \"required\": [\r",
+											"        \"currentPage\",\r",
+											"        \"totalPages\",\r",
+											"        \"currentRecords\",\r",
+											"        \"totalRecords\"\r",
+											"      ]\r",
+											"    },\r",
+											"    \"data\": {\r",
+											"      \"type\": \"array\",\r",
+											"      \"items\": [\r",
+											"        {\r",
+											"          \"type\": \"object\",\r",
+											"          \"properties\": {\r",
+											"            \"id\": {\r",
+											"              \"type\": \"integer\"\r",
+											"            },\r",
+											"            \"vaccine\": {\r",
+											"              \"type\": \"object\",\r",
+											"              \"properties\": {\r",
+											"                \"id\": {\r",
+											"                  \"type\": \"integer\"\r",
+											"                },\r",
+											"                \"name\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                },\r",
+											"                \"disease\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                },\r",
+											"                \"requiredDoses\": {\r",
+											"                  \"type\": \"integer\"\r",
+											"                }\r",
+											"              },\r",
+											"              \"required\": [\r",
+											"                \"id\",\r",
+											"                \"name\",\r",
+											"                \"disease\",\r",
+											"                \"requiredDoses\"\r",
+											"              ]\r",
+											"            },\r",
+											"            \"vaccinationSlot\": {\r",
+											"              \"type\": \"object\",\r",
+											"              \"properties\": {\r",
+											"                \"id\": {\r",
+											"                  \"type\": \"integer\"\r",
+											"                },\r",
+											"                \"date\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                }\r",
+											"              },\r",
+											"              \"required\": [\r",
+											"                \"id\",\r",
+											"                \"date\"\r",
+											"              ]\r",
+											"            },\r",
+											"            \"status\": {\r",
+											"              \"type\": \"string\"\r",
+											"            },\r",
+											"            \"patient\": {\r",
+											"              \"type\": \"object\",\r",
+											"              \"properties\": {\r",
+											"                \"id\": {\r",
+											"                  \"type\": \"integer\"\r",
+											"                },\r",
+											"                \"firstName\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                },\r",
+											"                \"lastName\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                },\r",
+											"                \"pesel\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                },\r",
+											"                \"email\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                },\r",
+											"                \"address\": {\r",
+											"                  \"type\": \"object\",\r",
+											"                  \"properties\": {\r",
+											"                    \"id\": {\r",
+											"                      \"type\": \"integer\"\r",
+											"                    },\r",
+											"                    \"city\": {\r",
+											"                      \"type\": \"string\"\r",
+											"                    },\r",
+											"                    \"zipCode\": {\r",
+											"                      \"type\": \"string\"\r",
+											"                    },\r",
+											"                    \"street\": {\r",
+											"                      \"type\": \"string\"\r",
+											"                    },\r",
+											"                    \"houseNumber\": {\r",
+											"                      \"type\": \"string\"\r",
+											"                    },\r",
+											"                    \"localNumber\": {\r",
+											"                      \"type\": \"string\"\r",
+											"                    }\r",
+											"                  },\r",
+											"                  \"required\": [\r",
+											"                    \"id\",\r",
+											"                    \"city\",\r",
+											"                    \"zipCode\",\r",
+											"                    \"street\",\r",
+											"                    \"houseNumber\",\r",
+											"                    \"localNumber\"\r",
+											"                  ]\r",
+											"                }\r",
+											"              },\r",
+											"              \"required\": [\r",
+											"                \"id\",\r",
+											"                \"firstName\",\r",
+											"                \"lastName\",\r",
+											"                \"pesel\",\r",
+											"                \"email\",\r",
+											"                \"address\"\r",
+											"              ]\r",
+											"            },\r",
+											"            \"doctor\": {\r",
+											"              \"type\": \"object\",\r",
+											"              \"properties\": {\r",
+											"                \"id\": {\r",
+											"                  \"type\": \"integer\"\r",
+											"                },\r",
+											"                \"firstName\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                },\r",
+											"                \"lastName\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                },\r",
+											"                \"email\": {\r",
+											"                  \"type\": \"string\"\r",
+											"                }\r",
+											"              },\r",
+											"              \"required\": [\r",
+											"                \"id\",\r",
+											"                \"firstName\",\r",
+											"                \"lastName\",\r",
+											"                \"email\"\r",
+											"              ]\r",
+											"            }\r",
+											"          },\r",
+											"          \"required\": [\r",
+											"            \"id\",\r",
+											"            \"vaccine\",\r",
+											"            \"vaccinationSlot\",\r",
+											"            \"status\",\r",
+											"            \"patient\",\r",
+											"            \"doctor\"\r",
+											"          ]\r",
+											"        }\r",
+											"      ]\r",
+											"    }\r",
+											"  },\r",
+											"  \"required\": [\r",
+											"    \"pagination\",\r",
+											"    \"data\"\r",
+											"  ]\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Response structure is valid\", () => {\r",
+											"    pm.response.to.have.jsonSchema(schema);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/vaccinations?disease=COVID-21",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"vaccinations"
+									],
+									"query": [
+										{
+											"key": "disease",
+											"value": "COVID-21"
+										},
+										{
+											"key": "patientId",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "doctorId",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/vaccinations/report?startDate=2022-03-18T14:15:00Z&endDate=2022-06-20T14:15:00Z",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"vaccinations",
+										"report"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2022-03-18T14:15:00Z",
+											"description": "REQUIRED"
+										},
+										{
+											"key": "endDate",
+											"value": "2022-06-20T14:15:00Z",
+											"description": "REQUIRED"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Download report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{IOHostURL}}/admin/vaccinations/report/download?startDate=2022-03-18T14:15:00Z&endDate=2022-06-20T14:15:00Z",
+									"host": [
+										"{{IOHostURL}}"
+									],
+									"path": [
+										"admin",
+										"vaccinations",
+										"report",
+										"download"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2022-03-18T14:15:00Z"
+										},
+										{
+											"key": "endDate",
+											"value": "2022-06-20T14:15:00Z"
+										}
 									]
 								}
 							},

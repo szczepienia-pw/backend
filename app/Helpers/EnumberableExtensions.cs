@@ -24,15 +24,23 @@ namespace backend.Helpers
         }
 
         [ExcludeFromCodeCoverage]
-        public static TSource FirstOrThrow<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, BasicException exception)
+        public static TSource FirstOrThrow<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, BasicException exception, bool releaseSemaphore = false)
         {
             if (source == null)
+            {
+                if(releaseSemaphore)
+                    Semaphores.slotSemaphore.Release();
                 throw exception;
+            }
 
             var element = source.FirstOrDefault(predicate);
 
             if (element == null)
+            {
+                if (releaseSemaphore)
+                    Semaphores.slotSemaphore.Release();
                 throw exception;
+            }
 
             return element;
         }
