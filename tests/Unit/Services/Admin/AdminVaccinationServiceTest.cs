@@ -78,7 +78,7 @@ namespace backend_tests.Admin
 
         [Theory]
         [InlineData(1, 1)]
-        public void UtTestChangeVaccinationSlotForAvailableSlotAndValidVaccinationSendEmail(int vaccinationId, int newSlotId)
+        public void UtTestChangeVaccinationSlotForAvailableSlotAndValidVaccinationSendEmailToPatient(int vaccinationId, int newSlotId)
         {
             this.mailerMock.Setup(mailer => mailer.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns(Task.FromResult(Task.CompletedTask));
 
@@ -94,6 +94,33 @@ namespace backend_tests.Admin
                 vaccination.Patient.Email,
                 "Vaccination visit slot changed",
                 It.Is<string>(body => body.Contains(oldSlot.Date.ToShortDateString()) &&
+                                      body.Contains(newSlot.Date.ToShortDateString()) &&
+                                      body.Contains(vaccination.Vaccine.Disease.ToString()) &&
+                                      body.Contains("System Administrator")),
+                null
+            ), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        public void UtTestChangeVaccinationSlotForAvailableSlotAndValidVaccinationSendEmailToDoctor(int vaccinationId, int newSlotId)
+        {
+            this.mailerMock.Setup(mailer => mailer.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns(Task.FromResult(Task.CompletedTask));
+
+            VaccinationModel vaccination = this.dataContextMock.Object.Vaccinations.First(vaccination => vaccination.Id == vaccinationId);
+            VaccinationSlotModel oldSlot = this.dataContextMock.Object.VaccinationSlots.First(slot => slot.Id == vaccination.VaccinationSlotId);
+            VaccinationSlotModel newSlot = this.dataContextMock.Object.VaccinationSlots.First(slot => slot.Id == newSlotId);
+
+            var response = this.adminVaccinationService.ChangeVaccinationSlot(vaccinationId, newSlotId).Result;
+
+            this.dataContextMock.Verify(dataContext => dataContext.SaveChanges(), Times.Once());
+
+            this.mailerMock.Verify(mailer => mailer.SendEmailAsync(
+                vaccination.Doctor.Email,
+                "Vaccination visit slot changed",
+                It.Is<string>(body => body.Contains(vaccination.Patient.FirstName) &&
+                                      body.Contains(vaccination.Patient.LastName) &&
+                                      body.Contains(oldSlot.Date.ToShortDateString()) &&
                                       body.Contains(newSlot.Date.ToShortDateString()) &&
                                       body.Contains(vaccination.Vaccine.Disease.ToString()) &&
                                       body.Contains("System Administrator")),
