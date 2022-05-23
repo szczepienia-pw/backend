@@ -75,11 +75,17 @@ namespace backend.Services.Admin
             // Release semaphore
             Semaphores.slotSemaphore.Release();
 
-            // Send email with confirmation
+            // Send email notification to patient
             _ = this.mailer.SendEmailAsync(
                     vaccination.Patient.Email,
                     "Vaccination visit slot changed",
                     $"Your {vaccination.Vaccine.Disease.ToString()} vaccination visit on {currentSlot.Date.ToShortDateString()} was changed to {newSlot.Date.ToShortDateString()} by System Administrator."
+            );
+
+            _ = this.mailer.SendEmailAsync(
+                    vaccination.Doctor.Email,
+                    "Vaccination visit slot changed",
+                    $"Vaccination visit of {vaccination.Patient.FirstName} {vaccination.Patient.LastName} ({vaccination.Vaccine.Disease.ToString()}) was moved from {currentSlot.Date.ToShortDateString()} to {newSlot.Date.ToShortDateString()} by System Administrator."
             );
 
             return new SuccessResponse();
