@@ -36,7 +36,7 @@ pipeline {
                             script {
                                 if (env.BRANCH_NAME == 'develop') {
                                     sh 'sed -i "s/database=io/database=io_develop/g" appsettings.json'
-                                    sh 'sed -i "s/http:\/\/localhost:8080/https:\/\/develop.szczepienia.pw/g" appsettings.json'
+                                    sh 'sed -i "s/http:\\/\\/localhost:8080/https:\\/\\/develop.szczepienia.pw/g" appsettings.json'
                                 } else {
                                     sh 'sed -i "s/http:\\/\\/localhost:8080/https:\\/\\/szczepienia.pw/g" appsettings.json'
                                 }
