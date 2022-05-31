@@ -62,10 +62,6 @@ namespace backend.Services.Admin
             }
             
             ((ISoftDelete)patient).SoftDelete();
-
-            if ((this.dataContext.Patients.Where(p => p.AddressId == address.Id && p.Id != patient.Id)).Count() == 0)
-                this.dataContext.Remove(address);                
-            
             this.dataContext.SaveChanges();
 
             return new SuccessResponse();
