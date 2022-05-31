@@ -189,10 +189,7 @@ namespace backend.Services.Patient
                 VaccinationSlotModel newSlot = new VaccinationSlotModel { Date = slot.vaccinationSlot.Date, Doctor = slot.vaccinationSlot.Doctor, Reserved = false };
                 this.dataContext.Add(newSlot);
             }
-            
-            if ((this.dataContext.Patients.Where(p => p.AddressId == address.Id && p.Id != patient.Id)).Count() == 0)
-                this.dataContext.Remove(address);   
-            
+
             ((ISoftDelete)patient).SoftDelete();
             this.dataContext.SaveChanges();
 
